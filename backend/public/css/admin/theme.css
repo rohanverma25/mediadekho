@@ -1,0 +1,216 @@
+/* Media Dekho — Bootstrap 5 admin theme (blood red / white / Poppins) */
+
+:root {
+    --bs-primary: #960018;
+    --bs-primary-rgb: 150, 0, 24;
+    --bs-link-color: #960018;
+    --bs-link-hover-color: #7a0013;
+    --md-radius: 0.85rem;
+    --md-shadow: 0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px -12px rgba(150, 0, 24, 0.18);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f8f8;
+}
+
+/* ---------- Buttons ---------- */
+.btn-primary {
+    background-color: #960018;
+    border-color: #960018;
+    background-image: linear-gradient(135deg, #960018, #6e0012);
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #7a0013 !important;
+    border-color: #7a0013 !important;
+}
+.btn-outline-primary {
+    color: #960018;
+    border-color: #960018;
+}
+.btn-outline-primary:hover {
+    background-color: #960018;
+    border-color: #960018;
+}
+.btn {
+    border-radius: 0.6rem;
+    font-weight: 500;
+}
+
+/* ---------- Sidebar ---------- */
+.admin-sidebar {
+    width: 260px;
+    height: 100vh;
+    background-color: #fff;
+    border-right: 1px solid rgba(15, 15, 15, 0.06);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1030;
+    overflow: hidden;
+}
+.admin-sidebar .brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    background-image: linear-gradient(135deg, #960018, #6e0012);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    padding: 1.25rem 1.5rem;
+    display: block;
+    border-bottom: 1px solid rgba(15, 15, 15, 0.06);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+/* The brand header stays pinned; only the link list scrolls when the nav
+   (now ~20 items across every admin module) overflows the viewport. */
+.admin-sidebar nav.nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    /* Bootstrap's base .nav sets flex-wrap: wrap (for horizontal pill nav
+       wrapping); .flex-column only changes the direction, so without this
+       overflowing links silently wrap into new hidden side-columns instead
+       of scrolling vertically. */
+    flex-wrap: nowrap;
+}
+.admin-sidebar nav.nav::-webkit-scrollbar {
+    width: 6px;
+}
+.admin-sidebar nav.nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+.admin-sidebar nav.nav::-webkit-scrollbar-thumb {
+    background-color: rgba(150, 0, 24, 0.25);
+    border-radius: 3px;
+}
+.admin-sidebar nav.nav::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(150, 0, 24, 0.45);
+}
+.admin-sidebar .nav-link {
+    color: #495057;
+    border-radius: 0.65rem;
+    margin: 0.15rem 0.75rem;
+    padding: 0.6rem 1rem;
+    font-weight: 500;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    /* nav.flex-column makes these flex items of the scrollable nav — without
+       this they get squeezed to fit instead of the list overflowing/scrolling. */
+    flex-shrink: 0;
+}
+.admin-sidebar .nav-link:hover {
+    background-color: rgba(150, 0, 24, 0.06);
+    color: #960018;
+}
+.admin-sidebar .nav-link.active {
+    background-color: rgba(150, 0, 24, 0.08);
+    color: #960018;
+    box-shadow: inset 3px 0 0 0 #960018;
+}
+.admin-sidebar .nav-link i {
+    width: 1.25rem;
+    display: inline-block;
+    text-align: center;
+    margin-right: 0.5rem;
+}
+
+/* ---------- Main content ---------- */
+.admin-main {
+    margin-left: 260px;
+    min-height: 100vh;
+}
+.admin-topbar {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(15, 15, 15, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+/* ---------- Cards / tables ---------- */
+.card {
+    border-radius: var(--md-radius);
+    border-color: rgba(150, 0, 24, 0.08);
+    box-shadow: var(--md-shadow);
+}
+.card-header {
+    background-color: #fff;
+    border-top-left-radius: var(--md-radius) !important;
+    border-top-right-radius: var(--md-radius) !important;
+    font-weight: 600;
+}
+.table thead th {
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: #6c757d;
+    background-color: rgba(150, 0, 24, 0.025);
+    border-bottom-width: 1px;
+}
+.badge {
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+/* ---------- Login page ---------- */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(150, 0, 24, 0.1), transparent 60%),
+        radial-gradient(900px 500px at 110% 110%, rgba(150, 0, 24, 0.08), transparent 55%),
+        radial-gradient(rgba(150, 0, 24, 0.09) 1px, transparent 1px),
+        #fafafa;
+    background-size: auto, auto, 22px 22px, auto;
+}
+.login-card {
+    border-radius: var(--md-radius);
+    box-shadow: 0 24px 60px -20px rgba(150, 0, 24, 0.3), 0 4px 16px -8px rgba(15, 15, 15, 0.15);
+    border: 1px solid rgba(150, 0, 24, 0.08);
+    max-width: 420px;
+    width: 100%;
+}
+.login-card .brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    background-image: linear-gradient(135deg, #960018, #6e0012);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+/* ---------- Stat cards ---------- */
+.stat-card {
+    border-radius: var(--md-radius);
+    box-shadow: var(--md-shadow);
+    border-color: rgba(150, 0, 24, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+.stat-card::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #960018, #6e0012);
+}
+
+@media (max-width: 991.98px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.2s ease;
+    }
+    .admin-sidebar.show {
+        transform: translateX(0);
+    }
+    .admin-main {
+        margin-left: 0;
+    }
+}

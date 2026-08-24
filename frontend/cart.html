@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campaign Cart & Plan Summary | Media Dekho</title>
+  <meta name="description" content="Review your selected media advertising options, calculate estimated campaign spend, apply discount coupons, and request an official proposal quote.">
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://www.mediadekho.com/favicon.ico">
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#c01625',
+              'red-dark': '#a0101c',
+              dark: '#0f172a',
+              surface: '#ffffff',
+              subtle: '#f8fafc',
+              accent: '#c01625',
+              gold: '#c01625'
+            }
+          },
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            inter: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-inter antialiased min-h-screen selection:bg-brand-red selection:text-white">
+
+  <!-- ==================== TOP RED STRIP ==================== -->
+  <div class="bg-brand-red h-1.5 w-full"></div>
+
+  <!-- ==================== MAIN HEADER / NAVIGATION ==================== -->
+  <header class="sticky top-0 z-40 bg-white/95 border-b border-slate-200 shadow-sm backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="flex items-center gap-2.5 group flex-shrink-0">
+        <div class="w-10 h-10 rounded-2xl bg-brand-red flex items-center justify-center text-white font-outfit font-black text-xl shadow-md shadow-brand-red/30 group-hover:scale-105 transition-transform">
+          MD
+        </div>
+        <div>
+          <span class="font-outfit font-black text-xl tracking-tight text-slate-900 block leading-none">MEDIA</span>
+          <span class="font-outfit font-bold text-[10px] tracking-widest text-brand-red uppercase block">DEKHO</span>
+        </div>
+      </a>
+
+      <!-- Quick Search Trigger Input -->
+      <div class="hidden lg:flex items-center flex-1 max-w-xs xl:max-w-sm mx-2">
+        <button class="open-search-modal w-full glass-input rounded-2xl px-3.5 py-2 text-left text-xs text-slate-500 flex items-center justify-between hover:border-slate-400 transition group shadow-sm bg-slate-50">
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 group-hover:text-brand-red transition text-xs"></i>
+            <span class="truncate">Search 300,000+ media options...</span>
+          </span>
+          <kbd class="bg-slate-200/80 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-mono border border-slate-300">ctrl K</kbd>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-5 text-xs sm:text-sm font-bold text-slate-700">
+        <a href="index.html" class="hover:text-brand-red transition">Home</a>
+        <a href="category.html" class="hover:text-brand-red transition">Categories Page</a>
+        <a href="listing.html" class="hover:text-brand-red transition">Listing Detail</a>
+        <a href="cart.html" class="text-brand-red font-bold transition flex items-center gap-1">
+          <span>Cart</span>
+          <span class="bg-brand-red text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase">ACTIVE</span>
+        </a>
+        <a href="login.html" class="hover:text-brand-red transition flex items-center gap-1 text-slate-900">
+          <i class="fa-solid fa-right-to-bracket text-xs text-brand-red"></i>
+          <span>Log In</span>
+        </a>
+      </nav>
+
+      <!-- Header CTAs Right -->
+      <div class="flex items-center gap-2.5">
+        <!-- Campaign Cart Trigger Button -->
+        <a href="cart.html" class="relative bg-slate-100 p-2.5 rounded-2xl hover:bg-slate-200 border border-slate-200 text-slate-700 transition flex items-center justify-center">
+          <i class="fa-solid fa-layer-group text-base"></i>
+          <span class="cart-count-badge hidden absolute -top-1.5 -right-1.5 bg-brand-red text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md">0</span>
+        </a>
+
+
+
+        <!-- Get Proposal CTA -->
+        <button class="open-inquiry-modal btn-shimmer bg-brand-red hover:bg-brand-red-dark text-white font-outfit font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 rounded-full shadow-lg shadow-brand-red/25 transition-transform active:scale-95 flex items-center gap-2">
+          <span>Get Custom Plan</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== SUB-HEADER CATEGORY MENU SLIDER ==================== -->
+  <div class="bg-white border-b border-slate-200 shadow-sm sticky top-[62px] z-30 py-2.5 px-4 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto flex items-center gap-2 relative">
+      
+      <!-- Left Scroll Arrow -->
+      <button id="cat-slider-left" class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white flex items-center justify-center flex-shrink-0 transition shadow-sm">
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+      </button>
+
+      <!-- Scrollable Categories Menu Track -->
+      <div id="cat-slider-track" class="flex items-center gap-2 overflow-x-auto scrollbar-none py-0.5 scroll-smooth flex-1 whitespace-nowrap">
+        <a href="category.html?cat=all" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="all">All Verticals</a>
+        <a href="category.html?cat=Magazine Advertising" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Magazine Advertising">Magazine Advertising</a>
+        <a href="category.html?cat=Airport Advertising" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Airport Advertising">Airport Advertising</a>
+        <a href="category.html?cat=Transit & Metro" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Transit & Metro">Transit & Metro</a>
+        <a href="category.html?cat=Outdoor & Billboards" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Outdoor & Billboards">Outdoor & Billboards</a>
+        <a href="category.html?cat=Cinema Advertising" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Cinema Advertising">Cinema Advertising</a>
+        <a href="category.html?cat=App Takeover" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="App Takeover">App Takeover</a>
+        <a href="category.html?cat=Influencer Marketing" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Influencer Marketing">Influencer Marketing</a>
+        <a href="category.html?cat=OTT & Streaming" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="OTT & Streaming">OTT & Streaming</a>
+        <a href="category.html?cat=Stadium Branding" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Stadium Branding">Stadium Branding</a>
+        <a href="category.html?cat=Team Sponsorship" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Team Sponsorship">Team Sponsorship</a>
+        <a href="category.html?cat=Corporate Merchandise" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Corporate Merchandise">Corporate Merchandise</a>
+        <a href="category.html?cat=Festival Swag" class="cat-menu-item font-semibold text-xs px-3.5 py-1.5 rounded-full border transition" data-cat="Festival Swag">Festival Swag</a>
+      </div>
+
+      <!-- Right Scroll Arrow -->
+      <button id="cat-slider-right" class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white flex items-center justify-center flex-shrink-0 transition shadow-sm">
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ==================== BREADCRUMB & PROGRESS TRACKER BAR ==================== -->
+  <section class="bg-gradient-to-b from-slate-100 to-slate-50 border-b border-slate-200 py-6 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      
+      <!-- Breadcrumb -->
+      <div>
+        <nav class="flex items-center gap-2 text-xs text-slate-500 font-medium mb-1">
+          <a href="index.html" class="hover:text-brand-red">Home</a>
+          <i class="fa-solid fa-chevron-right text-[9px]"></i>
+          <span class="text-slate-900 font-bold">Campaign Cart</span>
+        </nav>
+        <h1 class="font-outfit font-black text-2xl sm:text-3xl text-slate-900 tracking-tight">
+          Your Selected Campaign Plan & Basket
+        </h1>
+      </div>
+
+      <!-- Step Progress Indicator -->
+      <div class="flex items-center gap-2 sm:gap-4 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm text-xs font-bold">
+        <div class="flex items-center gap-1.5 text-brand-red px-3 py-1 bg-red-50 rounded-xl">
+          <span class="w-5 h-5 rounded-full bg-brand-red text-white flex items-center justify-center text-[10px]">1</span>
+          <span>Review Basket</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+        <div class="flex items-center gap-1.5 text-slate-400 px-2 py-1">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[10px]">2</span>
+          <span>Proposal Quote</span>
+        </div>
+        <i class="fa-solid fa-chevron-right text-slate-300 text-[10px]"></i>
+        <div class="flex items-center gap-1.5 text-slate-400 px-2 py-1">
+          <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[10px]">3</span>
+          <span>Execution Audit</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== MAIN CART SECTION ==================== -->
+  <section class="py-10 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- ==================== LEFT COLUMN: CART ITEMS LIST (8 COLS) ==================== -->
+        <main class="lg:col-span-8 space-y-6">
+          
+          <!-- Top Bar: Count & Clear Action -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-layer-group text-brand-red text-lg"></i>
+              <h2 class="font-outfit font-bold text-base text-slate-900">
+                Selected Media Options (<span id="cart-item-count-text" class="text-brand-red font-black">0</span>)
+              </h2>
+            </div>
+
+            <button id="clear-cart-page-btn" onclick="clearCartPage()" class="text-xs font-semibold text-slate-400 hover:text-brand-red flex items-center gap-1 transition">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+              <span>Clear Entire Basket</span>
+            </button>
+          </div>
+
+          <!-- Cart Items Container -->
+          <div id="cart-page-items-list" class="space-y-4">
+            <!-- Populated via JavaScript dynamically -->
+          </div>
+
+          <!-- Empty State (Shown when cart is empty) -->
+          <div id="cart-page-empty-state" class="hidden bg-white p-12 rounded-3xl border border-slate-200 shadow-sm text-center space-y-4">
+            <div class="w-16 h-16 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-brand-red text-2xl mx-auto">
+              <i class="fa-solid fa-basket-shopping"></i>
+            </div>
+            <h3 class="font-outfit font-extrabold text-2xl text-slate-900">Your Campaign Basket is Empty</h3>
+            <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+              Explore 300,000+ verified advertising options across Magazines, Airports, Metro Trains, Swiggy/Zomato Banners, and Cinema Screens to build your campaign.
+            </p>
+            <a href="category.html?cat=all" class="inline-flex items-center gap-2 bg-brand-red hover:bg-brand-red-dark text-white font-outfit font-bold text-xs px-6 py-3 rounded-xl shadow-lg shadow-brand-red/25 transition">
+              <span>Browse All Media Options</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+          </div>
+
+          <!-- Campaign Boosters Add-on Section -->
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+              <div>
+                <span class="text-[10px] text-brand-red font-bold uppercase tracking-widest block">Recommended Add-Ons</span>
+                <h3 class="font-outfit font-bold text-base text-slate-900">Enhance Your Campaign Performance</h3>
+              </div>
+              <span class="bg-red-50 text-brand-red text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">Boost ROI</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              
+              <!-- Booster 1 -->
+              <label class="p-3.5 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition cursor-pointer flex flex-col justify-between space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" id="booster-retarget" class="booster-checkbox custom-checkbox" data-price="15000" onchange="updateCartPageTotals()">
+                    <span class="font-outfit font-bold text-xs text-slate-900">Digital Retargeting</span>
+                  </div>
+                  <span class="text-xs font-black text-brand-red font-outfit">+₹15,000</span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-tight">Retarget users who saw your offline print/billboard on Meta & Google Ads.</p>
+              </label>
+
+              <!-- Booster 2 -->
+              <label class="p-3.5 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition cursor-pointer flex flex-col justify-between space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" id="booster-audit" class="booster-checkbox custom-checkbox" data-price="5000" checked onchange="updateCartPageTotals()">
+                    <span class="font-outfit font-bold text-xs text-slate-900">Geotagged Photo Audit</span>
+                  </div>
+                  <span class="text-xs font-black text-brand-red font-outfit">+₹5,000</span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-tight">100% verified high-res geotagged photos & physical voucher delivery.</p>
+              </label>
+
+              <!-- Booster 3 -->
+              <label class="p-3.5 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition cursor-pointer flex flex-col justify-between space-y-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" id="booster-vip" class="booster-checkbox custom-checkbox" data-price="7500" onchange="updateCartPageTotals()">
+                    <span class="font-outfit font-bold text-xs text-slate-900">VIP Artwork Inspection</span>
+                  </div>
+                  <span class="text-xs font-black text-brand-red font-outfit">+₹7,500</span>
+                </div>
+                <p class="text-[11px] text-slate-500 leading-tight">Pre-print color calibration and design optimization by expert designers.</p>
+              </label>
+
+            </div>
+          </div>
+
+          <!-- Navigation Bottom Bar -->
+          <div class="flex justify-between items-center">
+            <a href="category.html?cat=all" class="text-xs font-bold text-slate-600 hover:text-brand-red flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-arrow-left text-[10px]"></i>
+              <span>Continue Adding Options</span>
+            </a>
+
+            <span class="text-xs text-slate-400 font-medium">Prices based on 2026 direct owner card rates</span>
+          </div>
+
+        </main>
+
+        <!-- ==================== RIGHT COLUMN: ORDER SUMMARY (4 COLS) ==================== -->
+        <aside class="lg:col-span-4 space-y-6">
+          
+          <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl space-y-6 sticky top-24">
+            
+            <div class="border-b border-slate-100 pb-4">
+              <span class="text-[10px] text-slate-400 uppercase font-bold tracking-widest block">Cost Calculation</span>
+              <h3 class="font-outfit font-extrabold text-xl text-slate-900">Campaign Order Summary</h3>
+            </div>
+
+            <!-- Price Breakdown Lines -->
+            <div class="space-y-3 text-xs">
+              <div class="flex justify-between text-slate-600">
+                <span>Selected Media Options Subtotal:</span>
+                <span id="summary-media-subtotal" class="font-bold text-slate-900">₹0</span>
+              </div>
+
+              <div class="flex justify-between text-slate-600">
+                <span>Campaign Add-ons / Boosters:</span>
+                <span id="summary-boosters-total" class="font-bold text-slate-900">₹5,000</span>
+              </div>
+
+              <div class="flex justify-between text-slate-600">
+                <span>Estimated GST (18%):</span>
+                <span id="summary-gst-total" class="font-bold text-slate-900">₹0</span>
+              </div>
+
+              <div id="summary-discount-row" class="hidden justify-between text-emerald-600 font-bold bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+                <span>Promo Discount (10% OFF):</span>
+                <span id="summary-discount-val">-₹0</span>
+              </div>
+            </div>
+
+            <!-- Coupon Promo Input Box -->
+            <div class="pt-2">
+              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1.5">Have a Promo Coupon Code?</label>
+              <div class="flex gap-2">
+                <input id="coupon-input" type="text" placeholder="Try DEKHO10" class="glass-input flex-1 rounded-xl px-3 py-2 text-xs font-semibold uppercase">
+                <button id="apply-coupon-btn" onclick="applyCouponCode()" class="bg-slate-900 hover:bg-slate-800 text-white font-outfit font-bold text-xs px-4 py-2 rounded-xl transition">
+                  Apply
+                </button>
+              </div>
+              <span id="coupon-msg" class="text-[10px] text-slate-400 mt-1 block">Enter <strong>DEKHO10</strong> for 10% instant campaign discount.</span>
+            </div>
+
+            <div class="border-t border-slate-200 pt-4">
+              <div class="flex justify-between items-baseline mb-1">
+                <span class="text-xs font-bold text-slate-700">Total Estimated Campaign Spend:</span>
+                <div id="summary-grand-total" class="font-outfit font-black text-2xl sm:text-3xl text-brand-red">₹0</div>
+              </div>
+              <span class="text-[10px] text-slate-400 block">Final rate confirmed within 15 minutes by Media Buying Strategist.</span>
+            </div>
+
+            <!-- Primary Proposal CTA -->
+            <button class="open-inquiry-modal w-full btn-shimmer bg-brand-red hover:bg-brand-red-dark text-white font-outfit font-bold text-sm py-3.5 rounded-2xl shadow-xl shadow-brand-red/25 transition active:scale-95 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-file-invoice text-xs"></i>
+              <span>Request Official Proposal Quote</span>
+            </button>
+
+            <!-- Trust Badges -->
+            <div class="pt-2 border-t border-slate-100 space-y-2 text-[11px] text-slate-500 font-medium">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-check text-emerald-600 text-sm"></i>
+                <span>Direct Media Owner Rates Guaranteed</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-brand-red text-sm"></i>
+                <span>15-Minute Strategic Turnaround</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-award text-amber-500 text-sm"></i>
+                <span>100% Geotagged Physical Proof Audit</span>
+              </div>
+            </div>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== CART FAQS SECTION ==================== -->
+  <section class="py-16 px-4 sm:px-6 bg-slate-100 border-t border-slate-200">
+    <div class="max-w-4xl mx-auto space-y-10">
+      
+      <div class="text-center">
+        <span class="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-2">Campaign Basket Help</span>
+        <h2 class="font-outfit font-extrabold text-3xl sm:text-4xl text-slate-900 mb-3">
+          Cart & Proposal FAQs
+        </h2>
+        <p class="text-slate-600 text-sm">Learn how Media Dekho handles campaign quotes, payments, and execution proof.</p>
+      </div>
+
+      <!-- FAQ Accordion List -->
+      <div class="space-y-4">
+        
+        <div class="faq-item active">
+          <div class="faq-header">
+            <span>What happens after I submit my campaign plan request?</span>
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </div>
+          <div class="faq-content">
+            Once you request an official proposal quote, a dedicated Media Dekho Strategist reviews media inventory availability, verifies final print/display deadlines, and sends a formal PDF proposal along with payment details within 15 minutes.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span>Are these prices final or subject to negotiation?</span>
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </div>
+          <div class="faq-content">
+            Media Dekho aggregates official direct owner rates with zero hidden agent markups. For bulk multi-channel or annual campaigns, our team can unlock additional publisher series discounts up to 15%.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span>When do I need to submit my campaign artwork?</span>
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </div>
+          <div class="faq-content">
+            Artwork deadlines depend on the media type (15-20 days before publication month for glossy trade magazines, 5-7 days for digital LED screens and airport billboards). Our team will provide exact specs and templates after booking.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <span>How is campaign execution verified?</span>
+            <i class="fa-solid fa-chevron-down text-xs"></i>
+          </div>
+          <div class="faq-content">
+            We provide 100% verified geotagged proof photos and physical original issue voucher copies delivered straight to your corporate address immediately upon campaign launch.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-slate-900 border-t border-slate-800 pt-16 pb-12 text-slate-400 text-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
+        
+        <!-- Brand Info -->
+        <div class="md:col-span-2 space-y-4">
+          <a href="index.html" class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-brand-red flex items-center justify-center text-white font-outfit font-black text-lg">MD</div>
+            <span class="font-outfit font-black text-xl text-white tracking-tight">MEDIA DEKHO</span>
+          </a>
+          <p class="text-xs text-slate-400 max-w-sm leading-relaxed">
+            Media Dekho Pvt Ltd is India's premier Media Aggregator Platform for campaign planning and ad execution across Offline, Digital, Sports, and Corporate Gifting.
+          </p>
+          <div class="flex items-center gap-3 text-lg text-slate-400">
+            <a href="https://www.facebook.com/MediaDekho" target="_blank" class="hover:text-brand-red transition"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://x.com/MediaDekho" target="_blank" class="hover:text-brand-red transition"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://in.linkedin.com/company/mediadekho" target="_blank" class="hover:text-brand-red transition"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="https://www.youtube.com/channel/MediaDekho" target="_blank" class="hover:text-brand-red transition"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="font-outfit font-bold text-white text-sm mb-4">Media Verticals</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="category.html?cat=Magazine Advertising" class="hover:text-white transition">Magazine Advertising</a></li>
+            <li><a href="category.html?cat=Airport Advertising" class="hover:text-white transition">Airport Advertising</a></li>
+            <li><a href="category.html?cat=Transit %26 Metro" class="hover:text-white transition">Metro & Transit Wraps</a></li>
+            <li><a href="category.html?cat=Cinema Advertising" class="hover:text-white transition">Cinema Blockbuster Ads</a></li>
+            <li><a href="category.html?cat=OTT %26 Streaming" class="hover:text-white transition">OTT & In-App Banners</a></li>
+            <li><a href="category.html?cat=Stadium Branding" class="hover:text-white transition">IPL & Sports Sponsorships</a></li>
+          </ul>
+        </div>
+
+        <!-- Corporate -->
+        <div>
+          <h4 class="font-outfit font-bold text-white text-sm mb-4">Company</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a href="index.html#why-us-section" class="hover:text-white transition">About Us</a></li>
+            <li><a href="index.html#clients-section" class="hover:text-white transition">Client Case Studies</a></li>
+            <li><a href="index.html#estimator-section" class="hover:text-white transition">Campaign Budget Estimator</a></li>
+            <li><a href="#" class="open-inquiry-modal hover:text-white transition">Contact Specialist</a></li>
+            <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact HQ -->
+        <div>
+          <h4 class="font-outfit font-bold text-white text-sm mb-4">Headquarters</h4>
+          <p class="text-xs leading-relaxed text-slate-400 mb-2">
+            1010-1012, 10th Floor, Venus Atlantis Corporate Park, Prahlad Nagar, Ahmedabad, Gujarat 380054
+          </p>
+          <p class="text-xs text-slate-300 font-semibold mb-1">Inquiry Helpline:</p>
+          <a href="tel:+918980004451" class="text-xs text-brand-red font-bold block">+91 89800 04451</a>
+        </div>
+
+      </div>
+
+      <div class="pt-8 border-t border-slate-800 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p>© 2026 Media Dekho Pvt Ltd. All Rights Reserved.</p>
+        <p>Built with Precision Media Buying Engine</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ==================== LEAD INQUIRY FORM MODAL ==================== -->
+  <div id="inquiry-modal" class="fixed inset-0 z-50 modal-backdrop hidden items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-8 relative">
+      
+      <button id="close-inquiry-modal" class="absolute top-5 right-5 text-slate-400 hover:text-slate-900 text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="mb-6 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center text-brand-red text-xl mx-auto mb-3">
+          <i class="fa-solid fa-paper-plane"></i>
+        </div>
+        <h3 class="font-outfit font-extrabold text-2xl text-slate-900">Get a Custom Media Proposal</h3>
+        <p class="text-xs text-slate-500 mt-1 font-medium">Connect with a Media Dekho Strategist within 15 minutes.</p>
+      </div>
+
+      <form id="inquiry-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Your Name *</label>
+          <input type="text" required placeholder="e.g. Rajesh Kumar" class="glass-input w-full rounded-xl px-3.5 py-2.5 text-xs">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Phone Number *</label>
+            <input type="tel" required placeholder="+91 98765 43210" class="glass-input w-full rounded-xl px-3.5 py-2.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Work Email *</label>
+            <input type="email" required placeholder="name@company.com" class="glass-input w-full rounded-xl px-3.5 py-2.5 text-xs">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Company / Brand</label>
+            <input type="text" placeholder="Brand Name" class="glass-input w-full rounded-xl px-3.5 py-2.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Target Budget</label>
+            <select class="glass-input w-full rounded-xl px-3.5 py-2.5 text-xs cursor-pointer text-slate-800">
+              <option>₹1 Lakh - ₹5 Lakhs</option>
+              <option>₹5 Lakhs - ₹25 Lakhs</option>
+              <option>₹25 Lakhs - ₹1 Crore</option>
+              <option>₹1 Crore+</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Campaign Requirements</label>
+          <textarea rows="3" placeholder="Tell us your target locations, timeline, or preferred media options..." class="glass-input w-full rounded-xl px-3.5 py-2.5 text-xs resize-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-brand-red hover:bg-brand-red-dark text-white font-outfit font-bold text-sm py-3 rounded-xl shadow-lg shadow-brand-red/25 transition flex items-center justify-center gap-2">
+          <span>Submit Request</span>
+          <i class="fa-solid fa-check text-xs"></i>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-20 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- JavaScript File -->
+  <script src="js/app.js"></script>
+</body>
+</html>

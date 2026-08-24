@@ -1,0 +1,351 @@
+/* 
+  Media Dekho - Premium Modern Light Theme Stylesheet (Solid Red Accents)
+  Custom CSS for Clean Light Aesthetics, Sub-Header Category Menu Slider, Category Page Filters & FAQs
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --font-primary: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  
+  --color-brand-red: #c01625;
+  --color-brand-red-hover: #a0101c;
+  --color-brand-accent: #c01625;
+  
+  --color-bg-light: #f8fafc;
+  --color-bg-surface: #ffffff;
+  --color-bg-subtle: #f1f5f9;
+  
+  --color-text-main: #0f172a;
+  --color-text-body: #334155;
+  --color-text-muted: #64748b;
+  
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(226, 232, 240, 0.8);
+  --glass-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  
+  --card-bg: #ffffff;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-light);
+  color: var(--color-text-body);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  color: var(--color-text-main);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(192, 22, 37, 0.5);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-red);
+}
+
+/* Hide Scrollbar for Horizontal Slider */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Category Menu Items */
+.cat-menu-item {
+  color: #334155;
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.cat-menu-item:hover {
+  color: var(--color-brand-red);
+  background-color: #fef2f2;
+  border-color: rgba(192, 22, 37, 0.3);
+}
+
+.cat-menu-item.active {
+  color: #ffffff !important;
+  background-color: var(--color-brand-red) !important;
+  border-color: var(--color-brand-red) !important;
+  box-shadow: 0 4px 12px rgba(192, 22, 37, 0.25);
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: var(--color-bg-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(192, 22, 37, 0.4);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(192, 22, 37, 0.1);
+}
+
+.glass-input {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  background: #ffffff;
+  border-color: var(--color-brand-red);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(192, 22, 37, 0.15);
+}
+
+.glass-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Solid Red Text & Accent Classes */
+.gradient-text-brand {
+  color: var(--color-brand-red);
+}
+
+.gradient-text-gold {
+  color: var(--color-brand-red);
+}
+
+.hero-bg-solid {
+  background-color: #f8fafc;
+}
+
+/* Marquee Animation for Logos */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: 200%;
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Float & Pulse Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Shimmer Button Effect */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 70%
+  );
+  transform: rotate(30deg);
+  transition: all 0.6s ease;
+  opacity: 0;
+}
+
+.btn-shimmer:hover::after {
+  opacity: 1;
+  animation: shimmerPass 1.2s ease-out;
+}
+
+@keyframes shimmerPass {
+  0% { transform: translate(-100%, -100%) rotate(30deg); }
+  100% { transform: translate(100%, 100%) rotate(30deg); }
+}
+
+/* Range Slider Styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: #cbd5e1;
+  border-radius: 4px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-brand-red);
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(192, 22, 37, 0.4);
+  transition: transform 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: #a0101c;
+}
+
+/* Floating Bottom Sticky Bar */
+.bottom-quick-bar {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+
+.bottom-quick-bar.hide {
+  transform: translate(-50%, 100px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Tab active state line indicator */
+.tab-btn.active {
+  color: #c01625;
+  border-bottom: 2px solid var(--color-brand-red);
+  background: rgba(192, 22, 37, 0.08);
+}
+
+/* Dynamic Badge Styling - Solid Red */
+.badge-hot {
+  background: var(--color-brand-red);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Modal Backdrop Blur */
+.modal-backdrop {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+/* Category Page Accordion & Filter Styles */
+.filter-accordion-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #0f172a;
+  padding: 0.75rem 0;
+  cursor: pointer;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.filter-accordion-title:hover {
+  color: var(--color-brand-red);
+}
+
+/* Checkbox Style */
+.custom-checkbox {
+  accent-color: var(--color-brand-red);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* FAQ Accordion Component */
+.faq-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+  border-color: rgba(192, 22, 37, 0.3);
+}
+
+.faq-header {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.faq-header:hover {
+  color: var(--color-brand-red);
+}
+
+.faq-header i {
+  transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-header i {
+  transform: rotate(180deg);
+  color: var(--color-brand-red);
+}
+
+.faq-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0, 1, 0, 1);
+  padding: 0 1.5rem;
+  color: #475569;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.faq-item.active .faq-content {
+  max-height: 500px;
+  padding-bottom: 1.25rem;
+  transition: max-height 0.35s cubic-bezier(1, 0, 1, 0);
+}
