@@ -37,7 +37,10 @@ export function App() {
     <SettingsProvider>
       <AuthProvider>
         <CartProvider>
-          <Router>
+          {/* import.meta.env.BASE_URL mirrors vite.config.js's `base` — keeps
+              router links in sync with the deployed subfolder automatically
+              instead of hardcoding the path in two places. */}
+          <Router basename={import.meta.env.BASE_URL}>
             <div className="flex flex-col min-h-screen">
               <Routes>
                 <Route

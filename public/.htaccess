@@ -1,0 +1,23 @@
+# Ensure JS modules are always served with the correct MIME type.
+AddType application/javascript .js
+AddType application/javascript .mjs
+AddType text/css .css
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /mediadekho/
+
+  # Never touch the Laravel backend living at /mediadekho/backend/ — without
+  # this exclusion, every non-file request under it (e.g. its API routes)
+  # gets silently rewritten to this React app's index.html instead of
+  # reaching Laravel, which is exactly what was happening before this file
+  # existed too (an even broader rewrite was already live on the server).
+  RewriteCond %{REQUEST_URI} !^/mediadekho/backend/
+
+  # Never rewrite requests for real files/directories (JS, CSS, images,
+  # favicon, etc.) — only fall back to index.html for client-side routes
+  # React Router handles (e.g. /mediadekho/category, /mediadekho/listing/foo).
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /mediadekho/index.html [L]
+</IfModule>
