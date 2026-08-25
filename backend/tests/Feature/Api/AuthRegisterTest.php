@@ -20,7 +20,12 @@ class AuthRegisterTest extends TestCase
         $this->seedRolesAndPermissions();
     }
 
-    public function test_guest_can_register_as_a_b2b_customer(): void
+    /**
+     * B2B is agency-tier pricing, so unlike every other account type it
+     * doesn't get a token back immediately — it's created 'pending' and
+     * needs an admin to approve it before the account can log in.
+     */
+    public function test_guest_can_register_as_a_b2b_customer_but_gets_no_token(): void
     {
         $response = $this->postJson('/api/register', [
             'name' => 'Rajesh Kumar',
@@ -32,17 +37,50 @@ class AuthRegisterTest extends TestCase
         ]);
 
         $response->assertCreated()
-            ->assertJsonStructure(['token', 'user' => ['id', 'name', 'email', 'roles']])
-            ->assertJsonPath('user.roles.0', 'B2B Customer');
+            ->assertJsonPath('pending_approval', true)
+            ->assertJsonMissing(['token']);
 
         $this->assertDatabaseHas('users', [
             'email' => 'rajesh@techcorp.com',
             'phone' => '+91 98765 43210',
             'company' => 'TechCorp Solutions',
+            'approval_status' => 'pending',
         ]);
 
         $user = User::query()->where('email', 'rajesh@techcorp.com')->firstOrFail();
         $this->assertTrue($user->hasRole('B2B Customer'));
+    }
+
+    public function test_pending_b2b_customer_cannot_log_in(): void
+    {
+        $this->postJson('/api/register', [
+            'name' => 'Rajesh Kumar',
+            'email' => 'rajesh@techcorp.com',
+            'password' => 'password123',
+            'user_type' => 'b2b',
+        ])->assertCreated();
+
+        $this->postJson('/api/login', [
+            'email' => 'rajesh@techcorp.com',
+            'password' => 'password123',
+        ])->assertUnprocessable()->assertJsonValidationErrors('email');
+    }
+
+    public function test_b2b_customer_can_log_in_once_approved(): void
+    {
+        $this->postJson('/api/register', [
+            'name' => 'Rajesh Kumar',
+            'email' => 'rajesh@techcorp.com',
+            'password' => 'password123',
+            'user_type' => 'b2b',
+        ])->assertCreated();
+
+        User::query()->where('email', 'rajesh@techcorp.com')->update(['approval_status' => 'approved']);
+
+        $this->postJson('/api/login', [
+            'email' => 'rajesh@techcorp.com',
+            'password' => 'password123',
+        ])->assertOk()->assertJsonPath('user.roles.0', 'B2B Customer');
     }
 
     #[DataProvider('userTypeProvider')]
@@ -63,7 +101,6 @@ class AuthRegisterTest extends TestCase
         return [
             'retail' => ['retail', 'Retail Customer'],
             'b2c' => ['b2c', 'B2C Customer'],
-            'b2b' => ['b2b', 'B2B Customer'],
             'enterprise' => ['enterprise', 'Enterprise Customer'],
         ];
     }

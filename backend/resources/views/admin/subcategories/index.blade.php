@@ -92,6 +92,12 @@ $(function () {
 
     const subcategoryModal = new bootstrap.Modal('#subcategoryModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const subcategoryEditUrl = (id) => '{{ route('admin.subcategories.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const subcategoryResourceUrl = (id) => '{{ route('admin.subcategories.update', ['__ID__']) }}'.replace('__ID__', id);
+
     const table = $('#subcategoriesTable').DataTable({
         ajax: {
             url: '{{ route('admin.subcategories.data') }}',
@@ -136,7 +142,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/media-subcategories/${id}/edit`, function (res) {
+        $.get(subcategoryEditUrl(id), function (res) {
             const c = res.category;
 
             $('#subcategory_id').val(c.id);
@@ -154,7 +160,7 @@ $(function () {
         if (! confirm('Delete this sub-category? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/media-subcategories/${id}`,
+            url: subcategoryResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -170,7 +176,7 @@ $(function () {
         clearErrors();
 
         const id = $('#subcategory_id').val();
-        const url = id ? `/admin/media-subcategories/${id}` : '{{ route('admin.subcategories.store') }}';
+        const url = id ? subcategoryResourceUrl(id) : '{{ route('admin.subcategories.store') }}';
         const method = id ? 'PUT' : 'POST';
 
         $.ajax({

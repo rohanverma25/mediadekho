@@ -28,6 +28,7 @@ export const SignupPage = () => {
   const [userType, setUserType] = useState('retail');
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingApprovalMessage, setPendingApprovalMessage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +36,13 @@ export const SignupPage = () => {
     setIsSubmitting(true);
 
     try {
-      await register({ name: fullName, email, phone, company, password, userType });
+      const result = await register({ name: fullName, email, phone, company, password, userType });
+
+      if (result?.pending_approval) {
+        setPendingApprovalMessage(result.message);
+        return;
+      }
+
       showToast('Account created successfully! Welcome to Media Dekho.', 'success');
       navigate('/dashboard');
     } catch (err) {
@@ -77,8 +84,22 @@ export const SignupPage = () => {
 
       {/* Main Signup Container */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 py-12">
+        {pendingApprovalMessage ? (
+          <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 text-center space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-2xl font-bold mx-auto border border-amber-100">
+              <i className="fa-solid fa-clock"></i>
+            </div>
+            <h1 className="font-outfit font-extrabold text-2xl text-slate-900">Account Pending Approval</h1>
+            <p className="text-sm text-slate-600 leading-relaxed">{pendingApprovalMessage}</p>
+            <Link
+              to="/"
+              className="inline-flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-dark text-white font-outfit font-bold text-sm px-6 py-3 rounded-xl shadow-lg shadow-brand-red/25 transition mt-2">
+              Back to Home
+            </Link>
+          </div>
+        ) : (
         <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 space-y-6">
-          
+
           <div className="text-center space-y-2">
             <div className="w-12 h-12 rounded-2xl bg-red-50 text-brand-red flex items-center justify-center text-xl font-bold mx-auto border border-red-100">
               <i className="fa-solid fa-user-plus"></i>
@@ -209,6 +230,7 @@ export const SignupPage = () => {
           </div>
 
         </div>
+        )}
       </main>
 
       <footer className="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">

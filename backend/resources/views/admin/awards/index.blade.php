@@ -25,6 +25,7 @@
                         <th>Event Date</th>
                         <th>Nominations</th>
                         <th>Status</th>
+                        <th>Homepage</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -94,6 +95,11 @@
                                 <input type="number" name="sort_order" id="award_sort_order" class="form-control" value="0" min="0">
                             </div>
                         </div>
+
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="show_on_homepage" id="award_show_on_homepage">
+                            <label class="form-check-label" for="award_show_on_homepage">Show in the "Awards &amp; Achievements" section on the homepage</label>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -110,6 +116,12 @@
 <script>
 $(function () {
     const awardModal = new bootstrap.Modal('#awardModal');
+
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const awardEditUrl = (id) => '{{ route('admin.awards.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const awardResourceUrl = (id) => '{{ route('admin.awards.update', ['__ID__']) }}'.replace('__ID__', id);
 
     $('#award_description').summernote({
         height: 200,
@@ -133,6 +145,7 @@ $(function () {
             { data: 'event_date', defaultContent: '—' },
             { data: 'nominations_count', render: (count) => count > 0 ? `<span class="badge text-bg-info">${count}</span>` : '—' },
             { data: 'status', render: (status) => `<span class="badge text-bg-${status === 'active' ? 'success' : 'secondary'}">${status}</span>` },
+            { data: 'show_on_homepage', render: (shown) => shown ? '<span class="badge text-bg-info">Shown</span>' : '<span class="text-muted">—</span>' },
             {
                 data: null,
                 orderable: false,
@@ -184,6 +197,7 @@ $(function () {
         $('#award_description').summernote('code', '');
         $('#award_type').val('upcoming');
         $('#award_status').val('active');
+        $('#award_show_on_homepage').prop('checked', false);
         resetImagePreview();
         $('#awardModalTitle').text('Add Award');
     });
@@ -192,7 +206,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/awards/${id}/edit`, function (res) {
+        $.get(awardEditUrl(id), function (res) {
             const a = res.award;
 
             $('#award_id').val(a.id);
@@ -203,6 +217,7 @@ $(function () {
             $('#award_event_date').val(a.event_date ? a.event_date.substring(0, 10) : '');
             $('#award_status').val(a.status);
             $('#award_sort_order').val(a.sort_order);
+            $('#award_show_on_homepage').prop('checked', !!a.show_on_homepage);
             resetImagePreview(a.image_url);
             $('#awardModalTitle').text('Edit Award');
             awardModal.show();
@@ -214,7 +229,7 @@ $(function () {
         if (! confirm('Delete this award? Any nominations submitted for it will be deleted too. This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/awards/${id}`,
+            url: awardResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -232,7 +247,7 @@ $(function () {
         $('#award_description').val($('#award_description').summernote('code'));
 
         const id = $('#award_id').val();
-        const url = id ? `/admin/awards/${id}` : '{{ route('admin.awards.store') }}';
+        const url = id ? awardResourceUrl(id) : '{{ route('admin.awards.store') }}';
         const formData = new FormData(this);
         if (id) {
             formData.append('_method', 'PUT');

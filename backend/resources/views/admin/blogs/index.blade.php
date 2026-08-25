@@ -104,6 +104,12 @@
 $(function () {
     const blogModal = new bootstrap.Modal('#blogModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const blogEditUrl = (id) => '{{ route('admin.blogs.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const blogResourceUrl = (id) => '{{ route('admin.blogs.update', ['__ID__']) }}'.replace('__ID__', id);
+
     $('#blog_content').summernote({
         height: 260,
         toolbar: [
@@ -184,7 +190,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/blogs/${id}/edit`, function (res) {
+        $.get(blogEditUrl(id), function (res) {
             const b = res.blog;
 
             $('#blog_id').val(b.id);
@@ -205,7 +211,7 @@ $(function () {
         if (! confirm('Delete this blog post? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/blogs/${id}`,
+            url: blogResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -226,7 +232,7 @@ $(function () {
         $('#blog_content').val($('#blog_content').summernote('code'));
 
         const id = $('#blog_id').val();
-        const url = id ? `/admin/blogs/${id}` : '{{ route('admin.blogs.store') }}';
+        const url = id ? blogResourceUrl(id) : '{{ route('admin.blogs.store') }}';
         const formData = new FormData(this);
         if (id) {
             formData.append('_method', 'PUT');

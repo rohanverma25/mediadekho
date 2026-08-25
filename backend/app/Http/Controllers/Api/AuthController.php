@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\NotificationMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,10 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function __construct(private readonly NotificationMailer $mailer)
+    {
+    }
+
     /**
      * Maps the storefront's "Account Type" dropdown value onto the Spatie
      * role PricingService::resolveTier() checks for. Anything not in here
@@ -40,15 +45,32 @@ class AuthController extends Controller
             'user_type' => ['required', 'string', Rule::in(array_keys(self::USER_TYPE_ROLES))],
         ]);
 
+        // B2B accounts are agency-tier — they get admin-negotiated pricing,
+        // so an admin reviews and approves each one before it can be used,
+        // rather than granting access the instant the form is submitted.
+        $requiresApproval = $data['user_type'] === 'b2b';
+
         $user = User::query()->create([
             'name' => $data['name'],
             'email' => $data['email'],
             'phone' => $data['phone'] ?? null,
             'company' => $data['company'] ?? null,
             'password' => $data['password'],
+            'approval_status' => $requiresApproval ? 'pending' : 'approved',
         ]);
 
         $user->assignRole(self::USER_TYPE_ROLES[$data['user_type']]);
+
+        if ($requiresApproval) {
+            $this->mailer->pendingApproval($user);
+
+            return response()->json([
+                'pending_approval' => true,
+                'message' => "Thanks for registering! Your B2B account is pending admin approval — you'll be able to log in once it's active.",
+            ], 201);
+        }
+
+        $this->mailer->welcome($user);
 
         $token = $user->createToken('api-token')->plainTextToken;
 
@@ -84,6 +106,19 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+
+        if ($user->approval_status === 'pending') {
+            throw ValidationException::withMessages([
+                'email' => ["Your account is pending admin approval. You'll be able to log in once it's approved."],
+            ]);
+        }
+
+        if ($user->approval_status === 'rejected') {
+            throw ValidationException::withMessages([
+                'email' => ['Your account application was not approved. Please contact support for details.'],
+            ]);
+        }
+
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([

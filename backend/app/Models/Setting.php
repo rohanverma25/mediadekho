@@ -27,6 +27,14 @@ class Setting extends Model
         'map_embed_url',
         'razorpay_key_id',
         'razorpay_key_secret',
+        'smtp_host',
+        'smtp_port',
+        'smtp_username',
+        'smtp_password',
+        'smtp_encryption',
+        'mail_from_address',
+        'mail_from_name',
+        'notification_email',
     ];
 
     protected function casts(): array
@@ -35,6 +43,7 @@ class Setting extends Model
             'contact_emails' => 'array',
             'contact_addresses' => 'array',
             'razorpay_key_secret' => 'encrypted',
+            'smtp_password' => 'encrypted',
         ];
     }
 

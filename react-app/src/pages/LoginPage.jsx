@@ -11,7 +11,8 @@ export const LoginPage = () => {
   const location = useLocation();
   const { showToast } = useCart();
   const { login } = useAuth();
-  const { settings } = useSettings();
+  const { settings, status: settingsStatus } = useSettings();
+  const settingsLoading = settingsStatus === 'loading';
   const redirectTo = location.state?.from || '/dashboard';
 
   const [email, setEmail] = useState('');
@@ -47,14 +48,24 @@ export const LoginPage = () => {
       <header className="bg-white border-b border-slate-200 py-4 px-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3 group">
-            {settings?.logo_url ? (
+            {settingsLoading ? (
+              <Skeleton className="h-10 w-32 rounded-xl" />
+            ) : settings?.logo_url ? (
               <img
                 src={settings.logo_url}
                 alt="Media Dekho"
                 className="h-10 w-auto max-w-[160px] object-contain group-hover:scale-105 transition-transform"
               />
             ) : (
-              <Skeleton className="h-10 w-32 rounded-xl" />
+              <>
+                <div className="w-10 h-10 rounded-xl bg-brand-red flex items-center justify-center text-white font-outfit font-black text-xl shadow-lg shadow-brand-red/30 group-hover:scale-105 transition-transform">
+                  MD
+                </div>
+                <div>
+                  <span className="font-outfit font-black text-xl tracking-tight text-slate-900 block leading-none">MEDIA</span>
+                  <span className="font-outfit font-bold text-xs tracking-widest text-brand-red uppercase block">DEKHO</span>
+                </div>
+              </>
             )}
           </Link>
 

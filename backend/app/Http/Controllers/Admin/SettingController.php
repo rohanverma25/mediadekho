@@ -49,13 +49,24 @@ class SettingController extends Controller
             'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
             'razorpay_key_id' => ['nullable', 'string', 'max:255'],
             'razorpay_key_secret' => ['nullable', 'string', 'max:255'],
+            'smtp_host' => ['nullable', 'string', 'max:255'],
+            'smtp_port' => ['nullable', 'string', 'max:10'],
+            'smtp_username' => ['nullable', 'string', 'max:255'],
+            'smtp_password' => ['nullable', 'string', 'max:255'],
+            'smtp_encryption' => ['nullable', 'string', 'in:tls,ssl'],
+            'mail_from_address' => ['nullable', 'email', 'max:255'],
+            'mail_from_name' => ['nullable', 'string', 'max:255'],
+            'notification_email' => ['nullable', 'email', 'max:255'],
         ]);
 
-        // The secret field is deliberately never re-displayed once saved
-        // (see the Blade view) — a blank submission means "leave it
-        // unchanged", not "clear it out".
+        // Secret fields are deliberately never re-displayed once saved (see
+        // the Blade view) — a blank submission means "leave it unchanged",
+        // not "clear it out".
         if (! filled($data['razorpay_key_secret'] ?? null)) {
             unset($data['razorpay_key_secret']);
+        }
+        if (! filled($data['smtp_password'] ?? null)) {
+            unset($data['smtp_password']);
         }
 
         // Repeater rows the admin added but left blank (or only partially

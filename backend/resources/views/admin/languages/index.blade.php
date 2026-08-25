@@ -55,6 +55,12 @@
 $(function () {
     const languageModal = new bootstrap.Modal('#languageModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const languageEditUrl = (id) => '{{ route('admin.languages.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const languageResourceUrl = (id) => '{{ route('admin.languages.update', ['__ID__']) }}'.replace('__ID__', id);
+
     const table = $('#languagesTable').DataTable({
         ajax: {
             url: '{{ route('admin.languages.data') }}',
@@ -96,7 +102,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/languages/${id}/edit`, function (res) {
+        $.get(languageEditUrl(id), function (res) {
             $('#language_id').val(res.language.id);
             $('#language_name').val(res.language.name);
             $('#languageModalTitle').text('Edit Language');
@@ -109,7 +115,7 @@ $(function () {
         if (! confirm('Delete this language? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/languages/${id}`,
+            url: languageResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -125,7 +131,7 @@ $(function () {
         clearErrors();
 
         const id = $('#language_id').val();
-        const url = id ? `/admin/languages/${id}` : '{{ route('admin.languages.store') }}';
+        const url = id ? languageResourceUrl(id) : '{{ route('admin.languages.store') }}';
         const method = id ? 'PUT' : 'POST';
 
         $.ajax({

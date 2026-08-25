@@ -22,6 +22,7 @@ class AwardResource extends JsonResource
             'type' => $this->type,
             'organization' => $this->organization,
             'event_date' => $this->event_date?->format('Y-m-d'),
+            'show_on_homepage' => $this->show_on_homepage,
         ];
     }
 }

@@ -21,6 +21,7 @@ class Award extends Model
         'event_date',
         'status',
         'sort_order',
+        'show_on_homepage',
     ];
 
     protected function casts(): array
@@ -28,6 +29,7 @@ class Award extends Model
         return [
             'event_date' => 'date',
             'sort_order' => 'integer',
+            'show_on_homepage' => 'boolean',
         ];
     }
 

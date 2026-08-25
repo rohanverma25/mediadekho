@@ -90,6 +90,12 @@
 $(function () {
     const announcementModal = new bootstrap.Modal('#announcementModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const announcementEditUrl = (id) => '{{ route('admin.announcements.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const announcementResourceUrl = (id) => '{{ route('admin.announcements.update', ['__ID__']) }}'.replace('__ID__', id);
+
     $('#announcement_message').summernote({
         height: 180,
         toolbar: [
@@ -146,7 +152,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/announcements/${id}/edit`, function (res) {
+        $.get(announcementEditUrl(id), function (res) {
             const a = res.announcement;
 
             $('#announcement_id').val(a.id);
@@ -165,7 +171,7 @@ $(function () {
         if (! confirm('Delete this announcement? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/announcements/${id}`,
+            url: announcementResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -181,7 +187,7 @@ $(function () {
         clearErrors();
 
         const id = $('#announcement_id').val();
-        const url = id ? `/admin/announcements/${id}` : '{{ route('admin.announcements.store') }}';
+        const url = id ? announcementResourceUrl(id) : '{{ route('admin.announcements.store') }}';
         const method = id ? 'PUT' : 'POST';
 
         $.ajax({

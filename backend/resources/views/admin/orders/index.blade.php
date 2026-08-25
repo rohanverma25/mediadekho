@@ -34,6 +34,11 @@ $(function () {
         return `<span class="badge text-bg-${map[status] ?? 'secondary'}">${status}</span>`;
     };
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const orderShowUrl = (id) => '{{ route('admin.orders.show', ['__ID__']) }}'.replace('__ID__', id);
+
     $('#ordersTable').DataTable({
         ajax: {
             url: '{{ route('admin.orders.data') }}',
@@ -53,7 +58,7 @@ $(function () {
                 data: null,
                 orderable: false,
                 className: 'text-end',
-                render: (row) => `<a href="/admin/orders/${row.id}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>`,
+                render: (row) => `<a href="${orderShowUrl(row.id)}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>`,
             },
         ],
     });

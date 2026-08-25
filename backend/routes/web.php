@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\FrequencyController;
+use App\Http\Controllers\Admin\IndustryController;
 use App\Http\Controllers\Admin\JobApplicationController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\LanguageController;
@@ -111,6 +112,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
         Route::get('customers/data', [CustomerController::class, 'data'])->name('customers.data');
+        Route::put('customers/{customer}/approve', [CustomerController::class, 'approve'])->name('customers.approve');
+        Route::put('customers/{customer}/reject', [CustomerController::class, 'reject'])->name('customers.reject');
 
         Route::get('awards', [AwardController::class, 'index'])->name('awards.index');
         Route::get('awards/data', [AwardController::class, 'data'])->name('awards.data');
@@ -144,6 +147,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('client-logos/{clientLogo}/edit', [ClientLogoController::class, 'edit'])->name('client-logos.edit');
         Route::put('client-logos/{clientLogo}', [ClientLogoController::class, 'update'])->name('client-logos.update');
         Route::delete('client-logos/{clientLogo}', [ClientLogoController::class, 'destroy'])->name('client-logos.destroy');
+
+        Route::get('industries', [IndustryController::class, 'index'])->name('industries.index');
+        Route::get('industries/data', [IndustryController::class, 'data'])->name('industries.data');
+        Route::post('industries', [IndustryController::class, 'store'])->name('industries.store');
+        Route::get('industries/{industry}/edit', [IndustryController::class, 'edit'])->name('industries.edit');
+        Route::put('industries/{industry}', [IndustryController::class, 'update'])->name('industries.update');
+        Route::delete('industries/{industry}', [IndustryController::class, 'destroy'])->name('industries.destroy');
 
         Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
         Route::get('announcements/data', [AnnouncementController::class, 'data'])->name('announcements.data');

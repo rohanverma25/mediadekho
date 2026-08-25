@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ImageUploadHelper;
 use App\Http\Controllers\Controller;
 use App\Models\JobApplication;
+use App\Services\NotificationMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,6 +13,10 @@ use Illuminate\Validation\Rule;
 class JobApplicationController extends Controller
 {
     private const RESUME_DIRECTORY = 'resumes';
+
+    public function __construct(private readonly NotificationMailer $mailer)
+    {
+    }
 
     /**
      * Public job application submission — open to guests (no auth
@@ -40,7 +45,9 @@ class JobApplicationController extends Controller
 
         $data['user_id'] = $request->user('sanctum')?->id;
 
-        JobApplication::query()->create($data);
+        $application = JobApplication::query()->create($data);
+
+        $this->mailer->jobApplication($application);
 
         return response()->json(['message' => "Thanks for applying! We'll review your application and get back to you."], 201);
     }

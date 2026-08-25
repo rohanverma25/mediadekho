@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ClientLogoController;
 use App\Http\Controllers\Api\ContactLeadController;
 use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\IndustryController;
 use App\Http\Controllers\Api\JobApplicationController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\MediaCategoryController;
@@ -56,6 +57,8 @@ Route::middleware('throttle:60,1')->group(function () {
     Route::get('media-categories/{category}', [MediaCategoryController::class, 'show']);
 
     Route::get('client-logos', [ClientLogoController::class, 'index']);
+
+    Route::get('industries', [IndustryController::class, 'index']);
 
     Route::get('news', [NewsController::class, 'index']);
 

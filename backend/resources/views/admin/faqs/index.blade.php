@@ -102,6 +102,12 @@
 $(function () {
     const faqModal = new bootstrap.Modal('#faqModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const faqEditUrl = (id) => '{{ route('admin.faqs.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const faqResourceUrl = (id) => '{{ route('admin.faqs.update', ['__ID__']) }}'.replace('__ID__', id);
+
     const categories = @json($categories->map(fn ($c) => ['id' => $c->id, 'label' => $c->name]));
     const inventories = @json($inventories->map(fn ($i) => ['id' => $i->id, 'label' => $i->title]));
 
@@ -184,7 +190,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/faqs/${id}/edit`, function (res) {
+        $.get(faqEditUrl(id), function (res) {
             const f = res.faq;
 
             $('#faq_id').val(f.id);
@@ -204,7 +210,7 @@ $(function () {
         if (! confirm('Delete this FAQ? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/faqs/${id}`,
+            url: faqResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -220,7 +226,7 @@ $(function () {
         clearErrors();
 
         const id = $('#faq_id').val();
-        const url = id ? `/admin/faqs/${id}` : '{{ route('admin.faqs.store') }}';
+        const url = id ? faqResourceUrl(id) : '{{ route('admin.faqs.store') }}';
         const method = id ? 'PUT' : 'POST';
 
         $.ajax({

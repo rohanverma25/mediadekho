@@ -27,6 +27,7 @@ class User extends Authenticatable
         'phone',
         'company',
         'password',
+        'approval_status',
     ];
 
     /**

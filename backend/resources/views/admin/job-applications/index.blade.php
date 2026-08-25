@@ -64,6 +64,11 @@ $(function () {
     const applicationModal = new bootstrap.Modal('#applicationModal');
     let activeApplicationId = null;
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const applicationResourceUrl = (id) => '{{ route('admin.job-applications.update', ['__ID__']) }}'.replace('__ID__', id);
+
     const statusBadge = (status) => {
         const map = { new: 'danger', shortlisted: 'success', rejected: 'secondary' };
         return `<span class="badge text-bg-${map[status] ?? 'secondary'}">${status}</span>`;
@@ -121,7 +126,7 @@ $(function () {
         if (! activeApplicationId) return;
 
         $.ajax({
-            url: `/admin/job-applications/${activeApplicationId}`,
+            url: applicationResourceUrl(activeApplicationId),
             method: 'PUT',
             data: { status: $('#app_view_status').val() },
             success: function () {
@@ -139,7 +144,7 @@ $(function () {
         if (! confirm('Delete this application? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/job-applications/${id}`,
+            url: applicationResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload(null, false);

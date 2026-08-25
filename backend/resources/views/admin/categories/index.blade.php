@@ -102,6 +102,12 @@
 $(function () {
     const categoryModal = new bootstrap.Modal('#categoryModal');
 
+    // Hardcoding "/admin/..." here breaks the moment the app is deployed
+    // under a subfolder (e.g. /mediadekho/backend/public/) — route() is
+    // resolved server-side against the real request, so it's always correct.
+    const categoryEditUrl = (id) => '{{ route('admin.categories.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const categoryResourceUrl = (id) => '{{ route('admin.categories.update', ['__ID__']) }}'.replace('__ID__', id);
+
     $('#category_description').summernote({
         height: 180,
         toolbar: [
@@ -179,7 +185,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/media-categories/${id}/edit`, function (res) {
+        $.get(categoryEditUrl(id), function (res) {
             const c = res.category;
 
             $('#category_id').val(c.id);
@@ -200,7 +206,7 @@ $(function () {
         if (! confirm('Delete this category? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/media-categories/${id}`,
+            url: categoryResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -216,7 +222,7 @@ $(function () {
         clearErrors();
 
         const id = $('#category_id').val();
-        const url = id ? `/admin/media-categories/${id}` : '{{ route('admin.categories.store') }}';
+        const url = id ? categoryResourceUrl(id) : '{{ route('admin.categories.store') }}';
         const formData = new FormData(this);
         if (id) {
             formData.append('_method', 'PUT');

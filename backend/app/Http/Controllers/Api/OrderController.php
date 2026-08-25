@@ -10,6 +10,7 @@ use App\Models\MediaInventory;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Setting;
+use App\Services\NotificationMailer;
 use App\Services\PricingService;
 use App\Services\RazorpayService;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +23,7 @@ class OrderController extends Controller
     public function __construct(
         private readonly PricingService $pricing,
         private readonly RazorpayService $razorpay,
+        private readonly NotificationMailer $mailer,
     ) {
     }
 
@@ -199,6 +201,10 @@ class OrderController extends Controller
             'paid_at' => now(),
         ]);
 
-        return response()->json(new OrderResource($order->load('items.inventory')));
+        $order->load(['items.inventory', 'user']);
+
+        $this->mailer->orderConfirmed($order);
+
+        return response()->json(new OrderResource($order));
     }
 }

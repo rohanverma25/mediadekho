@@ -52,7 +52,14 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (payload) => {
     const data = await registerAccount(payload);
-    persistSession(data);
+
+    // A B2B signup comes back pending admin approval — no token/user is
+    // issued yet, so there's no session to persist until an admin approves
+    // the account and they log in for the first time.
+    if (data.token) {
+      persistSession(data);
+    }
+
     return data;
   };
 

@@ -86,6 +86,12 @@
 $(function () {
     const newsModal = new bootstrap.Modal('#newsModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const newsEditUrl = (id) => '{{ route('admin.news.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const newsResourceUrl = (id) => '{{ route('admin.news.update', ['__ID__']) }}'.replace('__ID__', id);
+
     const table = $('#newsTable').DataTable({
         ajax: {
             url: '{{ route('admin.news.data') }}',
@@ -154,7 +160,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/news/${id}/edit`, function (res) {
+        $.get(newsEditUrl(id), function (res) {
             const n = res.news;
 
             $('#news_id').val(n.id);
@@ -175,7 +181,7 @@ $(function () {
         if (! confirm('Delete this news item? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/news/${id}`,
+            url: newsResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -191,7 +197,7 @@ $(function () {
         clearErrors();
 
         const id = $('#news_id').val();
-        const url = id ? `/admin/news/${id}` : '{{ route('admin.news.store') }}';
+        const url = id ? newsResourceUrl(id) : '{{ route('admin.news.store') }}';
         const formData = new FormData(this);
         if (id) {
             formData.append('_method', 'PUT');

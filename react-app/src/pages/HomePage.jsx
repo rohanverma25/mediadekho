@@ -1,12 +1,16 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MEDIA_DATABASE } from '../data/mediaData';
 import { useCart } from '../context/CartContext';
 import { useClientLogos } from '../hooks/useClientLogos';
+import { useIndustries } from '../hooks/useIndustries';
 import { useMediaInventory } from '../hooks/useMediaInventory';
 import { normalizeInventoryItem } from '../services/mediaInventoryService';
 import { useMediaCategories } from '../hooks/useMediaCategories';
 import { useFaqs } from '../hooks/useFaqs';
+import { useBlogs } from '../hooks/useBlogs';
+import { useNews } from '../hooks/useNews';
+import { useAwards } from '../hooks/useAwards';
 import { Skeleton } from '../components/Skeleton';
 import { ViewPricingButton } from '../components/ViewPricingButton';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +18,12 @@ import { useAuth } from '../context/AuthContext';
 const DEFAULT_CATEGORY_ICON = 'bi-grid';
 
 const FALLBACK_CLIENT_NAMES = ['SWIGGY', 'ZOMATO', 'AIR INDIA', 'NYKAA', 'TATA MOTORS', 'PAYTM', 'LENSKART', 'AMAZON'];
+
+const FALLBACK_BLOG_IMAGE =
+  'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80';
+
+const FALLBACK_AWARD_IMAGE =
+  'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80';
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -31,8 +41,21 @@ export const HomePage = () => {
   const [heroQuery, setHeroQuery] = useState('');
   const [activeCategoryId, setActiveCategoryId] = useState('all');
   const { logos: clientLogos, status: clientLogosStatus } = useClientLogos();
+  const { industries, status: industriesStatus } = useIndustries();
+  const industriesTrackRef = useRef(null);
+  const scrollIndustries = (direction) => {
+    if (industriesTrackRef.current) {
+      const scrollAmount = direction === 'left' ? -320 : 320;
+      industriesTrackRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
   const { categories: mediaCategories, status: mediaCategoriesStatus } = useMediaCategories();
   const { faqs, status: faqsStatus } = useFaqs();
+  const { blogs: latestBlogs, status: latestBlogsStatus } = useBlogs({ per_page: 3 });
+  const { news, status: newsStatus } = useNews();
+  const latestNews = news.slice(0, 3);
+  const { awards, status: awardsStatus } = useAwards();
+  const featuredAwards = useMemo(() => awards.filter((a) => a.show_on_homepage), [awards]);
   const [activeFaq, setActiveFaq] = useState(0);
   const { items: liveItems, status: inventoryStatus } = useMediaInventory({
     per_page: 8,
@@ -337,6 +360,60 @@ export const HomePage = () => {
         </section>
       )}
 
+      {/* INDUSTRIES WE SERVE */}
+      {(industriesStatus === 'loading' || (industriesStatus === 'success' && industries.length > 0)) && (
+        <section className="py-16 px-4 sm:px-6 bg-white border-b border-slate-200">
+          <div className="max-w-7xl mx-auto space-y-10">
+            <div className="text-center max-w-2xl mx-auto space-y-3">
+              <span className="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-2">Industries We Serve</span>
+              <h2 className="font-outfit font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+                Trusted Across Every Industry
+              </h2>
+            </div>
+
+            <div className="relative flex items-center gap-3">
+              <button
+                onClick={() => scrollIndustries('left')}
+                aria-label="Scroll industries left"
+                className="hidden sm:flex w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white items-center justify-center flex-shrink-0 transition shadow-sm">
+                <i className="fa-solid fa-chevron-left text-xs"></i>
+              </button>
+
+              <div
+                ref={industriesTrackRef}
+                className="flex items-stretch gap-5 overflow-x-auto scrollbar-none scroll-smooth snap-x snap-mandatory py-1 flex-1">
+                {industriesStatus === 'loading'
+                  ? Array.from({ length: 6 }).map((_, i) => (
+                      <Skeleton key={i} className="h-44 w-56 rounded-2xl flex-shrink-0 snap-start" />
+                    ))
+                  : industries.map((industry) => (
+                      <div
+                        key={industry.id}
+                        className="relative h-44 w-56 flex-shrink-0 snap-start rounded-2xl overflow-hidden group shadow-sm border border-slate-200">
+                        <img
+                          src={industry.image_url}
+                          alt={industry.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/10 to-transparent"></div>
+                        <span className="absolute bottom-3 left-3 right-3 text-white font-outfit font-bold text-sm drop-shadow">
+                          {industry.title}
+                        </span>
+                      </div>
+                    ))}
+              </div>
+
+              <button
+                onClick={() => scrollIndustries('right')}
+                aria-label="Scroll industries right"
+                className="hidden sm:flex w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white items-center justify-center flex-shrink-0 transition shadow-sm">
+                <i className="fa-solid fa-chevron-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* WHY MEDIA DEKHO SECTION */}
       <section className="py-16 px-4 sm:px-6 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto space-y-12">
@@ -382,6 +459,178 @@ export const HomePage = () => {
 
         </div>
       </section>
+
+      {/* AWARDS & ACHIEVEMENTS */}
+      {(awardsStatus === 'loading' || (awardsStatus === 'success' && featuredAwards.length > 0)) && (
+        <section className="py-16 px-4 sm:px-6 bg-slate-50 border-b border-slate-200">
+          <div className="max-w-7xl mx-auto space-y-10">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+              <div>
+                <span className="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-2">Recognition</span>
+                <h2 className="font-outfit font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+                  Awards & Achievements
+                </h2>
+              </div>
+              <Link to="/awards" className="text-xs font-bold text-brand-red hover:underline inline-flex items-center gap-1.5 flex-shrink-0">
+                View All Awards <i className="fa-solid fa-arrow-right text-[10px]"></i>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {awardsStatus === 'loading'
+                ? Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm">
+                      <Skeleton className="w-full h-32 rounded-none" />
+                      <div className="p-4 space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-3 w-2/3" />
+                      </div>
+                    </div>
+                  ))
+                : featuredAwards.map((award) => (
+                    <div key={award.id} className="rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
+                      <div className="h-32 overflow-hidden">
+                        <img
+                          src={award.image_url || FALLBACK_AWARD_IMAGE}
+                          alt={award.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-outfit font-bold text-sm text-slate-900 leading-snug line-clamp-2">{award.title}</h3>
+                        <span className="text-[10px] text-slate-500 font-semibold block mt-1">
+                          {[award.organization, award.event_date ? new Date(`${award.event_date}T00:00:00`).getFullYear() : null]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* LATEST BLOGS */}
+      {(latestBlogsStatus === 'loading' || (latestBlogsStatus === 'success' && latestBlogs.length > 0)) && (
+        <section className="py-16 px-4 sm:px-6 bg-slate-50 border-b border-slate-200">
+          <div className="max-w-7xl mx-auto space-y-10">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+              <div>
+                <span className="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-2">From The Blog</span>
+                <h2 className="font-outfit font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+                  Latest Insights & Industry News
+                </h2>
+              </div>
+              <Link to="/blogs" className="text-xs font-bold text-brand-red hover:underline inline-flex items-center gap-1.5 flex-shrink-0">
+                View All Posts <i className="fa-solid fa-arrow-right text-[10px]"></i>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {latestBlogsStatus === 'loading'
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm">
+                      <Skeleton className="w-full h-48 rounded-none" />
+                      <div className="p-5 space-y-3">
+                        <Skeleton className="h-3 w-24" />
+                        <Skeleton className="h-5 w-full" />
+                        <Skeleton className="h-3 w-full" />
+                        <Skeleton className="h-3 w-2/3" />
+                      </div>
+                    </div>
+                  ))
+                : latestBlogs.map((blog) => (
+                    <Link
+                      key={blog.id}
+                      to={`/blog?slug=${blog.slug}`}
+                      className="group rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-shadow flex flex-col">
+                      <div className="h-48 overflow-hidden">
+                        <img
+                          src={blog.featured_image_url || FALLBACK_BLOG_IMAGE}
+                          alt={blog.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-5 space-y-2.5 flex-1 flex flex-col">
+                        {blog.published_at && (
+                          <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                            {new Date(blog.published_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            {blog.author_name && ` · ${blog.author_name}`}
+                          </span>
+                        )}
+                        <h3 className="font-outfit font-bold text-lg text-slate-900 group-hover:text-brand-red transition line-clamp-2 leading-snug">
+                          {blog.title}
+                        </h3>
+                        {blog.excerpt && (
+                          <p className="text-xs text-slate-500 leading-relaxed line-clamp-3">{blog.excerpt}</p>
+                        )}
+                        <span className="text-xs font-bold text-brand-red mt-auto pt-2 flex items-center gap-1.5">
+                          Read More <i className="fa-solid fa-arrow-right text-[10px]"></i>
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* MEDIA IN THE NEWS */}
+      {(newsStatus === 'loading' || (newsStatus === 'success' && latestNews.length > 0)) && (
+        <section className="py-16 px-4 sm:px-6 bg-white border-b border-slate-200">
+          <div className="max-w-7xl mx-auto space-y-10">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+              <div>
+                <span className="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-2">In The Press</span>
+                <h2 className="font-outfit font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+                  Media Dekho In The News
+                </h2>
+              </div>
+              <Link to="/news" className="text-xs font-bold text-brand-red hover:underline inline-flex items-center gap-1.5 flex-shrink-0">
+                View All Coverage <i className="fa-solid fa-arrow-right text-[10px]"></i>
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {newsStatus === 'loading'
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm">
+                      <Skeleton className="w-full h-48 rounded-none" />
+                      <div className="p-5 space-y-3">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-2/3" />
+                      </div>
+                    </div>
+                  ))
+                : latestNews.map((item) => (
+                    <a
+                      key={item.id}
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-shadow flex flex-col">
+                      <div className="h-48 overflow-hidden bg-slate-100">
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-5 flex-1 flex flex-col">
+                        <h3 className="font-outfit font-bold text-base text-slate-900 group-hover:text-brand-red transition line-clamp-2 leading-snug">
+                          {item.title}
+                        </h3>
+                        <span className="text-xs font-bold text-brand-red mt-auto pt-3 flex items-center gap-1.5">
+                          Read Full Story <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </span>
+                      </div>
+                    </a>
+                  ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* FREQUENTLY ASKED QUESTIONS (FAQ) */}
       {(faqsStatus === 'loading' || (faqsStatus === 'success' && faqs.length > 0)) && (

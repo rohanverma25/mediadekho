@@ -72,6 +72,9 @@
             <a href="{{ route('admin.client-logos.index') }}" class="nav-link {{ request()->routeIs('admin.client-logos.*') ? 'active' : '' }}">
                 <i class="bi bi-badge-tm"></i> Client Logos
             </a>
+            <a href="{{ route('admin.industries.index') }}" class="nav-link {{ request()->routeIs('admin.industries.*') ? 'active' : '' }}">
+                <i class="bi bi-buildings"></i> Industries
+            </a>
             <a href="{{ route('admin.announcements.index') }}" class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
                 <i class="bi bi-megaphone"></i> Announcements
             </a>

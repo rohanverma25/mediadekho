@@ -86,6 +86,12 @@
 $(function () {
     const clientLogoModal = new bootstrap.Modal('#clientLogoModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const clientLogoEditUrl = (id) => '{{ route('admin.client-logos.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const clientLogoResourceUrl = (id) => '{{ route('admin.client-logos.update', ['__ID__']) }}'.replace('__ID__', id);
+
     const table = $('#clientLogosTable').DataTable({
         ajax: {
             url: '{{ route('admin.client-logos.data') }}',
@@ -154,7 +160,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/client-logos/${id}/edit`, function (res) {
+        $.get(clientLogoEditUrl(id), function (res) {
             const l = res.logo;
 
             $('#client_logo_id').val(l.id);
@@ -175,7 +181,7 @@ $(function () {
         if (! confirm('Delete this client logo? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/client-logos/${id}`,
+            url: clientLogoResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -191,7 +197,7 @@ $(function () {
         clearErrors();
 
         const id = $('#client_logo_id').val();
-        const url = id ? `/admin/client-logos/${id}` : '{{ route('admin.client-logos.store') }}';
+        const url = id ? clientLogoResourceUrl(id) : '{{ route('admin.client-logos.store') }}';
         const formData = new FormData(this);
         if (id) {
             formData.append('_method', 'PUT');

@@ -165,6 +165,61 @@
         </div>
 
         <div class="card mb-4">
+            <div class="card-header">Email / SMTP</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">SMTP Host</label>
+                        <input type="text" name="smtp_host" class="form-control @error('smtp_host') is-invalid @enderror" value="{{ old('smtp_host', $setting->smtp_host) }}" placeholder="smtp.gmail.com">
+                        @error('smtp_host')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Port</label>
+                        <input type="text" name="smtp_port" class="form-control @error('smtp_port') is-invalid @enderror" value="{{ old('smtp_port', $setting->smtp_port) }}" placeholder="587">
+                        @error('smtp_port')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Encryption</label>
+                        <select name="smtp_encryption" class="form-select @error('smtp_encryption') is-invalid @enderror">
+                            <option value="" @selected(old('smtp_encryption', $setting->smtp_encryption) === null || old('smtp_encryption', $setting->smtp_encryption) === '')>None</option>
+                            <option value="tls" @selected(old('smtp_encryption', $setting->smtp_encryption) === 'tls')>TLS</option>
+                            <option value="ssl" @selected(old('smtp_encryption', $setting->smtp_encryption) === 'ssl')>SSL</option>
+                        </select>
+                        @error('smtp_encryption')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">SMTP Username</label>
+                        <input type="text" name="smtp_username" class="form-control @error('smtp_username') is-invalid @enderror" value="{{ old('smtp_username', $setting->smtp_username) }}">
+                        @error('smtp_username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">SMTP Password</label>
+                        <input type="password" name="smtp_password" class="form-control @error('smtp_password') is-invalid @enderror" placeholder="{{ $setting->smtp_password ? '•••••••• (unchanged — leave blank to keep current password)' : 'Not set' }}" autocomplete="new-password">
+                        @error('smtp_password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">From Address</label>
+                        <input type="email" name="mail_from_address" class="form-control @error('mail_from_address') is-invalid @enderror" value="{{ old('mail_from_address', $setting->mail_from_address) }}" placeholder="hello@mediadekho.com">
+                        @error('mail_from_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">From Name</label>
+                        <input type="text" name="mail_from_name" class="form-control @error('mail_from_name') is-invalid @enderror" value="{{ old('mail_from_name', $setting->mail_from_name) }}" placeholder="Media Dekho">
+                        @error('mail_from_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Notification Email <span class="text-muted">(admin copies go here)</span></label>
+                        <input type="email" name="notification_email" class="form-control @error('notification_email') is-invalid @enderror" value="{{ old('notification_email', $setting->notification_email) }}" placeholder="{{ $setting->contact_email ?: 'defaults to Contact Email above' }}">
+                        @error('notification_email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                </div>
+                <div class="form-text">
+                    Leave the host blank to keep emails going to the server's log only (nothing is actually delivered). Fill these in with a real SMTP provider (Gmail app password, Hostinger's own mail account, Mailgun, etc.) to start sending real emails — the password is stored encrypted and never shown again once saved.
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
             <div class="card-header">Scripts</div>
             <div class="card-body">
                 <div class="alert alert-warning py-2 px-3 small">

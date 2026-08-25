@@ -55,6 +55,12 @@
 $(function () {
     const frequencyModal = new bootstrap.Modal('#frequencyModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const frequencyEditUrl = (id) => '{{ route('admin.frequencies.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const frequencyResourceUrl = (id) => '{{ route('admin.frequencies.update', ['__ID__']) }}'.replace('__ID__', id);
+
     const table = $('#frequenciesTable').DataTable({
         ajax: {
             url: '{{ route('admin.frequencies.data') }}',
@@ -96,7 +102,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/frequencies/${id}/edit`, function (res) {
+        $.get(frequencyEditUrl(id), function (res) {
             $('#frequency_id').val(res.frequency.id);
             $('#frequency_name').val(res.frequency.name);
             $('#frequencyModalTitle').text('Edit Frequency');
@@ -109,7 +115,7 @@ $(function () {
         if (! confirm('Delete this frequency? This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/frequencies/${id}`,
+            url: frequencyResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -125,7 +131,7 @@ $(function () {
         clearErrors();
 
         const id = $('#frequency_id').val();
-        const url = id ? `/admin/frequencies/${id}` : '{{ route('admin.frequencies.store') }}';
+        const url = id ? frequencyResourceUrl(id) : '{{ route('admin.frequencies.store') }}';
         const method = id ? 'PUT' : 'POST';
 
         $.ajax({

@@ -81,10 +81,20 @@ export const Footer = () => {
           {/* Brand Info */}
           <div className="md:col-span-2 space-y-4">
             <Link to="/" className="flex items-center gap-3">
-              {settings?.logo_url ? (
+              {settingsLoading ? (
+                <DarkSkeleton className="h-9 w-32 rounded-xl" />
+              ) : settings?.logo_url ? (
                 <img src={settings.logo_url} alt="Media Dekho" className="h-9 w-auto max-w-[140px] object-contain" />
               ) : (
-                <DarkSkeleton className="h-9 w-32 rounded-xl" />
+                <>
+                  <div className="w-9 h-9 rounded-xl bg-brand-red flex items-center justify-center text-white font-outfit font-black text-lg shadow-lg shadow-brand-red/30">
+                    MD
+                  </div>
+                  <div>
+                    <span className="font-outfit font-black text-lg tracking-tight text-white block leading-none">MEDIA</span>
+                    <span className="font-outfit font-bold text-[10px] tracking-widest text-brand-red uppercase block">DEKHO</span>
+                  </div>
+                </>
               )}
             </Link>
             {settingsLoading ? (

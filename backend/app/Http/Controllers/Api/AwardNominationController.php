@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\AwardNominationResource;
 use App\Models\Award;
 use App\Models\AwardNomination;
+use App\Services\NotificationMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -13,6 +14,10 @@ use Illuminate\Validation\Rule;
 
 class AwardNominationController extends Controller
 {
+    public function __construct(private readonly NotificationMailer $mailer)
+    {
+    }
+
     /**
      * Public nomination submission — open to guests (no auth required), but
      * if a valid Bearer token is present the nomination is linked to that
@@ -35,7 +40,9 @@ class AwardNominationController extends Controller
 
         $data['user_id'] = $request->user('sanctum')?->id;
 
-        AwardNomination::query()->create($data);
+        $nomination = AwardNomination::query()->create($data);
+
+        $this->mailer->awardNomination($nomination);
 
         return response()->json(['message' => 'Thanks! Your nomination has been submitted.'], 201);
     }

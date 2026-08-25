@@ -38,6 +38,7 @@ class AwardController extends Controller
                 'event_date' => $award->event_date?->format('Y-m-d'),
                 'status' => $award->status,
                 'sort_order' => $award->sort_order,
+                'show_on_homepage' => $award->show_on_homepage,
                 'image_url' => $award->image_url,
                 'nominations_count' => $award->nominations()->count(),
             ]);
@@ -97,6 +98,12 @@ class AwardController extends Controller
 
     private function validated(Request $request): array
     {
+        // Unchecked checkboxes aren't sent at all, and a checked one arrives
+        // as the string "on" — neither survives Laravel's `boolean` rule
+        // as-is, so normalize via Request::boolean() (which already
+        // understands "on") before validating.
+        $request->merge(['show_on_homepage' => $request->boolean('show_on_homepage')]);
+
         return $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -106,6 +113,7 @@ class AwardController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'status' => ['required', 'string', 'in:active,inactive'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
+            'show_on_homepage' => ['boolean'],
         ]);
     }
 }

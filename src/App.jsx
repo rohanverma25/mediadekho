@@ -11,6 +11,7 @@ import { SearchModal } from './components/SearchModal';
 import { CartDrawer } from './components/CartDrawer';
 import { Toast } from './components/Toast';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { ScrollToTop } from './components/ScrollToTop';
 
 import { HomePage } from './pages/HomePage';
 import { CategoryPage } from './pages/CategoryPage';
@@ -42,6 +43,7 @@ export function App() {
               instead of hardcoding the path in two places. */}
           <Router basename={import.meta.env.BASE_URL}>
             <div className="flex flex-col min-h-screen">
+              <ScrollToTop />
               <Routes>
                 <Route
                   path="*"

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\SeedsRolesAndPermissions;
@@ -60,5 +61,41 @@ class CustomerControllerTest extends TestCase
         $this->assertTrue($rows->contains('id', $retailCustomer->id));
         $this->assertFalse($rows->contains('id', $admin->id));
         $this->assertSame(2, $rows->firstWhere('id', $b2bCustomer->id)['orders_count']);
+    }
+
+    public function test_super_admin_can_approve_a_pending_customer(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        $pendingB2B = $this->userWithRole('B2B Customer');
+        $pendingB2B->update(['approval_status' => 'pending']);
+
+        $this->actingAs($admin)
+            ->putJson(route('admin.customers.approve', $pendingB2B))
+            ->assertOk();
+
+        $this->assertSame('approved', $pendingB2B->fresh()->approval_status);
+    }
+
+    public function test_super_admin_can_reject_a_pending_customer(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        $pendingB2B = $this->userWithRole('B2B Customer');
+        $pendingB2B->update(['approval_status' => 'pending']);
+
+        $this->actingAs($admin)
+            ->putJson(route('admin.customers.reject', $pendingB2B))
+            ->assertOk();
+
+        $this->assertSame('rejected', $pendingB2B->fresh()->approval_status);
+    }
+
+    public function test_customer_role_cannot_approve_customers(): void
+    {
+        $customer = $this->userWithRole('B2B Customer');
+        $pendingB2B = User::factory()->create(['approval_status' => 'pending']);
+
+        $this->actingAs($customer)
+            ->putJson(route('admin.customers.approve', $pendingB2B))
+            ->assertForbidden();
     }
 }

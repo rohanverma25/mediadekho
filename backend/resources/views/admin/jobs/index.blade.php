@@ -105,6 +105,12 @@
 $(function () {
     const jobModal = new bootstrap.Modal('#jobModal');
 
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const jobEditUrl = (id) => '{{ route('admin.jobs.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const jobResourceUrl = (id) => '{{ route('admin.jobs.update', ['__ID__']) }}'.replace('__ID__', id);
+
     $('#job_description').summernote({
         height: 220,
         toolbar: [
@@ -164,7 +170,7 @@ $(function () {
         const id = $(this).data('id');
         clearErrors();
 
-        $.get(`/admin/jobs/${id}/edit`, function (res) {
+        $.get(jobEditUrl(id), function (res) {
             const j = res.job;
 
             $('#job_id').val(j.id);
@@ -185,7 +191,7 @@ $(function () {
         if (! confirm('Delete this job? Any applications submitted for it will be deleted too. This cannot be undone.')) return;
 
         $.ajax({
-            url: `/admin/jobs/${id}`,
+            url: jobResourceUrl(id),
             method: 'DELETE',
             success: function () {
                 table.ajax.reload();
@@ -203,7 +209,7 @@ $(function () {
         $('#job_description').val($('#job_description').summernote('code'));
 
         const id = $('#job_id').val();
-        const url = id ? `/admin/jobs/${id}` : '{{ route('admin.jobs.store') }}';
+        const url = id ? jobResourceUrl(id) : '{{ route('admin.jobs.store') }}';
         const method = id ? 'PUT' : 'POST';
 
         $.ajax({

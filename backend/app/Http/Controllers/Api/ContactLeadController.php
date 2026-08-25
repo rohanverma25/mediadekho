@@ -5,12 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContactLeadResource;
 use App\Models\ContactLead;
+use App\Services\NotificationMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ContactLeadController extends Controller
 {
+    public function __construct(private readonly NotificationMailer $mailer)
+    {
+    }
+
     /**
      * Public "Contact Us" form submission. Open to guests by design (no
      * auth required to reach a sales team), so it's rate-limited at the
@@ -33,7 +38,9 @@ class ContactLeadController extends Controller
 
         $data['user_id'] = $request->user('sanctum')?->id;
 
-        ContactLead::query()->create($data);
+        $lead = ContactLead::query()->create($data);
+
+        $this->mailer->contactLead($lead);
 
         return response()->json(['message' => "Thanks! We've received your message and will get back to you shortly."], 201);
     }

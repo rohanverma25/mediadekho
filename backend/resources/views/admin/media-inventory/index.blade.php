@@ -122,6 +122,13 @@
 @push('scripts')
 <script>
 $(function () {
+    // route() is resolved server-side against the real request, so it stays
+    // correct under a subfolder deployment — a hardcoded "/admin/..." path
+    // would not.
+    const inventoryShowUrl = (id) => '{{ route('admin.media-inventory.show', ['__ID__']) }}'.replace('__ID__', id);
+    const inventoryEditUrl = (id) => '{{ route('admin.media-inventory.edit', ['__ID__']) }}'.replace('__ID__', id);
+    const inventoryResourceUrl = (id) => '{{ route('admin.media-inventory.update', ['__ID__']) }}'.replace('__ID__', id);
+
     function money(value) {
         return value === null || value === undefined ? '—' : '₹' + Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
@@ -154,8 +161,8 @@ $(function () {
                 orderable: false,
                 className: 'text-end',
                 render: (row) => `
-                    <a href="/admin/media-inventory/${row.id}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
-                    <a href="/admin/media-inventory/${row.id}/edit" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                    <a href="${inventoryShowUrl(row.id)}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+                    <a href="${inventoryEditUrl(row.id)}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                     <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${row.id}"><i class="bi bi-trash"></i></button>
                 `,
             },
@@ -171,7 +178,7 @@ $(function () {
         if (! confirm('Delete this inventory item? This cannot be undone.')) return;
 
         const token = $('meta[name="csrf-token"]').attr('content');
-        const form = $('<form>', { method: 'POST', action: `/admin/media-inventory/${id}` });
+        const form = $('<form>', { method: 'POST', action: inventoryResourceUrl(id) });
         form.append($('<input>', { type: 'hidden', name: '_token', value: token }));
         form.append($('<input>', { type: 'hidden', name: '_method', value: 'DELETE' }));
         $('body').append(form);
