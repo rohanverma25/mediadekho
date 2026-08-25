@@ -60,6 +60,23 @@ class AppServiceProvider extends ServiceProvider
         $request = $this->app['request'];
         $root = rtrim($request->getSchemeAndHttpHost().$request->getBaseUrl(), '/');
 
-        config(['filesystems.disks.public.url' => $root.'/storage']);
+        // Laravel's normal `/storage` URL only resolves if the
+        // `public/storage` symlink (created by `php artisan storage:link`)
+        // actually exists on the server. Several shared-hosting setups
+        // (this app's production host included) either have no SSH access
+        // to run that command, or silently drop symlinks when the app is
+        // zipped/uploaded — the symlink is just never there. When that's
+        // the case, `/storage/...` URLs 404 even though the file is sitting
+        // right there on disk, so fall back to the real, physical path
+        // (storage/app/public/...) instead of the symlinked one.
+        //
+        // clearstatcache() matters here specifically under long-lived PHP
+        // workers (e.g. `php artisan serve`'s built-in server) — without it,
+        // a symlink created or removed after the worker started wouldn't be
+        // picked up until the process restarts.
+        clearstatcache(true, public_path('storage'));
+        $suffix = is_dir(public_path('storage')) ? '/storage' : '/storage/app/public';
+
+        config(['filesystems.disks.public.url' => $root.$suffix]);
     }
 }

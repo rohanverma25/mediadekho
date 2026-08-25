@@ -12,6 +12,7 @@ import { CartDrawer } from './components/CartDrawer';
 import { Toast } from './components/Toast';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ScrollToTop } from './components/ScrollToTop';
+import { AnnouncementBar } from './components/AnnouncementBar';
 
 import { HomePage } from './pages/HomePage';
 import { CategoryPage } from './pages/CategoryPage';
@@ -44,6 +45,7 @@ export function App() {
           <Router basename={import.meta.env.BASE_URL}>
             <div className="flex flex-col min-h-screen">
               <ScrollToTop />
+              <AnnouncementBar />
               <Routes>
                 <Route
                   path="*"
