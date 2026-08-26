@@ -38,17 +38,26 @@ return [
             'report' => false,
         ],
 
+        // Uploaded files (logos, category/media images, resumes, ...) live
+        // directly under public/uploads — not storage/app/public behind the
+        // storage:link symlink Laravel normally uses. On this app's shared
+        // host that symlink either can't be created (no SSH access) or
+        // doesn't survive a zip-upload deploy, which was a repeated source
+        // of broken image URLs. public/ is always directly web-reachable
+        // with zero extra server config, so storing here sidesteps the
+        // whole symlink problem entirely.
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
+            'root' => public_path('uploads'),
             // ASSET_URL, when set, is an explicit override for wherever
-            // uploaded files (logos, category/media images, resumes, ...)
-            // are actually reachable from — takes priority over the
-            // APP_URL-derived guess below, and over AppServiceProvider's
-            // per-request auto-detection (see configurePublicDiskUrl()).
+            // uploaded files are actually reachable from — takes priority
+            // over the APP_URL-derived guess below, and over
+            // AppServiceProvider's per-request auto-detection (see
+            // configurePublicDiskUrl()). Rarely needed now that files live
+            // under public/, but kept as an escape hatch.
             'url' => env('ASSET_URL')
                 ? rtrim(env('ASSET_URL'), '/')
-                : rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+                : rtrim(env('APP_URL', 'http://localhost'), '/').'/uploads',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -78,10 +87,11 @@ return [
     | `storage:link` Artisan command is executed. The array keys should be
     | the locations of the links and the values should be their targets.
     |
+    | Empty — uploads live directly under public/uploads (see the 'public'
+    | disk above), so there's no symlink to create.
+    |
     */
 
-    'links' => [
-        public_path('storage') => storage_path('app/public'),
-    ],
+    'links' => [],
 
 ];
