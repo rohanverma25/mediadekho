@@ -57,6 +57,13 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
+        // An explicit ASSET_URL in .env always wins — it's a deliberate,
+        // known-correct override (config/filesystems.php already applied
+        // it at boot), so there's nothing to auto-detect here.
+        if (env('ASSET_URL')) {
+            return;
+        }
+
         $request = $this->app['request'];
         $root = rtrim($request->getSchemeAndHttpHost().$request->getBaseUrl(), '/');
 

@@ -41,7 +41,14 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // ASSET_URL, when set, is an explicit override for wherever
+            // uploaded files (logos, category/media images, resumes, ...)
+            // are actually reachable from — takes priority over the
+            // APP_URL-derived guess below, and over AppServiceProvider's
+            // per-request auto-detection (see configurePublicDiskUrl()).
+            'url' => env('ASSET_URL')
+                ? rtrim(env('ASSET_URL'), '/')
+                : rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

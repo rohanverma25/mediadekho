@@ -1,6 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MEDIA_DATABASE } from '../data/mediaData';
 import { useCart } from '../context/CartContext';
 import { useClientLogos } from '../hooks/useClientLogos';
 import { useIndustries } from '../hooks/useIndustries';
@@ -72,9 +71,7 @@ export const HomePage = () => {
   };
 
   const normalizedLiveItems = useMemo(() => liveItems.map(normalizeInventoryItem), [liveItems]);
-  const usingLiveMedia = inventoryStatus === 'success' && normalizedLiveItems.length > 0;
-  const mediaSource = usingLiveMedia ? normalizedLiveItems : MEDIA_DATABASE;
-  const filteredMedia = mediaSource;
+  const filteredMedia = normalizedLiveItems;
 
   return (
     <div>
@@ -243,6 +240,13 @@ export const HomePage = () => {
                   </div>
                 </div>
               ))}
+
+            {inventoryStatus === 'success' && filteredMedia.length === 0 && (
+              <div className="col-span-full text-center py-16 text-slate-500">
+                <i className="fa-solid fa-photo-film text-3xl mb-3 text-slate-300"></i>
+                <p className="text-sm font-medium">No listings available in this category yet. Check back soon.</p>
+              </div>
+            )}
 
             {inventoryStatus !== 'loading' && filteredMedia.map((item) => {
               const isCarted = cart.some((c) => c.id === item.id);
