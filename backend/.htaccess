@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # This app's document root on shared hosting is the Laravel project
+    # folder itself (backend/), not backend/public/ — there's no way to
+    # point the host's docroot directly at public/ without SSH/vhost
+    # access, and this app is also deployed several subfolders deep
+    # (/mediadekho/backend/), so matching against the full REQUEST_URI
+    # (which always includes that subfolder prefix) isn't reliable here.
+    # RewriteRule patterns are matched against the URL-path *relative to
+    # this directory* instead, which stays correct at any subfolder depth:
+    # a request already under public/ (line 1) is left alone; anything
+    # else (line 2) is transparently routed into public/. Laravel's own
+    # routing and URL generation see the un-rewritten REQUEST_URI, so
+    # URLs never need to include "/public" and nothing else changes.
+    RewriteRule ^public/ - [L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
