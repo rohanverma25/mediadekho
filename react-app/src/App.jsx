@@ -13,6 +13,7 @@ import { Toast } from './components/Toast';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ScrollToTop } from './components/ScrollToTop';
 import { AnnouncementBar } from './components/AnnouncementBar';
+import { MobileBottomNav } from './components/MobileBottomNav';
 
 import { HomePage } from './pages/HomePage';
 import { CategoryPage } from './pages/CategoryPage';
@@ -81,6 +82,7 @@ export function App() {
                         </Routes>
                       </main>
                       <Footer />
+                      <MobileBottomNav />
                     </>
                   }
                 />

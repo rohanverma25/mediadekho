@@ -48,7 +48,7 @@ export const ClientsPage = () => {
                     src={logo.logo_url}
                     alt={logo.name}
                     title={logo.name}
-                    className="max-h-12 max-w-full object-contain grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition"
+                    className="max-h-12 max-w-full object-contain"
                   />
                 );
 

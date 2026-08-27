@@ -73,7 +73,7 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="bg-slate-900 border-t border-slate-800 pt-16 pb-12 text-slate-400 text-sm">
+    <footer className="bg-slate-900 border-t border-slate-800 pt-16 pb-28 md:pb-12 text-slate-400 text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
