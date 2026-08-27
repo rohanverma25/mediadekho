@@ -42,13 +42,21 @@ class PricingService
      * directly, or every tier (and internal margin/commission/net-profit
      * figures) would leak regardless of the requester's role or what tier
      * they query for in the URL.
+     *
+     * Unauthenticated callers get a `locked` response with no numeric
+     * pricing at all — rates are only shown to logged-in accounts, so
+     * there's nothing to resolve a tier for or compute here.
      */
     public function priceForUser(MediaInventory $inventory, ?User $user): array
     {
+        if (! $user) {
+            return ['tier' => null, 'available' => false, 'locked' => true];
+        }
+
         $price = $inventory->price;
 
         if (! $price) {
-            return ['tier' => $this->resolveTier($user), 'available' => false];
+            return ['tier' => $this->resolveTier($user), 'available' => false, 'locked' => false];
         }
 
         $tier = $this->resolveTier($user);
@@ -60,6 +68,7 @@ class PricingService
         return [
             'tier' => $tier,
             'available' => true,
+            'locked' => false,
             // list_price/discount_amount are the pre-discount tier rate and
             // what got knocked off it — safe to expose (unlike base_price,
             // commission, or margin) since they only describe what the

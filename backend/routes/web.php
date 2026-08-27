@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\MediaSubCategoryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\StatController;
+use App\Http\Controllers\Admin\VideoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -154,6 +156,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('industries/{industry}/edit', [IndustryController::class, 'edit'])->name('industries.edit');
         Route::put('industries/{industry}', [IndustryController::class, 'update'])->name('industries.update');
         Route::delete('industries/{industry}', [IndustryController::class, 'destroy'])->name('industries.destroy');
+
+        Route::get('stats', [StatController::class, 'index'])->name('stats.index');
+        Route::get('stats/data', [StatController::class, 'data'])->name('stats.data');
+        Route::post('stats', [StatController::class, 'store'])->name('stats.store');
+        Route::get('stats/{stat}/edit', [StatController::class, 'edit'])->name('stats.edit');
+        Route::put('stats/{stat}', [StatController::class, 'update'])->name('stats.update');
+        Route::delete('stats/{stat}', [StatController::class, 'destroy'])->name('stats.destroy');
+
+        Route::get('videos', [VideoController::class, 'index'])->name('videos.index');
+        Route::get('videos/data', [VideoController::class, 'data'])->name('videos.data');
+        Route::post('videos', [VideoController::class, 'store'])->name('videos.store');
+        Route::get('videos/{video}/edit', [VideoController::class, 'edit'])->name('videos.edit');
+        Route::put('videos/{video}', [VideoController::class, 'update'])->name('videos.update');
+        Route::delete('videos/{video}', [VideoController::class, 'destroy'])->name('videos.destroy');
 
         Route::get('announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
         Route::get('announcements/data', [AnnouncementController::class, 'data'])->name('announcements.data');

@@ -125,9 +125,9 @@
                         @error('facebook_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label class="form-label"><i class="bi bi-twitter-x"></i> Twitter / X URL</label>
-                        <input type="url" name="twitter_url" class="form-control @error('twitter_url') is-invalid @enderror" value="{{ old('twitter_url', $setting->twitter_url) }}">
-                        @error('twitter_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <label class="form-label"><i class="bi bi-instagram"></i> Instagram URL</label>
+                        <input type="url" name="instagram_url" class="form-control @error('instagram_url') is-invalid @enderror" value="{{ old('instagram_url', $setting->instagram_url) }}">
+                        @error('instagram_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-3 mb-3">
                         <label class="form-label"><i class="bi bi-linkedin"></i> LinkedIn URL</label>
@@ -239,6 +239,17 @@
         </div>
 
         <div class="card mb-4">
+            <div class="card-header">About Us Page</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">About Us Content <span class="text-muted">(shown at /about on the storefront)</span></label>
+                    <textarea name="about_us" id="setting_about_us" class="form-control @error('about_us') is-invalid @enderror" rows="8">{{ old('about_us', $setting->about_us) }}</textarea>
+                    @error('about_us')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
             <div class="card-header">Legal Pages</div>
             <div class="card-body">
                 <div class="mb-4">
@@ -274,6 +285,7 @@ $(function () {
         ],
     };
 
+    $('#setting_about_us').summernote(editorOptions);
     $('#setting_privacy_policy').summernote(editorOptions);
     $('#setting_terms_of_use').summernote(editorOptions);
 

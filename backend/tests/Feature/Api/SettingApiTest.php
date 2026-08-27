@@ -18,6 +18,7 @@ class SettingApiTest extends TestCase
             'facebook_url' => 'https://www.facebook.com/MediaDekho',
             'privacy_policy' => '<p>We respect your privacy.</p>',
             'terms_of_use' => '<p>Terms go here.</p>',
+            'about_us' => '<p>Media Dekho is India\'s largest media aggregator.</p>',
             'contact_emails' => [['title' => 'Sales', 'email' => 'sales@mediadekho.com']],
             'contact_addresses' => [['title' => 'Head Office', 'address' => 'Ahmedabad HQ']],
             'map_embed_url' => 'https://www.google.com/maps/embed?pb=abc123',
@@ -29,8 +30,8 @@ class SettingApiTest extends TestCase
             ->assertJsonStructure([
                 'data' => [
                     'logo_url', 'contact_phone', 'contact_email', 'contact_address',
-                    'footer_description', 'social' => ['facebook', 'twitter', 'linkedin', 'youtube'],
-                    'header_scripts', 'footer_scripts', 'privacy_policy', 'terms_of_use',
+                    'footer_description', 'social' => ['facebook', 'instagram', 'linkedin', 'youtube'],
+                    'header_scripts', 'footer_scripts', 'privacy_policy', 'terms_of_use', 'about_us',
                     'contact_emails', 'contact_addresses', 'map_embed_url',
                 ],
             ])
@@ -38,6 +39,7 @@ class SettingApiTest extends TestCase
             ->assertJsonPath('data.social.facebook', 'https://www.facebook.com/MediaDekho')
             ->assertJsonPath('data.privacy_policy', '<p>We respect your privacy.</p>')
             ->assertJsonPath('data.terms_of_use', '<p>Terms go here.</p>')
+            ->assertJsonPath('data.about_us', '<p>Media Dekho is India\'s largest media aggregator.</p>')
             ->assertJsonPath('data.contact_emails.0.title', 'Sales')
             ->assertJsonPath('data.contact_emails.0.email', 'sales@mediadekho.com')
             ->assertJsonPath('data.contact_addresses.0.title', 'Head Office')

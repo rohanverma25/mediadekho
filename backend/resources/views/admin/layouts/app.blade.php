@@ -75,6 +75,12 @@
             <a href="{{ route('admin.industries.index') }}" class="nav-link {{ request()->routeIs('admin.industries.*') ? 'active' : '' }}">
                 <i class="bi bi-buildings"></i> Industries
             </a>
+            <a href="{{ route('admin.stats.index') }}" class="nav-link {{ request()->routeIs('admin.stats.*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart-line"></i> Stats
+            </a>
+            <a href="{{ route('admin.videos.index') }}" class="nav-link {{ request()->routeIs('admin.videos.*') ? 'active' : '' }}">
+                <i class="bi bi-youtube"></i> Videos
+            </a>
             <a href="{{ route('admin.announcements.index') }}" class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
                 <i class="bi bi-megaphone"></i> Announcements
             </a>

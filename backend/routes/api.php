@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\StatController;
+use App\Http\Controllers\Api\VideoController;
 use Illuminate\Support\Facades\Route;
 
 Route::apiResource('categories', CategoryController::class);
@@ -59,6 +61,10 @@ Route::middleware('throttle:60,1')->group(function () {
     Route::get('client-logos', [ClientLogoController::class, 'index']);
 
     Route::get('industries', [IndustryController::class, 'index']);
+
+    Route::get('stats', [StatController::class, 'index']);
+
+    Route::get('videos', [VideoController::class, 'index']);
 
     Route::get('news', [NewsController::class, 'index']);
 

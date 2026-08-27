@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { ViewPricingButton } from './ViewPricingButton';
 
 export const CartDrawer = () => {
   const { cart, cartTotal, toggleCartItem, isCartDrawerOpen, setIsCartDrawerOpen, setIsInquiryOpen } = useCart();
+  const { isAuthenticated } = useAuth();
 
   return (
     <div 
@@ -39,7 +42,11 @@ export const CartDrawer = () => {
               <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-bold text-slate-900 truncate">{item.title}</h4>
                 <span className="text-[10px] text-slate-500 font-medium block">{item.category} • {item.location}</span>
-                <span className="text-xs font-extrabold text-brand-red font-outfit">₹{item.price.toLocaleString('en-IN')} <span className="font-normal text-slate-500 text-[10px]">{item.priceUnit}</span></span>
+                {isAuthenticated ? (
+                  <span className="text-xs font-extrabold text-brand-red font-outfit">₹{item.price.toLocaleString('en-IN')} <span className="font-normal text-slate-500 text-[10px]">{item.priceUnit}</span></span>
+                ) : (
+                  <ViewPricingButton className="inline-flex items-center gap-1 text-[10px] font-bold text-brand-red bg-red-50 hover:bg-brand-red hover:text-white border border-red-100 transition rounded-lg px-2 py-1 cursor-pointer" />
+                )}
               </div>
               <button 
                 onClick={() => toggleCartItem(item.id)}
@@ -55,7 +62,11 @@ export const CartDrawer = () => {
       <div className="p-5 border-t border-slate-200 bg-slate-50 space-y-4">
         <div className="flex justify-between items-center text-sm">
           <span className="text-slate-600 font-medium">Total Estimated Plan Spend:</span>
-          <span className="font-outfit font-black text-xl text-brand-red">₹{cartTotal.toLocaleString('en-IN')}</span>
+          {isAuthenticated ? (
+            <span className="font-outfit font-black text-xl text-brand-red">₹{cartTotal.toLocaleString('en-IN')}</span>
+          ) : (
+            <ViewPricingButton />
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-2">

@@ -181,6 +181,20 @@ class SettingTest extends TestCase
         ]);
     }
 
+    public function test_super_admin_can_update_about_us_page(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        Setting::current();
+
+        $this->actingAs($admin)->put(route('admin.settings.update'), [
+            'about_us' => '<p>Media Dekho is India\'s largest media aggregator.</p>',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('settings', [
+            'about_us' => '<p>Media Dekho is India\'s largest media aggregator.</p>',
+        ]);
+    }
+
     public function test_customer_role_cannot_update_settings(): void
     {
         $customer = $this->userWithRole('B2B Customer');

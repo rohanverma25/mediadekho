@@ -15,8 +15,11 @@ export const AwardsPage = () => {
   const { awards, status } = useAwards();
   const [nominationAward, setNominationAward] = useState(null);
 
-  const upcomingAwards = useMemo(() => awards.filter((a) => a.type === 'upcoming'), [awards]);
-  const pastAwards = useMemo(() => awards.filter((a) => a.type === 'past'), [awards]);
+  // Awards already featured on the homepage are left off this page so the
+  // two don't just repeat each other — this page is the full list minus
+  // whatever's already been highlighted there.
+  const upcomingAwards = useMemo(() => awards.filter((a) => a.type === 'upcoming' && !a.show_on_homepage), [awards]);
+  const pastAwards = useMemo(() => awards.filter((a) => a.type === 'past' && !a.show_on_homepage), [awards]);
 
   return (
     <div>

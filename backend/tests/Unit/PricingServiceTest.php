@@ -82,11 +82,24 @@ class PricingServiceTest extends TestCase
         $this->assertSame(PricingService::TIER_ENTERPRISE, $this->pricing->resolveTier($user));
     }
 
+    /**
+     * Pricing is a logged-in-only feature — a guest gets a locked response
+     * with no numeric price, tier, or breakdown fields at all.
+     */
+    public function test_price_for_user_returns_locked_response_for_guest(): void
+    {
+        $inventory = $this->makeInventoryWithPrice();
+
+        $result = $this->pricing->priceForUser($inventory, null);
+
+        $this->assertSame(['tier' => null, 'available' => false, 'locked' => true], $result);
+    }
+
     public function test_price_for_user_returns_correct_tier_price(): void
     {
         $inventory = $this->makeInventoryWithPrice();
 
-        $retail = $this->pricing->priceForUser($inventory, null);
+        $retail = $this->pricing->priceForUser($inventory, $this->userWithRole('Retail Customer'));
         $b2c = $this->pricing->priceForUser($inventory, $this->userWithRole('B2C Customer'));
         $b2b = $this->pricing->priceForUser($inventory, $this->userWithRole('B2B Customer'));
         $enterprise = $this->pricing->priceForUser($inventory, $this->userWithRole('Enterprise Customer'));
@@ -110,7 +123,7 @@ class PricingServiceTest extends TestCase
         $result = $this->pricing->priceForUser($inventory, $b2cUser);
 
         $this->assertSame(
-            ['tier', 'available', 'list_price', 'discount_amount', 'price', 'tax_percentage', 'tax_amount', 'final_price'],
+            ['tier', 'available', 'locked', 'list_price', 'discount_amount', 'price', 'tax_percentage', 'tax_amount', 'final_price'],
             array_keys($result)
         );
         $this->assertSame(PricingService::TIER_B2C, $result['tier']);
@@ -136,16 +149,17 @@ class PricingServiceTest extends TestCase
         $inventory = MediaInventory::factory()->create(['category_id' => $category->id]);
         $inventory->setRelation('price', null);
 
-        $result = $this->pricing->priceForUser($inventory, null);
+        $result = $this->pricing->priceForUser($inventory, $this->userWithRole('Retail Customer'));
 
         $this->assertFalse($result['available']);
+        $this->assertFalse($result['locked']);
     }
 
     public function test_flat_discount_is_subtracted_from_every_tier(): void
     {
         $inventory = $this->makeInventoryWithPrice(['discount_type' => 'flat', 'discount_value' => 100]);
 
-        $retail = $this->pricing->priceForUser($inventory, null);
+        $retail = $this->pricing->priceForUser($inventory, $this->userWithRole('Retail Customer'));
 
         $this->assertSame(1400.0, $retail['price']); // 1500 - 100
     }
@@ -155,7 +169,7 @@ class PricingServiceTest extends TestCase
         $inventory = $this->makeInventoryWithPrice(['discount_type' => 'percentage', 'discount_value' => 10]);
 
         // 10% of base_price (1000) = 100 discount, applied flat to every tier
-        $retail = $this->pricing->priceForUser($inventory, null);
+        $retail = $this->pricing->priceForUser($inventory, $this->userWithRole('Retail Customer'));
 
         $this->assertSame(1400.0, $retail['price']); // 1500 - 100
     }
@@ -164,7 +178,7 @@ class PricingServiceTest extends TestCase
     {
         $inventory = $this->makeInventoryWithPrice(['tax_percentage' => 18]);
 
-        $retail = $this->pricing->priceForUser($inventory, null);
+        $retail = $this->pricing->priceForUser($inventory, $this->userWithRole('Retail Customer'));
 
         $this->assertSame(270.0, $retail['tax_amount']); // 1500 * 18%
         $this->assertSame(1770.0, $retail['final_price']); // 1500 + 270

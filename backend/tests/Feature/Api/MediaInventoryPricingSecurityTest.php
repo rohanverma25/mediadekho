@@ -38,11 +38,19 @@ class MediaInventoryPricingSecurityTest extends TestCase
         ]);
     }
 
-    public function test_guest_receives_retail_price(): void
+    /**
+     * Pricing is a logged-in-only feature — a guest gets a locked response
+     * with no numeric price anywhere in it, not even the retail rate.
+     */
+    public function test_guest_receives_no_price(): void
     {
-        $this->getJson("/api/media-inventory/{$this->inventory->slug}/price")
+        $response = $this->getJson("/api/media-inventory/{$this->inventory->slug}/price")
             ->assertOk()
-            ->assertJson(['tier' => 'retail', 'price' => 1500.0]);
+            ->assertJson(['available' => false, 'locked' => true]);
+
+        $response->assertJsonMissingPath('price');
+        $response->assertJsonMissingPath('final_price');
+        $response->assertJsonMissingPath('list_price');
     }
 
     public function test_b2c_customer_receives_only_b2c_price(): void

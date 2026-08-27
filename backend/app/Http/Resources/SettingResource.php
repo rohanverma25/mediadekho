@@ -22,7 +22,7 @@ class SettingResource extends JsonResource
             'footer_description' => $this->footer_description,
             'social' => [
                 'facebook' => $this->facebook_url,
-                'twitter' => $this->twitter_url,
+                'instagram' => $this->instagram_url,
                 'linkedin' => $this->linkedin_url,
                 'youtube' => $this->youtube_url,
             ],
@@ -30,6 +30,7 @@ class SettingResource extends JsonResource
             'footer_scripts' => $this->footer_scripts,
             'privacy_policy' => $this->privacy_policy,
             'terms_of_use' => $this->terms_of_use,
+            'about_us' => $this->about_us,
             'contact_emails' => $this->contact_emails ?? [],
             'contact_addresses' => $this->contact_addresses ?? [],
             'map_embed_url' => $this->map_embed_url,

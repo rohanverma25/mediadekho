@@ -30,6 +30,11 @@ export async function fetchMediaInventoryBySlug(slug) {
 export function normalizeInventoryItem(item) {
   const isAvailable = Boolean(item.price?.available);
   const price = isAvailable ? item.price.final_price : 0;
+  // The API itself locks pricing for unauthenticated requests (no numeric
+  // fields at all) — trusting that flag rather than re-deriving it from
+  // frontend auth state keeps every consumer in sync with what the server
+  // actually decided, even if client-side auth state is briefly stale.
+  const priceLocked = Boolean(item.price?.locked);
 
   return {
     id: item.id,
@@ -40,6 +45,7 @@ export function normalizeInventoryItem(item) {
     location: 'Pan-India',
     city: 'Pan-India',
     price,
+    priceLocked,
     // Breakdown behind `price` (already tax-inclusive) — lets pages like the
     // cart show what was discounted and taxed instead of re-deriving it with
     // guessed rates. Undefined (not 0) when unavailable, so callers can tell

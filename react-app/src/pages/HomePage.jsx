@@ -10,7 +10,11 @@ import { useFaqs } from '../hooks/useFaqs';
 import { useBlogs } from '../hooks/useBlogs';
 import { useNews } from '../hooks/useNews';
 import { useAwards } from '../hooks/useAwards';
+import { useStats } from '../hooks/useStats';
+import { useVideos } from '../hooks/useVideos';
 import { Skeleton } from '../components/Skeleton';
+import { YouTubeFacade } from '../components/YouTubeFacade';
+import { StatCounter } from '../components/StatCounter';
 import { ViewPricingButton } from '../components/ViewPricingButton';
 import { useAuth } from '../context/AuthContext';
 
@@ -41,6 +45,15 @@ export const HomePage = () => {
   const [activeCategoryId, setActiveCategoryId] = useState('all');
   const { logos: clientLogos, status: clientLogosStatus } = useClientLogos();
   const { industries, status: industriesStatus } = useIndustries();
+  const { stats, status: statsStatus } = useStats();
+  const { videos, status: videosStatus } = useVideos();
+  const videosTrackRef = useRef(null);
+  const scrollVideos = (direction) => {
+    if (videosTrackRef.current) {
+      const scrollAmount = direction === 'left' ? -340 : 340;
+      videosTrackRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
   const industriesTrackRef = useRef(null);
   const scrollIndustries = (direction) => {
     if (industriesTrackRef.current) {
@@ -55,6 +68,13 @@ export const HomePage = () => {
   const latestNews = news.slice(0, 3);
   const { awards, status: awardsStatus } = useAwards();
   const featuredAwards = useMemo(() => awards.filter((a) => a.show_on_homepage), [awards]);
+  const awardsTrackRef = useRef(null);
+  const scrollAwards = (direction) => {
+    if (awardsTrackRef.current) {
+      const scrollAmount = direction === 'left' ? -320 : 320;
+      awardsTrackRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
   const [activeFaq, setActiveFaq] = useState(0);
   const { items: liveItems, status: inventoryStatus } = useMediaInventory({
     per_page: 8,
@@ -140,6 +160,42 @@ export const HomePage = () => {
 
         </div>
       </section>
+
+      {/* STATS COUNTER BAND */}
+      {(statsStatus === 'loading' || (statsStatus === 'success' && stats.length > 0)) && (
+        <section className="relative py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-brand-red via-brand-red to-red-900 overflow-hidden">
+          {/* Decorative glow — purely visual, clipped by the section so it never affects layout/scroll width */}
+          <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full bg-white/10 blur-3xl"></div>
+          <div className="pointer-events-none absolute -bottom-32 -right-16 w-96 h-96 rounded-full bg-black/10 blur-3xl"></div>
+
+          <div className="relative max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-6 text-center">
+            {statsStatus === 'loading'
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex flex-col items-center gap-3">
+                    <Skeleton className="w-16 h-16 rounded-2xl bg-white/20" />
+                    <Skeleton className="h-10 w-28 bg-white/20" />
+                    <Skeleton className="h-3 w-32 bg-white/20" />
+                  </div>
+                ))
+              : stats.map((stat, i) => (
+                  <div
+                    key={stat.id}
+                    className={`group flex flex-col items-center gap-3 px-4 transition-transform duration-300 hover:-translate-y-1 ${
+                      i > 0 ? 'sm:border-l sm:border-white/20' : ''
+                    }`}>
+                    <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center text-white text-2xl shadow-lg transition-colors group-hover:bg-white group-hover:text-brand-red">
+                      <i className={stat.icon}></i>
+                    </div>
+                    <StatCounter
+                      value={stat.value}
+                      className="font-outfit font-black text-4xl sm:text-5xl text-white tracking-tight tabular-nums"
+                    />
+                    <span className="text-white/85 text-sm font-semibold max-w-[240px] leading-snug">{stat.label}</span>
+                  </div>
+                ))}
+          </div>
+        </section>
+      )}
 
       {/* CLIENT LOGOS MARQUEE */}
       <section className="py-6 bg-white border-b border-slate-200 overflow-hidden">
@@ -468,52 +524,77 @@ export const HomePage = () => {
       {(awardsStatus === 'loading' || (awardsStatus === 'success' && featuredAwards.length > 0)) && (
         <section className="py-16 px-4 sm:px-6 bg-slate-50 border-b border-slate-200">
           <div className="max-w-7xl mx-auto space-y-10">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-              <div>
-                <span className="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-2">Recognition</span>
-                <h2 className="font-outfit font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
-                  Awards & Achievements
-                </h2>
-              </div>
-              <Link to="/awards" className="text-xs font-bold text-brand-red hover:underline inline-flex items-center gap-1.5 flex-shrink-0">
-                View All Awards <i className="fa-solid fa-arrow-right text-[10px]"></i>
-              </Link>
+            <div className="text-center">
+              <span className="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-2">Recognition</span>
+              <h2 className="font-outfit font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+                Awards & Achievements
+              </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {awardsStatus === 'loading'
-                ? Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm">
-                      <Skeleton className="w-full h-32 rounded-none" />
-                      <div className="p-4 space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-3 w-2/3" />
-                      </div>
-                    </div>
-                  ))
-                : featuredAwards.map((award) => (
-                    <div key={award.id} className="rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
-                      <div className="h-32 overflow-hidden">
+            <div className="relative flex items-center gap-3">
+              <button
+                onClick={() => scrollAwards('left')}
+                aria-label="Scroll awards left"
+                className="hidden sm:flex w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white items-center justify-center flex-shrink-0 transition shadow-sm">
+                <i className="fa-solid fa-chevron-left text-xs"></i>
+              </button>
+
+              <div
+                ref={awardsTrackRef}
+                className="flex items-stretch gap-5 overflow-x-auto scrollbar-none scroll-smooth snap-x snap-mandatory py-1 flex-1">
+                {awardsStatus === 'loading'
+                  ? Array.from({ length: 4 }).map((_, i) => (
+                      <Skeleton key={i} className="h-64 w-[92%] sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)] rounded-2xl flex-shrink-0 snap-start" />
+                    ))
+                  : featuredAwards.map((award) => (
+                      <div
+                        key={award.id}
+                        className="h-64 w-[92%] sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)] flex-shrink-0 snap-start flex items-center justify-center">
                         <img
                           src={award.image_url || FALLBACK_AWARD_IMAGE}
                           alt={award.title}
-                          className="w-full h-full object-cover"
+                          className="max-w-full max-h-full object-contain"
                         />
                       </div>
-                      <div className="p-4">
-                        <h3 className="font-outfit font-bold text-sm text-slate-900 leading-snug line-clamp-2">{award.title}</h3>
-                        <span className="text-[10px] text-slate-500 font-semibold block mt-1">
-                          {[award.organization, award.event_date ? new Date(`${award.event_date}T00:00:00`).getFullYear() : null]
-                            .filter(Boolean)
-                            .join(' · ')}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+              </div>
+
+              <button
+                onClick={() => scrollAwards('right')}
+                aria-label="Scroll awards right"
+                className="hidden sm:flex w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white items-center justify-center flex-shrink-0 transition shadow-sm">
+                <i className="fa-solid fa-chevron-right text-xs"></i>
+              </button>
             </div>
           </div>
         </section>
       )}
+
+      {/* AWARD NOMINATION CTA */}
+      <section className="py-14 px-4 sm:px-6 bg-brand-red">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div className="flex items-center gap-5 flex-col md:flex-row">
+            <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center text-white text-2xl flex-shrink-0">
+              <i className="fa-solid fa-trophy"></i>
+            </div>
+            <div>
+              <h2 className="font-outfit font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+                Think Your Campaign Deserves Recognition?
+              </h2>
+              <p className="text-white/90 text-sm mt-1.5 max-w-xl">
+                Nominate your brand or campaign for our upcoming awards and get recognized among 5,000+ industry leaders.
+              </p>
+            </div>
+          </div>
+
+          <Link
+            to="/awards"
+            className="flex-shrink-0 inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-brand-red font-outfit font-bold text-sm px-6 py-3.5 rounded-xl shadow-lg transition active:scale-95">
+            <i className="fa-solid fa-trophy text-xs"></i>
+            <span>Nominate Now</span>
+          </Link>
+        </div>
+      </section>
 
       {/* LATEST BLOGS */}
       {(latestBlogsStatus === 'loading' || (latestBlogsStatus === 'success' && latestBlogs.length > 0)) && (
@@ -631,6 +712,60 @@ export const HomePage = () => {
                       </div>
                     </a>
                   ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* VIDEOS */}
+      {(videosStatus === 'loading' || (videosStatus === 'success' && videos.length > 0)) && (
+        <section className="py-16 px-4 sm:px-6 bg-slate-50 border-b border-slate-200">
+          <div className="max-w-7xl mx-auto space-y-10">
+            <div className="text-center">
+              <span className="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-2">Watch & Learn</span>
+              <h2 className="font-outfit font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+                Videos
+              </h2>
+            </div>
+
+            <div className="relative flex items-center gap-3">
+              <button
+                onClick={() => scrollVideos('left')}
+                aria-label="Scroll videos left"
+                className="hidden sm:flex w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white items-center justify-center flex-shrink-0 transition shadow-sm">
+                <i className="fa-solid fa-chevron-left text-xs"></i>
+              </button>
+
+              <div
+                ref={videosTrackRef}
+                className="flex items-stretch gap-5 overflow-x-auto scrollbar-none scroll-smooth snap-x snap-mandatory py-1 flex-1">
+                {videosStatus === 'loading'
+                  ? Array.from({ length: 3 }).map((_, i) => (
+                      <Skeleton key={i} className="h-52 w-[80%] sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)] rounded-2xl flex-shrink-0 snap-start" />
+                    ))
+                  : videos.map((video) => (
+                      <div
+                        key={video.id}
+                        className="w-[80%] sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
+                        <YouTubeFacade
+                          videoId={video.video_id}
+                          title={video.title}
+                          thumbnailUrl={video.thumbnail_url}
+                          className="w-full aspect-video"
+                        />
+                        <div className="p-4">
+                          <h3 className="font-outfit font-bold text-sm text-slate-900 leading-snug line-clamp-2">{video.title}</h3>
+                        </div>
+                      </div>
+                    ))}
+              </div>
+
+              <button
+                onClick={() => scrollVideos('right')}
+                aria-label="Scroll videos right"
+                className="hidden sm:flex w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white items-center justify-center flex-shrink-0 transition shadow-sm">
+                <i className="fa-solid fa-chevron-right text-xs"></i>
+              </button>
             </div>
           </div>
         </section>

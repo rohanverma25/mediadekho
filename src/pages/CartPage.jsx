@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { createOrder, verifyPayment } from '../services/orderService';
 import { ApiError } from '../services/api';
+import { ViewPricingButton } from '../components/ViewPricingButton';
 
 export const CartPage = () => {
   const { cart, updateQuantity, toggleCartItem, clearCart, setIsInquiryOpen, setInquiryContext, showToast } = useCart();
@@ -169,7 +170,11 @@ export const CartPage = () => {
                             </Link>
 
                             <div className="flex items-center gap-2 text-xs text-slate-500">
-                              <span>Card Rate: <strong className="text-slate-800 font-outfit">₹{item.price.toLocaleString('en-IN')}</strong> / {item.priceUnit}</span>
+                              {isAuthenticated ? (
+                                <span>Card Rate: <strong className="text-slate-800 font-outfit">₹{item.price.toLocaleString('en-IN')}</strong> / {item.priceUnit}</span>
+                              ) : (
+                                <ViewPricingButton />
+                              )}
                             </div>
                           </div>
                         </div>
@@ -194,7 +199,9 @@ export const CartPage = () => {
 
                           <div className="text-right">
                             <span className="text-[10px] text-slate-400 font-bold uppercase block">Item Subtotal</span>
-                            <span className="font-outfit font-black text-lg text-slate-900">₹{itemSubtotal.toLocaleString('en-IN')}</span>
+                            <span className="font-outfit font-black text-lg text-slate-900">
+                              {isAuthenticated ? `₹${itemSubtotal.toLocaleString('en-IN')}` : '—'}
+                            </span>
                           </div>
 
                           <button
@@ -220,31 +227,40 @@ export const CartPage = () => {
                   <h3 className="font-outfit font-extrabold text-xl text-slate-900">Order Summary</h3>
                 </div>
 
-                <div className="space-y-3 text-xs">
-                  <div className="flex justify-between text-slate-600">
-                    <span>Media Options List Price:</span>
-                    <span className="font-bold text-slate-900">₹{listSubtotal.toLocaleString('en-IN')}</span>
-                  </div>
+                {isAuthenticated ? (
+                  <>
+                    <div className="space-y-3 text-xs">
+                      <div className="flex justify-between text-slate-600">
+                        <span>Media Options List Price:</span>
+                        <span className="font-bold text-slate-900">₹{listSubtotal.toLocaleString('en-IN')}</span>
+                      </div>
 
-                  {discountTotal > 0 && (
-                    <div className="flex justify-between text-emerald-600 font-bold bg-emerald-50 p-2 rounded-xl border border-emerald-200">
-                      <span>Discount:</span>
-                      <span>-₹{discountTotal.toLocaleString('en-IN')}</span>
+                      {discountTotal > 0 && (
+                        <div className="flex justify-between text-emerald-600 font-bold bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+                          <span>Discount:</span>
+                          <span>-₹{discountTotal.toLocaleString('en-IN')}</span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between text-slate-600">
+                        <span>Tax:</span>
+                        <span className="font-bold text-slate-900">₹{taxTotal.toLocaleString('en-IN')}</span>
+                      </div>
                     </div>
-                  )}
 
-                  <div className="flex justify-between text-slate-600">
-                    <span>Tax:</span>
-                    <span className="font-bold text-slate-900">₹{taxTotal.toLocaleString('en-IN')}</span>
+                    <div className="border-t border-slate-200 pt-4">
+                      <div className="flex justify-between items-baseline mb-1">
+                        <span className="text-xs font-bold text-slate-700">Total Estimated Spend:</span>
+                        <div className="font-outfit font-black text-2xl sm:text-3xl text-brand-red">₹{grandTotal.toLocaleString('en-IN')}</div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="border-t border-slate-200 pt-4 text-center space-y-3">
+                    <p className="text-xs text-slate-500">Log in to view pricing for your selected media options.</p>
+                    <ViewPricingButton className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold text-brand-red bg-red-50 hover:bg-brand-red hover:text-white border border-red-100 transition rounded-xl px-3.5 py-2.5 cursor-pointer" />
                   </div>
-                </div>
-
-                <div className="border-t border-slate-200 pt-4">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <span className="text-xs font-bold text-slate-700">Total Estimated Spend:</span>
-                    <div className="font-outfit font-black text-2xl sm:text-3xl text-brand-red">₹{grandTotal.toLocaleString('en-IN')}</div>
-                  </div>
-                </div>
+                )}
 
                 <div className="grid grid-cols-1 gap-3">
                   <button

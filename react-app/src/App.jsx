@@ -24,6 +24,7 @@ import { NewsPage } from './pages/NewsPage';
 import { FaqPage } from './pages/FaqPage';
 import { ContactPage } from './pages/ContactPage';
 import { AwardsPage } from './pages/AwardsPage';
+import { ClientsPage } from './pages/ClientsPage';
 import { CareerPage } from './pages/CareerPage';
 import { CartPage } from './pages/CartPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -62,12 +63,14 @@ export function App() {
                           <Route path="/listing" element={<ListingDetailPage />} />
                           <Route path="/blogs" element={<BlogListPage />} />
                           <Route path="/blog" element={<BlogDetailPage />} />
+                          <Route path="/about" element={<LegalPage title="About Us" field="about_us" />} />
                           <Route path="/privacy-policy" element={<LegalPage title="Privacy Policy" field="privacy_policy" />} />
                           <Route path="/terms-of-service" element={<LegalPage title="Terms of Service" field="terms_of_use" />} />
                           <Route path="/news" element={<NewsPage />} />
                           <Route path="/faq" element={<FaqPage />} />
                           <Route path="/contact" element={<ContactPage />} />
                           <Route path="/awards" element={<AwardsPage />} />
+                          <Route path="/clients" element={<ClientsPage />} />
                           <Route path="/careers" element={<CareerPage />} />
                           <Route path="/cart" element={<CartPage />} />
                           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

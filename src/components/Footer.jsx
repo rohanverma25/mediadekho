@@ -9,7 +9,7 @@ const DEFAULT_ADDRESS = '1010-1012, 10th Floor, Venus Atlantis Corporate Park, P
 const DEFAULT_PHONE = '+91 89800 04451';
 const DEFAULT_SOCIAL = {
   facebook: 'https://www.facebook.com/MediaDekho',
-  twitter: 'https://x.com/MediaDekho',
+  instagram: 'https://www.instagram.com/MediaDekho',
   linkedin: 'https://in.linkedin.com/company/mediadekho',
   youtube: 'https://www.youtube.com/channel/MediaDekho',
 };
@@ -67,7 +67,7 @@ export const Footer = () => {
     : [{ title: 'Head Office', address: settings?.contact_address || DEFAULT_ADDRESS }];
   const social = {
     facebook: settings?.social?.facebook || DEFAULT_SOCIAL.facebook,
-    twitter: settings?.social?.twitter || DEFAULT_SOCIAL.twitter,
+    instagram: settings?.social?.instagram || DEFAULT_SOCIAL.instagram,
     linkedin: settings?.social?.linkedin || DEFAULT_SOCIAL.linkedin,
     youtube: settings?.social?.youtube || DEFAULT_SOCIAL.youtube,
   };
@@ -106,7 +106,7 @@ export const Footer = () => {
             ) : (
               <div className="flex items-center gap-3 text-lg text-slate-400">
                 {social.facebook && <a href={social.facebook} target="_blank" rel="noreferrer" className="hover:text-brand-red transition"><i className="fa-brands fa-facebook"></i></a>}
-                {social.twitter && <a href={social.twitter} target="_blank" rel="noreferrer" className="hover:text-brand-red transition"><i className="fa-brands fa-x-twitter"></i></a>}
+                {social.instagram && <a href={social.instagram} target="_blank" rel="noreferrer" className="hover:text-brand-red transition"><i className="fa-brands fa-instagram"></i></a>}
                 {social.linkedin && <a href={social.linkedin} target="_blank" rel="noreferrer" className="hover:text-brand-red transition"><i className="fa-brands fa-linkedin"></i></a>}
                 {social.youtube && <a href={social.youtube} target="_blank" rel="noreferrer" className="hover:text-brand-red transition"><i className="fa-brands fa-youtube"></i></a>}
               </div>
@@ -141,11 +141,12 @@ export const Footer = () => {
           <div>
             <h4 className="font-outfit font-bold text-white text-sm mb-4">Company</h4>
             <ul className="space-y-2 text-xs">
-              <li><Link to="/" className="hover:text-white transition">About Us</Link></li>
+              <li><Link to="/about" className="hover:text-white transition">About Us</Link></li>
               <li><Link to="/blogs" className="hover:text-white transition">Blog</Link></li>
               <li><Link to="/news" className="hover:text-white transition">In The News</Link></li>
               <li><Link to="/faq" className="hover:text-white transition">FAQs</Link></li>
               <li><Link to="/awards" className="hover:text-white transition">Awards</Link></li>
+              <li><Link to="/clients" className="hover:text-white transition">Clients</Link></li>
               <li><Link to="/careers" className="hover:text-white transition">Careers</Link></li>
               <li><Link to="/contact" className="hover:text-white transition">Contact Us</Link></li>
               <li><Link to="/privacy-policy" className="hover:text-white transition">Privacy Policy</Link></li>
