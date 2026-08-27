@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -85,6 +86,16 @@ class RolesAndPermissionsSeeder extends Seeder
         foreach (self::ROLES as $role) {
             Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
         }
+
+        // Spatie caches the full permission list for performance, and that
+        // cache can go stale mid-request the very first time this seeder
+        // runs after new permissions were just added above — syncPermissions()
+        // below would then fail with "no permission named ..." even though
+        // the row was just created a few lines up. Forcing a fresh read
+        // here (rather than trusting the model events to have already
+        // invalidated it) makes this seeder safe to run at any point in the
+        // project's life, not just on a brand-new database.
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $superAdmin = Role::findByName('Super Admin');
         $superAdmin->syncPermissions(self::PERMISSIONS);
