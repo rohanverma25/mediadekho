@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSettings } from '../context/SettingsContext';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 /**
  * Renders a single admin-managed legal page (Privacy Policy, Terms of Use)
@@ -10,6 +11,11 @@ import { Skeleton } from '../components/Skeleton';
 export const LegalPage = ({ title, field }) => {
   const { settings, status } = useSettings();
   const content = settings?.[field];
+
+  // A blank plain-text summary is the honest description here — the real
+  // content is arbitrary admin-authored HTML, not something to safely
+  // truncate into a meta description without risking cut-off markup.
+  useDocumentMeta({ title });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">

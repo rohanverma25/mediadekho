@@ -25,7 +25,7 @@ class MediaCategoryController extends Controller
     public function show(MediaCategory $category): MediaCategoryResource
     {
         $category->loadCount(['inventories' => fn ($q) => $q->where('status', 'published')]);
-        $category->load(['children' => fn ($q) => $q->where('status', 'active')]);
+        $category->load(['children' => fn ($q) => $q->where('status', 'active'), 'faqs']);
 
         return new MediaCategoryResource($category);
     }

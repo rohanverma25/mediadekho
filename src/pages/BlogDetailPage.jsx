@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useBlog } from '../hooks/useBlog';
 import { useBlogs } from '../hooks/useBlogs';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80';
@@ -14,6 +15,12 @@ export const BlogDetailPage = () => {
   const { blog, status } = useBlog(slug);
   const { blogs: otherBlogs } = useBlogs({ per_page: 4 });
   const relatedBlogs = otherBlogs.filter((b) => b.slug !== slug).slice(0, 3);
+
+  useDocumentMeta(
+    blog
+      ? { title: blog.title, description: blog.excerpt || undefined, image: blog.featured_image_url }
+      : { title: 'Blog' },
+  );
 
   if (!slug) {
     return (

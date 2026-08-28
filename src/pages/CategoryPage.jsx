@@ -3,11 +3,12 @@ import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'reac
 import { useCart } from '../context/CartContext';
 import { useMediaCategories } from '../hooks/useMediaCategories';
 import { useMediaInventory } from '../hooks/useMediaInventory';
-import { useFaqs } from '../hooks/useFaqs';
+import { fetchMediaCategoryBySlug } from '../services/mediaCategoryService';
 import { normalizeInventoryItem } from '../services/mediaInventoryService';
 import { Skeleton } from '../components/Skeleton';
 import { ViewPricingButton } from '../components/ViewPricingButton';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 // Accepts any common YouTube URL shape (watch?v=, youtu.be/, shorts/,
 // already-an-embed link) and normalizes it to an embeddable iframe src.
@@ -16,6 +17,10 @@ const getYoutubeEmbedUrl = (url) => {
   const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
   return match ? `https://www.youtube.com/embed/${match[1]}` : null;
 };
+
+// The category description is rich admin-authored HTML — strip tags down
+// to plain text for the meta description, which can't contain markup.
+const stripHtml = (html) => (html ? html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() : '');
 
 export const CategoryPage = () => {
   const { slug: slugParam } = useParams();
@@ -28,7 +33,6 @@ export const CategoryPage = () => {
   const { cart, toggleCartItem } = useCart();
   const { isAuthenticated } = useAuth();
   const { categories: mediaCategories, status: mediaCategoriesStatus } = useMediaCategories();
-  const { faqs, status: faqsStatus } = useFaqs();
 
   const handleAddToCart = (id, item) => {
     if (!isAuthenticated) {
@@ -68,6 +72,51 @@ export const CategoryPage = () => {
   const categoryYoutubeEmbedUrl = getYoutubeEmbedUrl(matchedMediaCategory?.youtube_video_link);
   const hasCategoryMedia = Boolean(matchedMediaCategory?.image_url || categoryYoutubeEmbedUrl);
   const hasCategoryContent = Boolean(matchedMediaCategory?.description || hasCategoryMedia);
+
+  useDocumentMeta(
+    matchedMediaCategory
+      ? {
+          title: `${matchedMediaCategory.name} Advertising Rates & Media Options`,
+          description: stripHtml(matchedMediaCategory.description).slice(0, 160) || undefined,
+          image: matchedMediaCategory.image_url,
+        }
+      : { title: 'Browse Media Categories' },
+  );
+
+  // FAQs are scoped per page, never shared with the homepage/FAQ page's
+  // general list — a category only ever shows its own linked FAQs (fetched
+  // fresh from the category detail endpoint, which is the only place they're
+  // embedded), and shows nothing at all if it has none configured, rather
+  // than falling back to the unrelated general FAQ set.
+  const [categoryFaqs, setCategoryFaqs] = useState([]);
+  const [categoryFaqsStatus, setCategoryFaqsStatus] = useState('loading');
+
+  useEffect(() => {
+    if (activeCategory === 'all') {
+      setCategoryFaqs([]);
+      setCategoryFaqsStatus('success');
+      return;
+    }
+
+    let cancelled = false;
+    setCategoryFaqsStatus('loading');
+
+    fetchMediaCategoryBySlug(activeCategory)
+      .then((category) => {
+        if (cancelled) return;
+        setCategoryFaqs(category?.faqs ?? []);
+        setCategoryFaqsStatus('success');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setCategoryFaqs([]);
+        setCategoryFaqsStatus('error');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCategory]);
   const availableSubcategories = matchedMediaCategory?.children ?? [];
 
   // A subcategory/frequency picked under one category is meaningless once
@@ -497,8 +546,8 @@ export const CategoryPage = () => {
         </section>
       )}
 
-      {/* FREQUENTLY ASKED QUESTIONS (FAQ) */}
-      {(faqsStatus === 'loading' || (faqsStatus === 'success' && faqs.length > 0)) && (
+      {/* FREQUENTLY ASKED QUESTIONS (FAQ) — this category's own, never the general set */}
+      {activeCategory !== 'all' && (categoryFaqsStatus === 'loading' || (categoryFaqsStatus === 'success' && categoryFaqs.length > 0)) && (
         <section className="py-16 px-4 sm:px-6 bg-slate-100 border-t border-slate-200">
           <div className="max-w-4xl mx-auto space-y-10">
 
@@ -510,13 +559,13 @@ export const CategoryPage = () => {
             </div>
 
             <div className="space-y-4">
-              {faqsStatus === 'loading' &&
+              {categoryFaqsStatus === 'loading' &&
                 Array.from({ length: 4 }).map((_, i) => (
                   <Skeleton key={i} className="h-16 w-full rounded-2xl" />
                 ))}
 
-              {faqsStatus === 'success' &&
-                faqs.map((faq, index) => (
+              {categoryFaqsStatus === 'success' &&
+                categoryFaqs.map((faq, index) => (
                   <div
                     key={faq.id}
                     className={`faq-item ${activeFaq === index ? 'active' : ''}`}>

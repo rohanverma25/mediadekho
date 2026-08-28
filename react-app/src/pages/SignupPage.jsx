@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { Skeleton } from '../components/Skeleton';
 import { ApiError } from '../services/api';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const USER_TYPES = [
   { value: 'retail', label: 'Retail' },
@@ -14,10 +15,16 @@ const USER_TYPES = [
 ];
 
 export const SignupPage = () => {
+  useDocumentMeta({ title: 'Create Free Account', noindex: true });
+
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { showToast } = useCart();
   const { register } = useAuth();
   const { settings } = useSettings();
+
+  const requestedType = searchParams.get('type');
+  const initialUserType = USER_TYPES.some((t) => t.value === requestedType) ? requestedType : 'retail';
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -25,7 +32,7 @@ export const SignupPage = () => {
   const [company, setCompany] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [userType, setUserType] = useState('retail');
+  const [userType, setUserType] = useState(initialUserType);
   const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pendingApprovalMessage, setPendingApprovalMessage] = useState(null);

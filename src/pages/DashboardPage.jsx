@@ -5,6 +5,7 @@ import { useMyAwardNominations } from '../hooks/useMyAwardNominations';
 import { useOrders } from '../hooks/useOrders';
 import { AccountLayout } from '../components/AccountLayout';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const STATUS_BADGE = {
   new: 'bg-amber-100 text-amber-700',
@@ -31,6 +32,8 @@ const formatDate = (dateStr) => {
 };
 
 export const DashboardPage = () => {
+  useDocumentMeta({ title: 'Dashboard', noindex: true });
+
   const { announcements, status: announcementsStatus } = useAnnouncements();
   const { nominations, status: nominationsStatus } = useMyAwardNominations();
   const { orders, status: ordersStatus } = useOrders();

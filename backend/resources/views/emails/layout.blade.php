@@ -14,7 +14,7 @@
             <td align="center">
                 <table role="presentation" width="100%" style="max-width:560px;" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td style="background-color:#c01625; padding:20px 28px; border-radius:12px 12px 0 0;">
+                        <td style="background-color:#d81a2b; padding:20px 28px; border-radius:12px 12px 0 0;">
                             <span style="font-size:20px; font-weight:900; color:#ffffff; letter-spacing:0.5px;">{{ config('app.name') }}</span>
                         </td>
                     </tr>

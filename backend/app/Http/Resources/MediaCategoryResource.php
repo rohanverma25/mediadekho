@@ -24,6 +24,7 @@ class MediaCategoryResource extends JsonResource
             'icon' => $this->icon,
             'inventory_count' => $this->whenCounted('inventories'),
             'children' => self::collection($this->whenLoaded('children')),
+            'faqs' => FaqResource::collection($this->whenLoaded('faqs')),
         ];
     }
 }

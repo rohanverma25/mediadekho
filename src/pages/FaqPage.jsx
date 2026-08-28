@@ -1,8 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { useFaqs } from '../hooks/useFaqs';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export const FaqPage = () => {
+  useDocumentMeta({
+    title: 'Frequently Asked Questions',
+    description: 'Answers to common questions about media planning, pricing, and booking with Media Dekho.',
+  });
+
   const { faqs, status } = useFaqs();
   const [query, setQuery] = useState('');
   const [activeFaq, setActiveFaq] = useState(0);

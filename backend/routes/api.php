@@ -56,7 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // open marketplace, not gated behind auth.
 Route::middleware('throttle:60,1')->group(function () {
     Route::get('media-categories', [MediaCategoryController::class, 'index']);
-    Route::get('media-categories/{category}', [MediaCategoryController::class, 'show']);
+    Route::get('media-categories/{category:slug}', [MediaCategoryController::class, 'show']);
 
     Route::get('client-logos', [ClientLogoController::class, 'index']);
 

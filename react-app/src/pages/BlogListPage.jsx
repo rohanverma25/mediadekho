@@ -2,11 +2,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useBlogs } from '../hooks/useBlogs';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80';
 
 export const BlogListPage = () => {
+  useDocumentMeta({
+    title: 'Blog',
+    description: 'Practical advice on media planning, advertising trends, and getting the most out of your campaign budget.',
+  });
+
   const { blogs, status } = useBlogs();
 
   return (

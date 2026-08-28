@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useJobs } from '../hooks/useJobs';
 import { Skeleton } from '../components/Skeleton';
 import { JobApplicationModal } from '../components/JobApplicationModal';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const TYPE_LABEL = {
   'full-time': 'Full-Time',
@@ -11,6 +12,11 @@ const TYPE_LABEL = {
 };
 
 export const CareerPage = () => {
+  useDocumentMeta({
+    title: 'Careers',
+    description: 'Explore open roles and build your career with Media Dekho.',
+  });
+
   const { jobs, status } = useJobs();
   const [applyJob, setApplyJob] = useState(null);
 

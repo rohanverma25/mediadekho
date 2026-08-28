@@ -17,7 +17,7 @@
         @endforeach
         <tr>
             <td style="padding:10px 0 0; font-size:14px; font-weight:bold; color:#0f172a;">Total Paid</td>
-            <td style="padding:10px 0 0; font-size:14px; font-weight:bold; color:#c01625; text-align:right;">₹{{ number_format($order->grand_total, 2) }}</td>
+            <td style="padding:10px 0 0; font-size:14px; font-weight:bold; color:#d81a2b; text-align:right;">₹{{ number_format($order->grand_total, 2) }}</td>
         </tr>
     </table>
 @endsection

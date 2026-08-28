@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useMyEnquiries } from '../hooks/useMyEnquiries';
 import { AccountLayout } from '../components/AccountLayout';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const STATUS_BADGE = {
   new: 'bg-amber-100 text-amber-700',
@@ -16,6 +17,8 @@ const formatDate = (dateStr) => {
 };
 
 export const EnquiriesPage = () => {
+  useDocumentMeta({ title: 'My Enquiries', noindex: true });
+
   const { enquiries, status } = useMyEnquiries();
   const { setIsInquiryOpen } = useCart();
 

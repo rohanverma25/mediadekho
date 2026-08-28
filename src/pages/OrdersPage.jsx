@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useOrders } from '../hooks/useOrders';
 import { AccountLayout } from '../components/AccountLayout';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const STATUSES = ['all', 'pending', 'paid', 'failed', 'cancelled', 'refunded'];
 
@@ -20,6 +21,8 @@ const formatDate = (dateStr) => {
 };
 
 export const OrdersPage = () => {
+  useDocumentMeta({ title: 'My Orders', noindex: true });
+
   const { orders, status } = useOrders();
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');

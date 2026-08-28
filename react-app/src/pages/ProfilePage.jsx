@@ -4,8 +4,11 @@ import { useCart } from '../context/CartContext';
 import { updateProfile } from '../services/profileService';
 import { ApiError } from '../services/api';
 import { AccountLayout } from '../components/AccountLayout';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export const ProfilePage = () => {
+  useDocumentMeta({ title: 'My Profile', noindex: true });
+
   const { user, updateUser } = useAuth();
   const { showToast } = useCart();
 

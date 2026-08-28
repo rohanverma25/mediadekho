@@ -1,8 +1,14 @@
 import React from 'react';
 import { useClientLogos } from '../hooks/useClientLogos';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export const ClientsPage = () => {
+  useDocumentMeta({
+    title: 'Our Clients',
+    description: '5,000+ global brands and fast-growing startups plan and execute their campaigns with Media Dekho.',
+  });
+
   const { logos, status } = useClientLogos();
 
   return (

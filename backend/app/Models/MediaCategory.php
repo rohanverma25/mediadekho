@@ -54,4 +54,11 @@ class MediaCategory extends Model
     {
         return $this->hasMany(MediaInventory::class, 'category_id');
     }
+
+    public function faqs(): HasMany
+    {
+        return $this->hasMany(Faq::class, 'category_id')
+            ->where('status', 'active')
+            ->orderBy('sort_order');
+    }
 }

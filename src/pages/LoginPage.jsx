@@ -5,8 +5,11 @@ import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import { Skeleton } from '../components/Skeleton';
 import { ApiError } from '../services/api';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export const LoginPage = () => {
+  useDocumentMeta({ title: 'Log In', noindex: true });
+
   const navigate = useNavigate();
   const location = useLocation();
   const { showToast } = useCart();

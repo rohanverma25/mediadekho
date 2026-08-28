@@ -5,8 +5,11 @@ import { useAuth } from '../context/AuthContext';
 import { createOrder, verifyPayment } from '../services/orderService';
 import { ApiError } from '../services/api';
 import { ViewPricingButton } from '../components/ViewPricingButton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export const CartPage = () => {
+  useDocumentMeta({ title: 'Your Cart', noindex: true });
+
   const { cart, updateQuantity, toggleCartItem, clearCart, setIsInquiryOpen, setInquiryContext, showToast } = useCart();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { fetchOrder } from '../services/orderService';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const STATUS_BADGE = {
   pending: 'bg-amber-100 text-amber-700',
@@ -12,6 +13,8 @@ const STATUS_BADGE = {
 };
 
 export const ThankYouPage = () => {
+  useDocumentMeta({ title: 'Order Confirmed', noindex: true });
+
   const [searchParams] = useSearchParams();
   const orderNumber = searchParams.get('order');
 

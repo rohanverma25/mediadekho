@@ -1,8 +1,14 @@
 import React from 'react';
 import { useNews } from '../hooks/useNews';
 import { Skeleton } from '../components/Skeleton';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export const NewsPage = () => {
+  useDocumentMeta({
+    title: 'Media Dekho In The News',
+    description: 'Coverage and mentions from publications across the industry.',
+  });
+
   const { news, status } = useNews();
 
   return (

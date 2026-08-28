@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useAwards } from '../hooks/useAwards';
 import { Skeleton } from '../components/Skeleton';
 import { AwardNominationModal } from '../components/AwardNominationModal';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80';
@@ -12,6 +13,11 @@ const formatDate = (dateStr) => {
 };
 
 export const AwardsPage = () => {
+  useDocumentMeta({
+    title: 'Awards',
+    description: 'Explore upcoming award opportunities and see the recognitions Media Dekho has been associated with.',
+  });
+
   const { awards, status } = useAwards();
   const [nominationAward, setNominationAward] = useState(null);
 

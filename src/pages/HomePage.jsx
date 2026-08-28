@@ -17,6 +17,7 @@ import { YouTubeFacade } from '../components/YouTubeFacade';
 import { StatCounter } from '../components/StatCounter';
 import { ViewPricingButton } from '../components/ViewPricingButton';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const DEFAULT_CATEGORY_ICON = 'bi-grid';
 
@@ -29,6 +30,8 @@ const FALLBACK_AWARD_IMAGE =
   'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80';
 
 export const HomePage = () => {
+  useDocumentMeta();
+
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
@@ -517,6 +520,66 @@ export const HomePage = () => {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* AGENCY PARTNER (B2B) CTA */}
+      <section className="py-6 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-brand-red-dark to-brand-red px-6 sm:px-10 py-6 sm:py-7">
+            {/* Dot-grid texture — purely decorative, sits behind everything */}
+            <div
+              className="absolute inset-0 opacity-[0.08]"
+              style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+            </div>
+
+            {/* Decorative glow blobs */}
+            <div className="pointer-events-none absolute -top-16 -right-10 w-56 h-56 rounded-full bg-white/10 blur-3xl"></div>
+            <div className="pointer-events-none absolute -bottom-16 -left-8 w-48 h-48 rounded-full bg-black/30 blur-3xl"></div>
+
+            <div className="relative flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div className="max-w-xl text-center lg:text-left">
+                <span className="inline-flex items-center gap-2 bg-white/10 border border-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2.5">
+                  <i className="fa-solid fa-handshake text-[10px]"></i>
+                  For Agencies &amp; Media Partners
+                </span>
+
+                <h2 className="font-outfit font-black text-xl sm:text-2xl text-white tracking-tight mb-1.5 leading-tight">
+                  Become an Agency Partner
+                </h2>
+
+                <p className="text-white/85 text-xs sm:text-sm leading-relaxed mb-3 max-w-lg mx-auto lg:mx-0">
+                  Get exclusive access to Advantage 360 — plan, compare &amp; sell media smarter with real-time rates and tools.
+                </p>
+
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1.5 mb-4 text-white/90 text-[11px] font-semibold">
+                  <span className="flex items-center gap-1.5"><i className="fa-solid fa-circle-check text-[10px]"></i> Real-Time Rates</span>
+                  <span className="flex items-center gap-1.5"><i className="fa-solid fa-circle-check text-[10px]"></i> Instant Comparisons</span>
+                  <span className="flex items-center gap-1.5"><i className="fa-solid fa-circle-check text-[10px]"></i> Zero Commission</span>
+                </div>
+
+                <Link
+                  to="/signup?type=b2b"
+                  className="group inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-brand-red font-outfit font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-2xl transition active:scale-95">
+                  Join Now
+                  <i className="fa-solid fa-arrow-right text-[10px] transition-transform group-hover:translate-x-1"></i>
+                </Link>
+              </div>
+
+              {/* Partnership photo, framed with the same decorative ring */}
+              <div className="relative hidden lg:flex items-center justify-center w-48 h-48 flex-shrink-0">
+                <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/25 animate-[spin_20s_linear_infinite]"></div>
+                <div className="absolute inset-4 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
+                  <img
+                    src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80"
+                    alt="Agency partnership"
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

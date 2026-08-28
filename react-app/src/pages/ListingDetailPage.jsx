@@ -5,6 +5,7 @@ import { fetchMediaInventoryBySlug, normalizeInventoryItem } from '../services/m
 import { Skeleton } from '../components/Skeleton';
 import { ViewPricingButton } from '../components/ViewPricingButton';
 import { useAuth } from '../context/AuthContext';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 export const ListingDetailPage = () => {
   const { toggleCartItem, cart, setIsInquiryOpen, setInquiryContext } = useCart();
@@ -70,6 +71,16 @@ export const ListingDetailPage = () => {
 
   const faqs = hasLiveItem && liveItem.faqs?.length > 0 ? liveItem.faqs : [];
   const keyInsights = hasLiveItem && liveItem.key_insights?.length > 0 ? liveItem.key_insights : [];
+
+  useDocumentMeta(
+    hasLiveItem
+      ? {
+          title: liveItem.title,
+          description: liveItem.short_description || undefined,
+          image: heroImage,
+        }
+      : { title: 'Media Listing' },
+  );
 
   // A slug is present but the item hasn't resolved yet — show a skeleton
   // instead of any placeholder/demo content flashing on screen.
