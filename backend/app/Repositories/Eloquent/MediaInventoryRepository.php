@@ -52,6 +52,7 @@ class MediaInventoryRepository implements MediaInventoryRepositoryInterface
             ->when($filters['frequency_id'] ?? null, fn (Builder $q, $value) => $q->where('frequency_id', $value))
             ->when($filters['language_id'] ?? null, fn (Builder $q, $value) => $q->where('language_id', $value))
             ->when($filters['status'] ?? null, fn (Builder $q, $value) => $q->where('status', $value))
+            ->when($filters['show_on_deals'] ?? null, fn (Builder $q) => $q->where('show_on_deals', true))
             ->when($filters['date_from'] ?? null, fn (Builder $q, $value) => $q->whereDate('created_at', '>=', $value))
             ->when($filters['date_to'] ?? null, fn (Builder $q, $value) => $q->whereDate('created_at', '<=', $value))
             ->when($filters['search'] ?? null, function (Builder $q, $value) {

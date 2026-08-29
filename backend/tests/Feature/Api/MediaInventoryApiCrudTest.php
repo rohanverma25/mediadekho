@@ -141,6 +141,21 @@ class MediaInventoryApiCrudTest extends TestCase
         $this->assertNotContains('Draft Item', $titles);
     }
 
+    public function test_show_exposes_seo_meta_fields(): void
+    {
+        $category = MediaCategory::factory()->create();
+        $inventory = MediaInventory::factory()->published()->create([
+            'category_id' => $category->id,
+            'meta_title' => 'Billboard on Main Street | Book Now',
+            'meta_description' => 'Prime billboard site with high daily footfall.',
+        ]);
+
+        $this->getJson("/api/media-inventory/{$inventory->slug}")
+            ->assertOk()
+            ->assertJsonPath('data.meta_title', 'Billboard on Main Street | Book Now')
+            ->assertJsonPath('data.meta_description', 'Prime billboard site with high daily footfall.');
+    }
+
     public function test_search_index_can_filter_by_category(): void
     {
         $categoryA = MediaCategory::factory()->create();

@@ -11,13 +11,13 @@
             </button>
         </div>
         <div class="card-body">
-            <p class="small text-muted">Shown as a slider on the homepage. Paste any YouTube link — watch, share, or embed URLs all work.</p>
+            <p class="small text-muted">Shown as a slider on the homepage. Paste a YouTube link, or upload a video file directly.</p>
             <table class="table table-hover align-middle w-100" id="videosTable">
                 <thead>
                     <tr>
                         <th>Thumbnail</th>
                         <th>Title</th>
-                        <th>YouTube URL</th>
+                        <th>Source</th>
                         <th>Status</th>
                         <th>Sort Order</th>
                         <th class="text-end">Actions</th>
@@ -31,7 +31,7 @@
     <div class="modal fade" id="videoModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="videoForm">
+                <form id="videoForm" enctype="multipart/form-data">
                     <div class="modal-header">
                         <h5 class="modal-title" id="videoModalTitle">Add Video</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -46,9 +46,36 @@
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label d-block">Video Source</label>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="source_type" id="source_type_youtube" value="youtube" checked>
+                                <label class="btn btn-outline-primary btn-sm" for="source_type_youtube">YouTube Link</label>
+                                <input type="radio" class="btn-check" name="source_type" id="source_type_upload" value="upload">
+                                <label class="btn btn-outline-primary btn-sm" for="source_type_upload">Upload File</label>
+                            </div>
+                            <div class="invalid-feedback" data-field="source_type"></div>
+                        </div>
+
+                        <div class="mb-3" id="youtube_url_group">
                             <label class="form-label">YouTube URL</label>
-                            <input type="url" name="youtube_url" id="video_youtube_url" class="form-control" placeholder="https://www.youtube.com/watch?v=..." required>
+                            <input type="url" name="youtube_url" id="video_youtube_url" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
                             <div class="invalid-feedback" data-field="youtube_url"></div>
+                        </div>
+
+                        <div class="mb-3 d-none" id="video_file_group">
+                            <label class="form-label">Video File</label>
+                            <input type="file" name="video_file" id="video_file" class="form-control" accept="video/mp4,video/webm,video/quicktime,video/ogg">
+                            <div class="form-text">MP4, WebM, MOV, or OGG — up to 40MB.</div>
+                            <div class="invalid-feedback" data-field="video_file"></div>
+                            <video id="video_file_preview" class="mt-2 rounded border d-none" width="200" controls></video>
+                        </div>
+
+                        <div class="mb-3 d-none" id="thumbnail_file_group">
+                            <label class="form-label">Thumbnail Image <span class="text-muted">(optional)</span></label>
+                            <input type="file" name="thumbnail_file" id="thumbnail_file" class="form-control" accept="image/jpeg,image/png,image/webp">
+                            <div class="form-text">Shown as the poster/cover before the video plays.</div>
+                            <div class="invalid-feedback" data-field="thumbnail_file"></div>
+                            <img id="thumbnail_file_preview" src="" alt="Preview" class="mt-2 rounded border d-none" width="140" height="80" style="object-fit:cover;">
                         </div>
 
                         <div class="row">
@@ -93,7 +120,12 @@ $(function () {
         columns: [
             { data: 'thumbnail_url', orderable: false, render: (url) => url ? `<img src="${url}" class="rounded" width="80" height="45" style="object-fit:cover;">` : '<span class="text-muted">—</span>' },
             { data: 'title' },
-            { data: 'youtube_url', render: (url) => `<a href="${url}" target="_blank" rel="noopener" class="text-truncate d-inline-block" style="max-width:220px;">${url}</a>` },
+            {
+                data: null,
+                render: (row) => row.source_type === 'upload'
+                    ? `<span class="badge text-bg-info">Uploaded</span>`
+                    : `<a href="${row.youtube_url}" target="_blank" rel="noopener" class="text-truncate d-inline-block" style="max-width:200px;">${row.youtube_url}</a>`,
+            },
             { data: 'status', render: (status) => `<span class="badge text-bg-${status === 'active' ? 'success' : 'secondary'}">${status}</span>` },
             { data: 'sort_order' },
             {
@@ -120,11 +152,37 @@ $(function () {
         });
     }
 
+    function toggleSourceFields() {
+        const isUpload = $('input[name="source_type"]:checked').val() === 'upload';
+        $('#youtube_url_group').toggleClass('d-none', isUpload);
+        $('#video_file_group, #thumbnail_file_group').toggleClass('d-none', ! isUpload);
+        $('#video_youtube_url').prop('required', ! isUpload);
+    }
+
+    $('input[name="source_type"]').on('change', toggleSourceFields);
+
+    $('#video_file').on('change', function () {
+        const file = this.files[0];
+        if (! file) return;
+        $('#video_file_preview').attr('src', URL.createObjectURL(file)).removeClass('d-none');
+    });
+
+    $('#thumbnail_file').on('change', function () {
+        const file = this.files[0];
+        if (! file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => $('#thumbnail_file_preview').attr('src', e.target.result).removeClass('d-none');
+        reader.readAsDataURL(file);
+    });
+
     $('#btnAddVideo').on('click', function () {
         clearErrors();
         $('#videoForm')[0].reset();
         $('#video_id').val('');
+        $('#video_file_preview, #thumbnail_file_preview').addClass('d-none');
         $('#videoModalTitle').text('Add Video');
+        toggleSourceFields();
     });
 
     $('#videosTable').on('click', '.btn-edit', function () {
@@ -136,9 +194,14 @@ $(function () {
 
             $('#video_id').val(v.id);
             $('#video_title').val(v.title);
+            $(`input[name="source_type"][value="${v.source_type}"]`).prop('checked', true);
             $('#video_youtube_url').val(v.youtube_url);
             $('#video_status').val(v.status);
             $('#video_sort_order').val(v.sort_order);
+            $('#video_file_preview, #thumbnail_file_preview').addClass('d-none');
+            if (v.video_url) $('#video_file_preview').attr('src', v.video_url).removeClass('d-none');
+            if (v.thumbnail_url) $('#thumbnail_file_preview').attr('src', v.thumbnail_url).removeClass('d-none');
+            toggleSourceFields();
             $('#videoModalTitle').text('Edit Video');
             videoModal.show();
         });
@@ -166,12 +229,22 @@ $(function () {
 
         const id = $('#video_id').val();
         const url = id ? videoResourceUrl(id) : '{{ route('admin.videos.store') }}';
-        const method = id ? 'PUT' : 'POST';
+
+        // File inputs are present, so this must go as multipart/form-data —
+        // and PHP can't parse a multipart PUT body, hence the classic
+        // Laravel workaround: always POST, with `_method` telling the
+        // router which verb to actually dispatch to.
+        const formData = new FormData(this);
+        if (id) {
+            formData.append('_method', 'PUT');
+        }
 
         $.ajax({
             url,
-            method,
-            data: $(this).serialize(),
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function () {
                 videoModal.hide();
                 table.ajax.reload();
@@ -185,6 +258,8 @@ $(function () {
             },
         });
     });
+
+    toggleSourceFields();
 });
 </script>
 @endpush

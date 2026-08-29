@@ -12,6 +12,28 @@ class MediaCategoryApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_index_exposes_the_homepage_and_popular_visibility_flags(): void
+    {
+        MediaCategory::factory()->create(['status' => 'active', 'show_on_homepage' => false, 'show_on_popular' => true]);
+
+        $this->getJson('/api/media-categories')
+            ->assertOk()
+            ->assertJsonFragment(['show_on_homepage' => false, 'show_on_popular' => true]);
+    }
+
+    public function test_index_exposes_seo_meta_fields(): void
+    {
+        MediaCategory::factory()->create([
+            'status' => 'active',
+            'meta_title' => 'Airport Advertising in India',
+            'meta_description' => 'Rates for T1/T2 airport advertising.',
+        ]);
+
+        $this->getJson('/api/media-categories')
+            ->assertOk()
+            ->assertJsonFragment(['meta_title' => 'Airport Advertising in India', 'meta_description' => 'Rates for T1/T2 airport advertising.']);
+    }
+
     public function test_index_includes_a_real_published_inventory_count_per_category(): void
     {
         $category = MediaCategory::factory()->create(['status' => 'active']);

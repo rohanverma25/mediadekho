@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\MediaInventoryController;
 use App\Http\Controllers\Api\NewsController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\PageMetaController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StatController;
 use App\Http\Controllers\Api\VideoController;
@@ -80,6 +81,8 @@ Route::middleware('throttle:60,1')->group(function () {
     Route::get('blogs/{blog:slug}', [BlogController::class, 'show']);
 
     Route::get('settings', [SettingController::class, 'index']);
+
+    Route::get('page-meta/{pageMeta:page_key}', [PageMetaController::class, 'show']);
 
     Route::get('media-inventory', [MediaInventoryController::class, 'index']);
     Route::get('media-inventory/{inventory:slug}', [MediaInventoryController::class, 'show']);

@@ -19,6 +19,16 @@ class UpdateMediaInventoryRequest extends FormRequest
     }
 
     /**
+     * Checkbox inputs are simply absent from the payload when unchecked, so
+     * without this the field would never validate/save a false value —
+     * always coerce it to an explicit boolean before validation runs.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['show_on_deals' => $this->boolean('show_on_deals')]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -35,6 +45,10 @@ class UpdateMediaInventoryRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'status' => ['sometimes', 'required', 'string', 'in:draft,published,archived'],
+            'show_on_deals' => ['boolean'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'key_insights' => ['nullable', 'array'],
             'key_insights.*.label' => ['required_with:key_insights.*.value', 'string', 'max:255'],
             'key_insights.*.value' => ['required_with:key_insights.*.label', 'string', 'max:255'],

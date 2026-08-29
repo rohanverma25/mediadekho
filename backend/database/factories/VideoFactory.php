@@ -19,6 +19,7 @@ class VideoFactory extends Factory
     {
         return [
             'title' => ucfirst($this->faker->words(4, true)),
+            'source_type' => Video::SOURCE_YOUTUBE,
             'youtube_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             'status' => 'active',
             'sort_order' => 0,

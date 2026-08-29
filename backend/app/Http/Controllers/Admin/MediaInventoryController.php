@@ -166,7 +166,7 @@ class MediaInventoryController extends Controller
 
     public function store(StoreMediaInventoryRequest $request): RedirectResponse
     {
-        $data = $request->safe()->except(['gallery', 'documents', 'image', 'key_insights']);
+        $data = $request->safe()->except(['gallery', 'documents', 'image', 'key_insights', 'meta_image']);
         $data['created_by'] = $request->user()->id;
 
         $inventory = $this->service->create(
@@ -175,6 +175,7 @@ class MediaInventoryController extends Controller
             $request->file('gallery', []),
             $request->file('documents', []),
             $request->input('key_insights', []),
+            $request->file('meta_image'),
         );
 
         return redirect()
@@ -215,7 +216,7 @@ class MediaInventoryController extends Controller
 
     public function update(UpdateMediaInventoryRequest $request, MediaInventory $inventory): RedirectResponse
     {
-        $data = $request->safe()->except(['gallery', 'documents', 'image', 'key_insights']);
+        $data = $request->safe()->except(['gallery', 'documents', 'image', 'key_insights', 'meta_image']);
 
         $this->service->update(
             $inventory,
@@ -224,6 +225,7 @@ class MediaInventoryController extends Controller
             $request->file('gallery', []),
             $request->file('documents', []),
             $request->input('key_insights', []),
+            $request->file('meta_image'),
         );
 
         return redirect()

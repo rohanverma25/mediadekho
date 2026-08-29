@@ -30,13 +30,31 @@ class MediaInventory extends Model
         'description',
         'image',
         'status',
+        'show_on_deals',
+        'meta_title',
+        'meta_description',
+        'meta_image',
         'created_by',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'show_on_deals' => 'boolean',
+        ];
+    }
 
     protected function imageUrl(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->image ? Storage::disk('public')->url($this->image) : null,
+        );
+    }
+
+    protected function metaImageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->meta_image ? Storage::disk('public')->url($this->meta_image) : null,
         );
     }
 

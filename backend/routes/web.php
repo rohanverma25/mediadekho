@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\MediaInventoryController;
 use App\Http\Controllers\Admin\MediaSubCategoryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PageMetaController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\VideoController;
@@ -177,6 +178,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('announcements/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('announcements.edit');
         Route::put('announcements/{announcement}', [AnnouncementController::class, 'update'])->name('announcements.update');
         Route::delete('announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+
+        Route::get('page-meta', [PageMetaController::class, 'index'])->name('page-meta.index');
+        Route::get('page-meta/{pageMeta}/edit', [PageMetaController::class, 'edit'])->name('page-meta.edit');
+        Route::put('page-meta/{pageMeta}', [PageMetaController::class, 'update'])->name('page-meta.update');
 
         Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');

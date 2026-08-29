@@ -23,6 +23,11 @@ class MediaCategory extends Model
         'image',
         'icon',
         'status',
+        'show_on_homepage',
+        'show_on_popular',
+        'meta_title',
+        'meta_description',
+        'meta_image',
         'sort_order',
     ];
 
@@ -30,6 +35,8 @@ class MediaCategory extends Model
     {
         return [
             'sort_order' => 'integer',
+            'show_on_homepage' => 'boolean',
+            'show_on_popular' => 'boolean',
         ];
     }
 
@@ -37,6 +44,13 @@ class MediaCategory extends Model
     {
         return Attribute::make(
             get: fn () => $this->image ? Storage::disk('public')->url($this->image) : null,
+        );
+    }
+
+    protected function metaImageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->meta_image ? Storage::disk('public')->url($this->meta_image) : null,
         );
     }
 

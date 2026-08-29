@@ -10,14 +10,14 @@ import { useFaqs } from '../hooks/useFaqs';
 import { useBlogs } from '../hooks/useBlogs';
 import { useNews } from '../hooks/useNews';
 import { useAwards } from '../hooks/useAwards';
-import { useStats } from '../hooks/useStats';
 import { useVideos } from '../hooks/useVideos';
 import { Skeleton } from '../components/Skeleton';
 import { YouTubeFacade } from '../components/YouTubeFacade';
-import { StatCounter } from '../components/StatCounter';
+import { UploadedVideoFacade } from '../components/UploadedVideoFacade';
 import { ViewPricingButton } from '../components/ViewPricingButton';
 import { useAuth } from '../context/AuthContext';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const DEFAULT_CATEGORY_ICON = 'bi-grid';
 
@@ -30,7 +30,8 @@ const FALLBACK_AWARD_IMAGE =
   'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80';
 
 export const HomePage = () => {
-  useDocumentMeta();
+  const { meta: homeMeta } = usePageMeta('home');
+  useDocumentMeta({ title: homeMeta?.title, description: homeMeta?.description, image: homeMeta?.og_image_url });
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,7 +49,6 @@ export const HomePage = () => {
   const [activeCategoryId, setActiveCategoryId] = useState('all');
   const { logos: clientLogos, status: clientLogosStatus } = useClientLogos();
   const { industries, status: industriesStatus } = useIndustries();
-  const { stats, status: statsStatus } = useStats();
   const { videos, status: videosStatus } = useVideos();
   const videosTrackRef = useRef(null);
   const scrollVideos = (direction) => {
@@ -65,6 +65,8 @@ export const HomePage = () => {
     }
   };
   const { categories: mediaCategories, status: mediaCategoriesStatus } = useMediaCategories();
+  const homepageCategories = useMemo(() => mediaCategories.filter((c) => c.show_on_homepage), [mediaCategories]);
+  const popularCategories = useMemo(() => mediaCategories.filter((c) => c.show_on_popular), [mediaCategories]);
   const { faqs, status: faqsStatus } = useFaqs();
   const { blogs: latestBlogs, status: latestBlogsStatus } = useBlogs({ per_page: 3 });
   const { news, status: newsStatus } = useNews();
@@ -83,6 +85,14 @@ export const HomePage = () => {
     per_page: 8,
     category_id: activeCategoryId !== 'all' ? activeCategoryId : undefined,
   });
+  const { items: dealItems, status: dealsStatus } = useMediaInventory({ per_page: 10, show_on_deals: 1 });
+  const dealsTrackRef = useRef(null);
+  const scrollDeals = (direction) => {
+    if (dealsTrackRef.current) {
+      const scrollAmount = direction === 'left' ? -300 : 300;
+      dealsTrackRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   const handleHeroSearch = (e) => {
     e.preventDefault();
@@ -95,6 +105,7 @@ export const HomePage = () => {
 
   const normalizedLiveItems = useMemo(() => liveItems.map(normalizeInventoryItem), [liveItems]);
   const filteredMedia = normalizedLiveItems;
+  const normalizedDeals = useMemo(() => dealItems.map(normalizeInventoryItem), [dealItems]);
 
   return (
     <div>
@@ -138,64 +149,118 @@ export const HomePage = () => {
             
             <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-[11px] text-slate-500 font-medium">
               <span className="font-bold text-slate-700">Popular:</span>
-              <Link to="/category/magazine-advertising" className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Vogue & Forbes</Link>
-              <Link to="/category/airport-advertising" className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Mumbai T2 Airport</Link>
-              <Link to="/category/transit-metro" className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Delhi Metro Trains</Link>
-              <Link to="/category/app-takeover" className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Swiggy & Zomato</Link>
+              {popularCategories.length > 0
+                ? popularCategories.map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/category/${category.slug}`}
+                      className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                      {category.name}
+                    </Link>
+                  ))
+                : (
+                  <>
+                    <Link to="/category/magazine-advertising" className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Vogue & Forbes</Link>
+                    <Link to="/category/airport-advertising" className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Mumbai T2 Airport</Link>
+                    <Link to="/category/transit-metro" className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Delhi Metro Trains</Link>
+                    <Link to="/category/app-takeover" className="hover:text-brand-red bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Swiggy & Zomato</Link>
+                  </>
+                )}
             </div>
           </form>
-
-          {/* Trust Badges */}
-          <div className="pt-4 flex flex-wrap justify-center items-center gap-6 text-xs text-slate-600 font-semibold">
-            <div className="flex items-center gap-2">
-              <i className="fa-solid fa-circle-check text-brand-red text-base"></i>
-              <span>Zero Agent Commission</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <i className="fa-solid fa-bolt text-brand-red text-base"></i>
-              <span>15-Min Proposal Response</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <i className="fa-solid fa-shield-halved text-brand-red text-base"></i>
-              <span>100% Geotagged Audit</span>
-            </div>
-          </div>
 
         </div>
       </section>
 
-      {/* STATS COUNTER BAND */}
-      {(statsStatus === 'loading' || (statsStatus === 'success' && stats.length > 0)) && (
-        <section className="relative py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-brand-red via-brand-red to-red-900 overflow-hidden">
-          {/* Decorative glow — purely visual, clipped by the section so it never affects layout/scroll width */}
-          <div className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full bg-white/10 blur-3xl"></div>
-          <div className="pointer-events-none absolute -bottom-32 -right-16 w-96 h-96 rounded-full bg-black/10 blur-3xl"></div>
+      {/* TOP DEALS SLIDER */}
+      {(dealsStatus === 'loading' || (dealsStatus === 'success' && normalizedDeals.length > 0)) && (
+        <section className="py-14 px-4 sm:px-6 bg-white border-b border-slate-200">
+          <div className="max-w-7xl mx-auto space-y-6">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <span className="text-brand-red font-outfit font-bold text-xs uppercase tracking-widest block mb-1.5">
+                  Limited Time
+                </span>
+                <h2 className="font-outfit font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
+                  Top Media Deals
+                </h2>
+              </div>
+              <Link
+                to="/category"
+                className="flex-shrink-0 text-brand-red font-outfit font-bold text-sm hover:underline flex items-center gap-1.5">
+                View All
+                <i className="fa-solid fa-arrow-right text-[11px]"></i>
+              </Link>
+            </div>
 
-          <div className="relative max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-6 text-center">
-            {statsStatus === 'loading'
-              ? Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="flex flex-col items-center gap-3">
-                    <Skeleton className="w-16 h-16 rounded-2xl bg-white/20" />
-                    <Skeleton className="h-10 w-28 bg-white/20" />
-                    <Skeleton className="h-3 w-32 bg-white/20" />
-                  </div>
-                ))
-              : stats.map((stat, i) => (
-                  <div
-                    key={stat.id}
-                    className={`group flex flex-col items-center gap-3 px-4 transition-transform duration-300 hover:-translate-y-1 ${
-                      i > 0 ? 'sm:border-l sm:border-white/20' : ''
-                    }`}>
-                    <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center text-white text-2xl shadow-lg transition-colors group-hover:bg-white group-hover:text-brand-red">
-                      <i className={stat.icon}></i>
-                    </div>
-                    <StatCounter
-                      value={stat.value}
-                      className="font-outfit font-black text-4xl sm:text-5xl text-white tracking-tight tabular-nums"
-                    />
-                    <span className="text-white/85 text-sm font-semibold max-w-[240px] leading-snug">{stat.label}</span>
-                  </div>
-                ))}
+            <div className="relative flex items-center gap-3">
+              <button
+                onClick={() => scrollDeals('left')}
+                aria-label="Scroll deals left"
+                className="hidden sm:flex w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white items-center justify-center flex-shrink-0 transition shadow-sm">
+                <i className="fa-solid fa-chevron-left text-xs"></i>
+              </button>
+
+              <div
+                ref={dealsTrackRef}
+                className="flex items-stretch gap-4 overflow-x-auto scrollbar-none scroll-smooth snap-x snap-mandatory py-1 flex-1">
+                {dealsStatus === 'loading'
+                  ? Array.from({ length: 4 }).map((_, i) => (
+                      <Skeleton key={i} className="h-56 w-[85%] sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)] rounded-2xl flex-shrink-0 snap-start" />
+                    ))
+                  : normalizedDeals.map((item) => (
+                      <div
+                        key={item.id}
+                        className="group relative flex-shrink-0 snap-start w-[85%] sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)] h-56 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow bg-gradient-to-br from-brand-red via-brand-red-dark to-slate-900">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          loading="lazy"
+                          className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="relative h-full flex flex-col justify-between p-4">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="bg-white text-brand-red text-[10px] font-black px-2.5 py-1 rounded-lg shadow truncate max-w-[65%]">
+                              {item.category}
+                            </span>
+                            <span className="bg-amber-400 text-slate-900 text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wide flex-shrink-0">
+                              Hot Deal
+                            </span>
+                          </div>
+                          <div>
+                            <p className="text-white font-outfit font-bold text-sm line-clamp-1 mb-1.5">{item.title}</p>
+                            <div className="mb-3">
+                              {item.priceLocked ? (
+                                <ViewPricingButton className="inline-flex items-center gap-1.5 text-[11px] font-bold text-white bg-white/15 hover:bg-white hover:text-brand-red border border-white/30 transition rounded-lg px-2.5 py-1.5" />
+                              ) : item.discountAmount > 0 ? (
+                                <span className="text-white font-outfit font-black text-lg">
+                                  Save ₹{Math.round(item.discountAmount).toLocaleString('en-IN')}
+                                </span>
+                              ) : (
+                                <span className="text-white font-outfit font-black text-lg">
+                                  ₹{Math.round(item.price).toLocaleString('en-IN')}
+                                </span>
+                              )}
+                            </div>
+                            <Link
+                              to={item.slug ? `/listing/${item.slug}` : '/listing'}
+                              className="inline-flex items-center gap-1.5 bg-white text-brand-red font-outfit font-extrabold text-xs px-4 py-2 rounded-xl hover:bg-slate-100 transition">
+                              Grab Deal
+                              <i className="fa-solid fa-arrow-right text-[10px] transition-transform group-hover:translate-x-1"></i>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+              </div>
+
+              <button
+                onClick={() => scrollDeals('right')}
+                aria-label="Scroll deals right"
+                className="hidden sm:flex w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-brand-red hover:text-white items-center justify-center flex-shrink-0 transition shadow-sm">
+                <i className="fa-solid fa-chevron-right text-xs"></i>
+              </button>
+            </div>
           </div>
         </section>
       )}
@@ -374,7 +439,7 @@ export const HomePage = () => {
       </section>
 
       {/* WHAT MEDIA ARE YOU LOOKING FOR — CATEGORY GRID */}
-      {(mediaCategoriesStatus === 'loading' || (mediaCategoriesStatus === 'success' && mediaCategories.length > 0)) && (
+      {(mediaCategoriesStatus === 'loading' || (mediaCategoriesStatus === 'success' && homepageCategories.length > 0)) && (
         <section className="py-16 px-4 sm:px-6 bg-slate-50 border-y border-slate-200">
           <div className="max-w-7xl mx-auto space-y-10">
             <div className="text-center max-w-2xl mx-auto space-y-3">
@@ -386,7 +451,7 @@ export const HomePage = () => {
               ) : (
                 <p className="text-slate-600 text-sm leading-relaxed">
                   {(() => {
-                    const total = mediaCategories.reduce((sum, c) => sum + (c.inventory_count || 0), 0);
+                    const total = homepageCategories.reduce((sum, c) => sum + (c.inventory_count || 0), 0);
                     return total > 0
                       ? `Browse ${total.toLocaleString('en-IN')}+ verified media options across every category below.`
                       : 'Click on any category below to explore verified media options and direct owner rates.';
@@ -404,7 +469,7 @@ export const HomePage = () => {
                       <Skeleton className="h-3 w-12" />
                     </div>
                   ))
-                : mediaCategories.map((category) => (
+                : homepageCategories.map((category) => (
                     <Link
                       key={category.id}
                       to={`/category/${category.slug}`}
@@ -526,7 +591,7 @@ export const HomePage = () => {
       {/* AGENCY PARTNER (B2B) CTA */}
       <section className="py-6 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-brand-red-dark to-brand-red px-6 sm:px-10 py-6 sm:py-7">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-950 via-brand-red-dark to-brand-red px-6 sm:px-10 py-6 sm:py-7">
             {/* Dot-grid texture — purely decorative, sits behind everything */}
             <div
               className="absolute inset-0 opacity-[0.08]"
@@ -810,12 +875,21 @@ export const HomePage = () => {
                       <div
                         key={video.id}
                         className="w-[80%] sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)] flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg transition-shadow">
-                        <YouTubeFacade
-                          videoId={video.video_id}
-                          title={video.title}
-                          thumbnailUrl={video.thumbnail_url}
-                          className="w-full aspect-video"
-                        />
+                        {video.source_type === 'upload' ? (
+                          <UploadedVideoFacade
+                            videoUrl={video.video_url}
+                            title={video.title}
+                            thumbnailUrl={video.thumbnail_url}
+                            className="w-full aspect-video"
+                          />
+                        ) : (
+                          <YouTubeFacade
+                            videoId={video.video_id}
+                            title={video.title}
+                            thumbnailUrl={video.thumbnail_url}
+                            className="w-full aspect-video"
+                          />
+                        )}
                         <div className="p-4">
                           <h3 className="font-outfit font-bold text-sm text-slate-900 leading-snug line-clamp-2">{video.title}</h3>
                         </div>

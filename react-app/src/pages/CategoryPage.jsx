@@ -76,9 +76,9 @@ export const CategoryPage = () => {
   useDocumentMeta(
     matchedMediaCategory
       ? {
-          title: `${matchedMediaCategory.name} Advertising Rates & Media Options`,
-          description: stripHtml(matchedMediaCategory.description).slice(0, 160) || undefined,
-          image: matchedMediaCategory.image_url,
+          title: matchedMediaCategory.meta_title || `${matchedMediaCategory.name} Advertising Rates & Media Options`,
+          description: matchedMediaCategory.meta_description || stripHtml(matchedMediaCategory.description).slice(0, 160) || undefined,
+          image: matchedMediaCategory.meta_image_url || matchedMediaCategory.image_url,
         }
       : { title: 'Browse Media Categories' },
   );

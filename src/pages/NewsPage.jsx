@@ -2,11 +2,14 @@ import React from 'react';
 import { useNews } from '../hooks/useNews';
 import { Skeleton } from '../components/Skeleton';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const NewsPage = () => {
+  const { meta } = usePageMeta('news');
   useDocumentMeta({
-    title: 'Media Dekho In The News',
-    description: 'Coverage and mentions from publications across the industry.',
+    title: meta?.title || 'Media Dekho In The News',
+    description: meta?.description || 'Coverage and mentions from publications across the industry.',
+    image: meta?.og_image_url,
   });
 
   const { news, status } = useNews();

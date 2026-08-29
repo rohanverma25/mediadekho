@@ -61,6 +61,7 @@ class RolesAndPermissionsSeeder extends Seeder
         'announcement.edit',
         'announcement.delete',
         'settings.edit',
+        'page-meta.edit',
         'order.view',
         'order.manage',
     ];

@@ -116,6 +116,29 @@ body {
     margin-right: 0.5rem;
 }
 
+/* ---------- Sidebar group dropdowns ---------- */
+.admin-sidebar .nav-group-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.admin-sidebar .nav-group-caret {
+    font-size: 0.7rem;
+    margin-right: 0;
+    width: auto;
+    transition: transform 0.2s ease;
+}
+.admin-sidebar .nav-group-toggle[aria-expanded="true"] .nav-group-caret {
+    transform: rotate(180deg);
+}
+.admin-sidebar .nav-group .nav-link {
+    padding-left: 2.75rem;
+    font-size: 0.85rem;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 /* ---------- Main content ---------- */
 .admin-main {
     margin-left: 260px;

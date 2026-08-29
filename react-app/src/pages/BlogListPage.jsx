@@ -3,14 +3,17 @@ import { Link } from 'react-router-dom';
 import { useBlogs } from '../hooks/useBlogs';
 import { Skeleton } from '../components/Skeleton';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80';
 
 export const BlogListPage = () => {
+  const { meta } = usePageMeta('blogs');
   useDocumentMeta({
-    title: 'Blog',
-    description: 'Practical advice on media planning, advertising trends, and getting the most out of your campaign budget.',
+    title: meta?.title || 'Blog',
+    description: meta?.description || 'Practical advice on media planning, advertising trends, and getting the most out of your campaign budget.',
+    image: meta?.og_image_url,
   });
 
   const { blogs, status } = useBlogs();

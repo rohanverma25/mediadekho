@@ -32,7 +32,7 @@ class MediaInventoryController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $filters = $request->only(['category_id', 'subcategory_id', 'frequency_id', 'language_id', 'date_from', 'date_to', 'search']);
+        $filters = $request->only(['category_id', 'subcategory_id', 'frequency_id', 'language_id', 'date_from', 'date_to', 'search', 'show_on_deals']);
 
         if (! $request->user('sanctum')?->can('inventory.view')) {
             $filters['status'] = 'published';
@@ -75,7 +75,7 @@ class MediaInventoryController extends Controller
 
     public function store(StoreMediaInventoryRequest $request): JsonResponse
     {
-        $data = $request->safe()->except(['gallery', 'documents', 'image', 'key_insights']);
+        $data = $request->safe()->except(['gallery', 'documents', 'image', 'key_insights', 'meta_image']);
         $data['created_by'] = $request->user()->id;
 
         $inventory = $this->service->create(
@@ -84,6 +84,7 @@ class MediaInventoryController extends Controller
             $request->file('gallery', []),
             $request->file('documents', []),
             $request->input('key_insights', []),
+            $request->file('meta_image'),
         );
 
         return (new MediaInventoryResource($inventory->load(['category', 'images'])))
@@ -93,7 +94,7 @@ class MediaInventoryController extends Controller
 
     public function update(UpdateMediaInventoryRequest $request, MediaInventory $inventory): MediaInventoryResource
     {
-        $data = $request->safe()->except(['gallery', 'documents', 'image', 'key_insights']);
+        $data = $request->safe()->except(['gallery', 'documents', 'image', 'key_insights', 'meta_image']);
 
         $inventory = $this->service->update(
             $inventory,
@@ -102,6 +103,7 @@ class MediaInventoryController extends Controller
             $request->file('gallery', []),
             $request->file('documents', []),
             $request->input('key_insights', []),
+            $request->file('meta_image'),
         );
 
         return new MediaInventoryResource($inventory->load(['category', 'images']));

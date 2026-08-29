@@ -75,9 +75,9 @@ export const ListingDetailPage = () => {
   useDocumentMeta(
     hasLiveItem
       ? {
-          title: liveItem.title,
-          description: liveItem.short_description || undefined,
-          image: heroImage,
+          title: liveItem.meta_title || liveItem.title,
+          description: liveItem.meta_description || liveItem.short_description || undefined,
+          image: liveItem.meta_image_url || heroImage,
         }
       : { title: 'Media Listing' },
   );

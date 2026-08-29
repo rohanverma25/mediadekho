@@ -6,6 +6,7 @@ import { submitContactLead } from '../services/contactService';
 import { ApiError } from '../services/api';
 import { Skeleton } from '../components/Skeleton';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const DEFAULT_PHONE = '+91 89800 04451';
 
@@ -20,9 +21,11 @@ const EMPTY_FORM = {
 };
 
 export const ContactPage = () => {
+  const { meta } = usePageMeta('contact');
   useDocumentMeta({
-    title: 'Contact Us',
-    description: 'Get in touch with Media Dekho for media planning, campaign proposals, and support.',
+    title: meta?.title || 'Contact Us',
+    description: meta?.description || 'Get in touch with Media Dekho for media planning, campaign proposals, and support.',
+    image: meta?.og_image_url,
   });
 
   const { settings, status: settingsStatus } = useSettings();

@@ -3,6 +3,7 @@ import { useJobs } from '../hooks/useJobs';
 import { Skeleton } from '../components/Skeleton';
 import { JobApplicationModal } from '../components/JobApplicationModal';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const TYPE_LABEL = {
   'full-time': 'Full-Time',
@@ -12,9 +13,11 @@ const TYPE_LABEL = {
 };
 
 export const CareerPage = () => {
+  const { meta } = usePageMeta('career');
   useDocumentMeta({
-    title: 'Careers',
-    description: 'Explore open roles and build your career with Media Dekho.',
+    title: meta?.title || 'Careers',
+    description: meta?.description || 'Explore open roles and build your career with Media Dekho.',
+    image: meta?.og_image_url,
   });
 
   const { jobs, status } = useJobs();

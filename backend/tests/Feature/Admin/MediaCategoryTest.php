@@ -4,6 +4,8 @@ namespace Tests\Feature\Admin;
 
 use App\Models\MediaCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Tests\Traits\SeedsRolesAndPermissions;
 
@@ -93,6 +95,93 @@ class MediaCategoryTest extends TestCase
 
         $this->assertDatabaseHas('media_categories', ['slug' => 'digital-media']);
         $this->assertDatabaseHas('media_categories', ['slug' => 'digital-media-1']);
+    }
+
+    public function test_super_admin_can_flag_a_category_for_homepage_and_popular(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+
+        $this->actingAs($admin)
+            ->postJson(route('admin.categories.store'), [
+                'name' => 'Airport Advertising',
+                'status' => 'active',
+                'show_on_homepage' => '1',
+                'show_on_popular' => '1',
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('media_categories', [
+            'name' => 'Airport Advertising',
+            'show_on_homepage' => 1,
+            'show_on_popular' => 1,
+        ]);
+    }
+
+    /**
+     * Checkbox inputs are simply absent from the payload when unchecked —
+     * the controller must still coerce that to an explicit false rather
+     * than leaving the flag untouched.
+     */
+    public function test_omitting_visibility_checkboxes_saves_them_as_false(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+
+        $this->actingAs($admin)
+            ->postJson(route('admin.categories.store'), [
+                'name' => 'Radio Advertising',
+                'status' => 'active',
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('media_categories', [
+            'name' => 'Radio Advertising',
+            'show_on_homepage' => 0,
+            'show_on_popular' => 0,
+        ]);
+    }
+
+    public function test_super_admin_can_toggle_visibility_flags_off_on_update(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        $category = MediaCategory::factory()->create([
+            'show_on_homepage' => true,
+            'show_on_popular' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->putJson(route('admin.categories.update', $category), [
+                'name' => $category->name,
+                'status' => 'active',
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('media_categories', [
+            'id' => $category->id,
+            'show_on_homepage' => 0,
+            'show_on_popular' => 0,
+        ]);
+    }
+
+    public function test_super_admin_can_set_seo_meta_fields_on_a_category(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        Storage::fake('public');
+
+        $this->actingAs($admin)
+            ->post(route('admin.categories.store'), [
+                'name' => 'Outdoor Advertising',
+                'status' => 'active',
+                'meta_title' => 'Outdoor Advertising Rates in India',
+                'meta_description' => 'Compare billboard and hoarding rates across India.',
+                'meta_image' => UploadedFile::fake()->image('outdoor-meta.jpg'),
+            ])
+            ->assertCreated();
+
+        $category = MediaCategory::query()->where('name', 'Outdoor Advertising')->firstOrFail();
+
+        $this->assertSame('Outdoor Advertising Rates in India', $category->meta_title);
+        $this->assertSame('Compare billboard and hoarding rates across India.', $category->meta_description);
+        Storage::disk('public')->assertExists($category->meta_image);
     }
 
     public function test_super_admin_can_update_category(): void

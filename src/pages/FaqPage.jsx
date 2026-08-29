@@ -2,11 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { useFaqs } from '../hooks/useFaqs';
 import { Skeleton } from '../components/Skeleton';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const FaqPage = () => {
+  const { meta } = usePageMeta('faq');
   useDocumentMeta({
-    title: 'Frequently Asked Questions',
-    description: 'Answers to common questions about media planning, pricing, and booking with Media Dekho.',
+    title: meta?.title || 'Frequently Asked Questions',
+    description: meta?.description || 'Answers to common questions about media planning, pricing, and booking with Media Dekho.',
+    image: meta?.og_image_url,
   });
 
   const { faqs, status } = useFaqs();

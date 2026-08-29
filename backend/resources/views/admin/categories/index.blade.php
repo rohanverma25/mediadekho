@@ -22,6 +22,7 @@
                         <th>Name</th>
                         <th>Icon</th>
                         <th>Status</th>
+                        <th>Visibility</th>
                         <th>Sort Order</th>
                         <th class="text-end">Actions</th>
                     </tr>
@@ -85,6 +86,45 @@
                                 <option value="inactive">Inactive</option>
                             </select>
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label d-block">Visibility</label>
+                            <div class="form-check form-check-inline">
+                                <input type="hidden" name="show_on_homepage" value="0">
+                                <input type="checkbox" name="show_on_homepage" id="category_show_on_homepage" class="form-check-input" value="1" checked>
+                                <label class="form-check-label" for="category_show_on_homepage">Show on Homepage</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="hidden" name="show_on_popular" value="0">
+                                <input type="checkbox" name="show_on_popular" id="category_show_on_popular" class="form-check-input" value="1">
+                                <label class="form-check-label" for="category_show_on_popular">Show on Popular</label>
+                            </div>
+                            <div class="form-text">Homepage: appears in the "What Media are you looking for?" grid. Popular: appears in the hero's quick-search suggestions.</div>
+                        </div>
+
+                        <hr>
+                        <h6 class="mb-3">SEO / Meta Tags</h6>
+
+                        <div class="mb-3">
+                            <label class="form-label">Meta Title</label>
+                            <input type="text" name="meta_title" id="category_meta_title" class="form-control" maxlength="255">
+                            <div class="invalid-feedback" data-field="meta_title"></div>
+                            <div class="form-text">Leave blank to use the default generated title.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Meta Description</label>
+                            <textarea name="meta_description" id="category_meta_description" class="form-control" rows="2" maxlength="500"></textarea>
+                            <div class="invalid-feedback" data-field="meta_description"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Meta / Social Share Image</label>
+                            <input type="file" name="meta_image" id="category_meta_image" class="form-control" accept="image/png,image/jpeg,image/webp">
+                            <div class="invalid-feedback" data-field="meta_image"></div>
+                            <div class="form-text">Falls back to the category image above if left blank.</div>
+                            <img id="category_meta_image_preview" src="" alt="Preview" class="mt-2 rounded border d-none" width="120" height="120" style="object-fit:cover;">
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -127,6 +167,14 @@ $(function () {
             { data: 'name' },
             { data: 'icon', defaultContent: '—' },
             { data: 'status', render: (status) => `<span class="badge text-bg-${status === 'active' ? 'success' : 'secondary'}">${status}</span>` },
+            {
+                data: null,
+                orderable: false,
+                render: (row) => `
+                    ${row.show_on_homepage ? '<span class="badge text-bg-primary me-1">Homepage</span>' : ''}
+                    ${row.show_on_popular ? '<span class="badge text-bg-warning">Popular</span>' : ''}
+                `,
+            },
             { data: 'sort_order' },
             {
                 data: null,
@@ -163,6 +211,17 @@ $(function () {
         }
     }
 
+    function resetMetaImagePreview(existingUrl = null) {
+        const preview = $('#category_meta_image_preview');
+        $('#category_meta_image').val('');
+
+        if (existingUrl) {
+            preview.attr('src', existingUrl).removeClass('d-none');
+        } else {
+            preview.attr('src', '').addClass('d-none');
+        }
+    }
+
     $('#category_image').on('change', function () {
         const file = this.files[0];
         if (! file) return;
@@ -172,12 +231,24 @@ $(function () {
         reader.readAsDataURL(file);
     });
 
+    $('#category_meta_image').on('change', function () {
+        const file = this.files[0];
+        if (! file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => $('#category_meta_image_preview').attr('src', e.target.result).removeClass('d-none');
+        reader.readAsDataURL(file);
+    });
+
     $('#btnAddCategory').on('click', function () {
         clearErrors();
         $('#categoryForm')[0].reset();
         $('#category_id').val('');
         $('#category_description').summernote('code', '');
         resetImagePreview();
+        resetMetaImagePreview();
+        $('#category_show_on_homepage').prop('checked', true);
+        $('#category_show_on_popular').prop('checked', false);
         $('#categoryModalTitle').text('Add Category');
     });
 
@@ -195,7 +266,12 @@ $(function () {
             $('#category_icon').val(c.icon);
             $('#category_sort_order').val(c.sort_order);
             $('#category_status').val(c.status);
+            $('#category_show_on_homepage').prop('checked', !! c.show_on_homepage);
+            $('#category_show_on_popular').prop('checked', !! c.show_on_popular);
+            $('#category_meta_title').val(c.meta_title);
+            $('#category_meta_description').val(c.meta_description);
             resetImagePreview(c.image_url);
+            resetMetaImagePreview(c.meta_image_url);
             $('#categoryModalTitle').text('Edit Category');
             categoryModal.show();
         });

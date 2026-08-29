@@ -5,15 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Video extends Model
 {
     /** @use HasFactory<\Database\Factories\VideoFactory> */
     use HasFactory;
 
+    public const SOURCE_YOUTUBE = 'youtube';
+
+    public const SOURCE_UPLOAD = 'upload';
+
     protected $fillable = [
         'title',
+        'source_type',
         'youtube_url',
+        'video_path',
+        'thumbnail_path',
         'status',
         'sort_order',
     ];
@@ -39,10 +47,28 @@ class Video extends Model
         );
     }
 
+    /**
+     * Uploaded videos have no auto-generated thumbnail the way YouTube
+     * does — falls back to whatever poster image the admin uploaded
+     * alongside it, or null (frontend shows a generic video placeholder).
+     */
     protected function thumbnailUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->video_id ? "https://img.youtube.com/vi/{$this->video_id}/hqdefault.jpg" : null,
+            get: function () {
+                if ($this->source_type === self::SOURCE_UPLOAD) {
+                    return $this->thumbnail_path ? Storage::disk('public')->url($this->thumbnail_path) : null;
+                }
+
+                return $this->video_id ? "https://img.youtube.com/vi/{$this->video_id}/hqdefault.jpg" : null;
+            },
+        );
+    }
+
+    protected function videoUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->video_path ? Storage::disk('public')->url($this->video_path) : null,
         );
     }
 

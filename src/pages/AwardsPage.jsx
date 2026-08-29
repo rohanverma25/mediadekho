@@ -3,6 +3,7 @@ import { useAwards } from '../hooks/useAwards';
 import { Skeleton } from '../components/Skeleton';
 import { AwardNominationModal } from '../components/AwardNominationModal';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const FALLBACK_IMAGE =
   'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80';
@@ -13,9 +14,11 @@ const formatDate = (dateStr) => {
 };
 
 export const AwardsPage = () => {
+  const { meta } = usePageMeta('awards');
   useDocumentMeta({
-    title: 'Awards',
-    description: 'Explore upcoming award opportunities and see the recognitions Media Dekho has been associated with.',
+    title: meta?.title || 'Awards',
+    description: meta?.description || 'Explore upcoming award opportunities and see the recognitions Media Dekho has been associated with.',
+    image: meta?.og_image_url,
   });
 
   const { awards, status } = useAwards();

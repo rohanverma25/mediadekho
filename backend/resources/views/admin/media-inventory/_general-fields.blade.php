@@ -56,6 +56,14 @@
             </select>
         </div>
 
+        <div class="col-md-4 d-flex align-items-end">
+            <div class="form-check form-switch mb-1">
+                <input type="hidden" name="show_on_deals" value="0">
+                <input type="checkbox" name="show_on_deals" id="show_on_deals" class="form-check-input" value="1" @checked($old('show_on_deals', $inventory?->show_on_deals))>
+                <label class="form-check-label" for="show_on_deals">Show in Homepage Deals Slider</label>
+            </div>
+        </div>
+
         <div class="col-12">
             <label class="form-label">Inventory Title</label>
             <input type="text" name="title" class="form-control @error('title') is-invalid @enderror" value="{{ $old('title') }}" required>
@@ -78,6 +86,32 @@
             <input type="file" name="image" id="inventory_image" class="form-control @error('image') is-invalid @enderror" accept="image/jpeg,image/png,image/webp">
             @error('image')<div class="invalid-feedback">{{ $message }}</div>@enderror
             <img id="inventory_image_preview" src="{{ $inventory?->image_url }}" alt="Preview" class="mt-2 rounded border {{ $inventory?->image_url ? '' : 'd-none' }}" width="140" height="140" style="object-fit:cover;">
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">SEO / Meta Tags</div>
+    <div class="card-body row g-3">
+        <div class="col-12">
+            <label class="form-label">Meta Title</label>
+            <input type="text" name="meta_title" class="form-control @error('meta_title') is-invalid @enderror" value="{{ $old('meta_title') }}" maxlength="255">
+            @error('meta_title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            <div class="form-text">Leave blank to use the inventory title.</div>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Meta Description</label>
+            <textarea name="meta_description" class="form-control @error('meta_description') is-invalid @enderror" rows="2" maxlength="500">{{ $old('meta_description') }}</textarea>
+            @error('meta_description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Meta / Social Share Image</label>
+            <input type="file" name="meta_image" id="inventory_meta_image" class="form-control @error('meta_image') is-invalid @enderror" accept="image/jpeg,image/png,image/webp">
+            @error('meta_image')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            <div class="form-text">Falls back to the inventory image above if left blank.</div>
+            <img id="inventory_meta_image_preview" src="{{ $inventory?->meta_image_url }}" alt="Preview" class="mt-2 rounded border {{ $inventory?->meta_image_url ? '' : 'd-none' }}" width="140" height="140" style="object-fit:cover;">
         </div>
     </div>
 </div>
@@ -128,6 +162,15 @@ $(function () {
 
         const reader = new FileReader();
         reader.onload = (e) => $('#inventory_image_preview').attr('src', e.target.result).removeClass('d-none');
+        reader.readAsDataURL(file);
+    });
+
+    $('#inventory_meta_image').on('change', function () {
+        const file = this.files[0];
+        if (! file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => $('#inventory_meta_image_preview').attr('src', e.target.result).removeClass('d-none');
         reader.readAsDataURL(file);
     });
 

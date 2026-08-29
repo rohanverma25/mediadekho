@@ -7,6 +7,8 @@ use App\Models\Language;
 use App\Models\MediaCategory;
 use App\Models\MediaInventory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Tests\Traits\SeedsRolesAndPermissions;
 
@@ -58,6 +60,60 @@ class MediaInventoryTest extends TestCase
             'title' => 'Billboard on Main Street',
             'slug' => 'billboard-on-main-street',
         ]);
+    }
+
+    public function test_super_admin_can_set_seo_meta_fields_on_inventory(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        Storage::fake('public');
+        $category = MediaCategory::factory()->create();
+        $frequency = Frequency::factory()->create();
+        $language = Language::factory()->create();
+
+        $this->actingAs($admin)
+            ->post(route('admin.media-inventory.store'), [
+                'category_id' => $category->id,
+                'frequency_id' => $frequency->id,
+                'language_id' => $language->id,
+                'title' => 'Billboard on Main Street',
+                'status' => 'draft',
+                'meta_title' => 'Billboard on Main Street | Book Now',
+                'meta_description' => 'Prime billboard site with high daily footfall.',
+                'meta_image' => UploadedFile::fake()->image('billboard-meta.jpg'),
+            ])
+            ->assertRedirect();
+
+        $inventory = MediaInventory::query()->where('title', 'Billboard on Main Street')->firstOrFail();
+
+        $this->assertSame('Billboard on Main Street | Book Now', $inventory->meta_title);
+        $this->assertSame('Prime billboard site with high daily footfall.', $inventory->meta_description);
+        Storage::disk('public')->assertExists($inventory->meta_image);
+    }
+
+    public function test_replacing_the_meta_image_deletes_the_old_one(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        Storage::fake('public');
+        $category = MediaCategory::factory()->create();
+        $inventory = MediaInventory::factory()->create([
+            'category_id' => $category->id,
+            'meta_image' => 'media-inventory-meta/original.jpg',
+        ]);
+        Storage::disk('public')->put('media-inventory-meta/original.jpg', 'fake-content');
+
+        $this->actingAs($admin)->post(route('admin.media-inventory.update', $inventory), [
+            '_method' => 'PUT',
+            'category_id' => $category->id,
+            'frequency_id' => $inventory->frequency_id,
+            'language_id' => $inventory->language_id,
+            'title' => $inventory->title,
+            'status' => 'draft',
+            'meta_image' => UploadedFile::fake()->image('new-meta.jpg'),
+        ])->assertRedirect();
+
+        $inventory->refresh();
+        Storage::disk('public')->assertMissing('media-inventory-meta/original.jpg');
+        Storage::disk('public')->assertExists($inventory->meta_image);
     }
 
     public function test_slug_regenerates_when_title_changes(): void

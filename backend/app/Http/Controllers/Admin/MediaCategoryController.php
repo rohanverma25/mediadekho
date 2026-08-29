@@ -15,6 +15,8 @@ class MediaCategoryController extends Controller
 {
     private const IMAGE_DIRECTORY = 'media-categories';
 
+    private const META_IMAGE_DIRECTORY = 'media-categories-meta';
+
     public function __construct(private readonly MediaCategoryRepositoryInterface $repository)
     {
     }
@@ -45,6 +47,8 @@ class MediaCategoryController extends Controller
                 'slug' => $category->slug,
                 'icon' => $category->icon,
                 'status' => $category->status,
+                'show_on_homepage' => $category->show_on_homepage,
+                'show_on_popular' => $category->show_on_popular,
                 'sort_order' => $category->sort_order,
                 'image_url' => $category->image_url,
                 'youtube_video_link' => $category->youtube_video_link,
@@ -57,6 +61,14 @@ class MediaCategoryController extends Controller
     {
         $this->authorize('create', MediaCategory::class);
 
+        // Checkbox inputs are simply absent from the payload when unchecked
+        // — coerce to an explicit boolean before validation so an unchecked
+        // box actually saves as false rather than being silently dropped.
+        $request->merge([
+            'show_on_homepage' => $request->boolean('show_on_homepage'),
+            'show_on_popular' => $request->boolean('show_on_popular'),
+        ]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -64,11 +76,20 @@ class MediaCategoryController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'icon' => ['nullable', 'string', 'max:100'],
             'status' => ['required', 'in:active,inactive'],
+            'show_on_homepage' => ['boolean'],
+            'show_on_popular' => ['boolean'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         if ($request->hasFile('image')) {
             $data['image'] = ImageUploadHelper::upload($request->file('image'), self::IMAGE_DIRECTORY);
+        }
+
+        if ($request->hasFile('meta_image')) {
+            $data['meta_image'] = ImageUploadHelper::upload($request->file('meta_image'), self::META_IMAGE_DIRECTORY);
         }
 
         $category = $this->repository->create($data);
@@ -81,13 +102,18 @@ class MediaCategoryController extends Controller
         $this->authorize('view', $category);
 
         return response()->json([
-            'category' => $category->toArray() + ['image_url' => $category->image_url],
+            'category' => $category->toArray() + ['image_url' => $category->image_url, 'meta_image_url' => $category->meta_image_url],
         ]);
     }
 
     public function update(Request $request, MediaCategory $category): JsonResponse
     {
         $this->authorize('update', $category);
+
+        $request->merge([
+            'show_on_homepage' => $request->boolean('show_on_homepage'),
+            'show_on_popular' => $request->boolean('show_on_popular'),
+        ]);
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -96,12 +122,22 @@ class MediaCategoryController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'icon' => ['nullable', 'string', 'max:100'],
             'status' => ['required', 'in:active,inactive'],
+            'show_on_homepage' => ['boolean'],
+            'show_on_popular' => ['boolean'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:500'],
+            'meta_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         if ($request->hasFile('image')) {
             ImageUploadHelper::delete($category->image);
             $data['image'] = ImageUploadHelper::upload($request->file('image'), self::IMAGE_DIRECTORY);
+        }
+
+        if ($request->hasFile('meta_image')) {
+            ImageUploadHelper::delete($category->meta_image);
+            $data['meta_image'] = ImageUploadHelper::upload($request->file('meta_image'), self::META_IMAGE_DIRECTORY);
         }
 
         $category = $this->repository->update($category, $data);
@@ -125,6 +161,7 @@ class MediaCategoryController extends Controller
         }
 
         ImageUploadHelper::delete($category->image);
+        ImageUploadHelper::delete($category->meta_image);
         $this->repository->delete($category);
 
         return response()->json(['message' => 'Category deleted.']);

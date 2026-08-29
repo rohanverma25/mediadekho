@@ -15,6 +15,8 @@ class MediaInventoryService
 {
     private const IMAGE_DIRECTORY = 'media-inventory';
 
+    private const META_IMAGE_DIRECTORY = 'media-inventory-meta';
+
     private const DOCUMENT_DIRECTORY = 'media-inventory-documents';
 
     public function __construct(
@@ -27,10 +29,14 @@ class MediaInventoryService
      * @param  UploadedFile[]  $documents
      * @param  array<int, array{label: string, value: string}>  $keyInsights
      */
-    public function create(array $data, ?UploadedFile $image, array $gallery = [], array $documents = [], array $keyInsights = []): MediaInventory
+    public function create(array $data, ?UploadedFile $image, array $gallery = [], array $documents = [], array $keyInsights = [], ?UploadedFile $metaImage = null): MediaInventory
     {
         if ($image) {
             $data['image'] = ImageUploadHelper::upload($image, self::IMAGE_DIRECTORY);
+        }
+
+        if ($metaImage) {
+            $data['meta_image'] = ImageUploadHelper::upload($metaImage, self::META_IMAGE_DIRECTORY);
         }
 
         $inventory = DB::transaction(function () use ($data, $gallery, $documents, $keyInsights) {
@@ -53,11 +59,16 @@ class MediaInventoryService
      * @param  UploadedFile[]  $documents
      * @param  array<int, array{label: string, value: string}>  $keyInsights
      */
-    public function update(MediaInventory $inventory, array $data, ?UploadedFile $image, array $gallery = [], array $documents = [], array $keyInsights = []): MediaInventory
+    public function update(MediaInventory $inventory, array $data, ?UploadedFile $image, array $gallery = [], array $documents = [], array $keyInsights = [], ?UploadedFile $metaImage = null): MediaInventory
     {
         if ($image) {
             ImageUploadHelper::delete($inventory->image);
             $data['image'] = ImageUploadHelper::upload($image, self::IMAGE_DIRECTORY);
+        }
+
+        if ($metaImage) {
+            ImageUploadHelper::delete($inventory->meta_image);
+            $data['meta_image'] = ImageUploadHelper::upload($metaImage, self::META_IMAGE_DIRECTORY);
         }
 
         return DB::transaction(function () use ($inventory, $data, $gallery, $documents, $keyInsights) {
