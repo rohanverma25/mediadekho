@@ -77,24 +77,14 @@ export const Header = () => {
           
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
-            {settingsLoading ? (
-              <Skeleton className="h-10 w-32 rounded-xl" />
-            ) : settings?.logo_url ? (
+            {settings?.logo_url ? (
               <img
                 src={settings.logo_url}
                 alt="Media Dekho"
                 className="h-10 w-auto max-w-[160px] object-contain group-hover:scale-105 transition-transform"
               />
             ) : (
-              <>
-                <div className="w-10 h-10 rounded-xl bg-brand-red flex items-center justify-center text-white font-outfit font-black text-xl shadow-lg shadow-brand-red/30 group-hover:scale-105 transition-transform">
-                  MD
-                </div>
-                <div>
-                  <span className="font-outfit font-black text-xl tracking-tight text-slate-900 block leading-none">MEDIA</span>
-                  <span className="font-outfit font-bold text-xs tracking-widest text-brand-red uppercase block">DEKHO</span>
-                </div>
-              </>
+              <Skeleton className="h-10 w-32 rounded-xl" />
             )}
           </Link>
 
@@ -126,15 +116,27 @@ export const Header = () => {
               )}
             </button>
 
-            {/* Login Account Icon Button */}
-            <Link
-              to={isAuthenticated ? '/dashboard' : '/login'}
-              title={isAuthenticated ? `${user?.name || 'My Account'}` : 'Log In / Account'}
-              className={`bg-slate-100 p-2.5 rounded-2xl hover:bg-slate-200 border border-slate-200 transition flex items-center justify-center ${
-                isActive('/login') || isActive('/dashboard') ? 'text-brand-red border-brand-red bg-red-50' : 'text-slate-700 hover:text-brand-red'
-              }`}>
-              <i className={`fa-solid ${isAuthenticated ? 'fa-circle-user' : 'fa-user'} text-base`}></i>
-            </Link>
+            {/* Account Icon (logged in) / Log In Button (guest) */}
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                title={user?.name || 'My Account'}
+                className={`bg-slate-100 p-2.5 rounded-2xl hover:bg-slate-200 border border-slate-200 transition flex items-center justify-center ${
+                  isActive('/dashboard') ? 'text-brand-red border-brand-red bg-red-50' : 'text-slate-700 hover:text-brand-red'
+                }`}>
+                <i className="fa-solid fa-circle-user text-base"></i>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                title="Log In"
+                className={`font-outfit font-bold text-xs sm:text-sm px-3.5 sm:px-4 py-2.5 rounded-2xl border-2 transition flex items-center gap-2 ${
+                  isActive('/login') ? 'bg-brand-red border-brand-red text-white' : 'border-brand-red text-brand-red hover:bg-brand-red hover:text-white'
+                }`}>
+                <i className="fa-solid fa-user text-sm"></i>
+                <span>Log In</span>
+              </Link>
+            )}
 
             {/* Get Proposal CTA */}
             <button 

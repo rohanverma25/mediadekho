@@ -62,6 +62,75 @@ class MediaInventoryTest extends TestCase
         ]);
     }
 
+    public function test_super_admin_can_flag_a_key_insight_to_show_after_heading(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        $category = MediaCategory::factory()->create();
+        $frequency = Frequency::factory()->create();
+        $language = Language::factory()->create();
+
+        $this->actingAs($admin)
+            ->post(route('admin.media-inventory.store'), [
+                'category_id' => $category->id,
+                'frequency_id' => $frequency->id,
+                'language_id' => $language->id,
+                'title' => 'Billboard on Main Street',
+                'status' => 'draft',
+                'key_insights' => [
+                    ['label' => 'Reach', 'value' => '50,000', 'show_after_heading' => '1'],
+                    ['label' => 'Footfall', 'value' => 'High', 'show_after_heading' => '0'],
+                ],
+            ])
+            ->assertRedirect();
+
+        $inventory = MediaInventory::query()->where('title', 'Billboard on Main Street')->firstOrFail();
+
+        $this->assertDatabaseHas('media_inventory_key_insights', [
+            'inventory_id' => $inventory->id,
+            'label' => 'Reach',
+            'show_after_heading' => 1,
+        ]);
+        $this->assertDatabaseHas('media_inventory_key_insights', [
+            'inventory_id' => $inventory->id,
+            'label' => 'Footfall',
+            'show_after_heading' => 0,
+        ]);
+    }
+
+    /**
+     * Checkbox inputs are simply absent from the payload when unchecked —
+     * the hidden-input trick each key-insight row uses must still coerce
+     * that to an explicit false rather than leaving it null/undefined.
+     */
+    public function test_omitting_show_after_heading_saves_it_as_false(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        $category = MediaCategory::factory()->create();
+        $frequency = Frequency::factory()->create();
+        $language = Language::factory()->create();
+
+        $this->actingAs($admin)
+            ->post(route('admin.media-inventory.store'), [
+                'category_id' => $category->id,
+                'frequency_id' => $frequency->id,
+                'language_id' => $language->id,
+                'title' => 'Radio Slot',
+                'status' => 'draft',
+                'key_insights' => [
+                    ['label' => 'Reach', 'value' => '50,000'],
+                ],
+            ])
+            ->assertRedirect();
+
+        $inventory = MediaInventory::query()->where('title', 'Radio Slot')->firstOrFail();
+
+        $this->assertDatabaseHas('media_inventory_key_insights', [
+            'inventory_id' => $inventory->id,
+            'label' => 'Reach',
+            'show_after_heading' => 0,
+        ]);
+    }
+
     public function test_super_admin_can_set_seo_meta_fields_on_inventory(): void
     {
         $admin = $this->userWithRole('Super Admin');

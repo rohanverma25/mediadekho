@@ -26,6 +26,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'company',
+        'gst_number',
         'password',
         'approval_status',
     ];

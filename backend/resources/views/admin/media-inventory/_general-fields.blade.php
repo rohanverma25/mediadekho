@@ -122,16 +122,24 @@
         <button type="button" class="btn btn-outline-primary btn-sm" id="btnAddInsight"><i class="bi bi-plus-lg"></i> Add Insight</button>
     </div>
     <div class="card-body">
+        <p class="text-muted small">"Show after heading" surfaces that insight right under the listing title (alongside Frequency/Language) as well as in the full list further down the page.</p>
         <div id="keyInsightsRows">
-            @forelse ($old('key_insights', $inventory?->keyInsights->map(fn ($i) => ['label' => $i->label, 'value' => $i->value])->all() ?? []) as $index => $insight)
-                <div class="row g-2 mb-2 key-insight-row">
-                    <div class="col-md-5">
+            @forelse ($old('key_insights', $inventory?->keyInsights->map(fn ($i) => ['label' => $i->label, 'value' => $i->value, 'show_after_heading' => $i->show_after_heading])->all() ?? []) as $index => $insight)
+                <div class="row g-2 mb-2 align-items-center key-insight-row">
+                    <div class="col-md-4">
                         <input type="text" name="key_insights[{{ $index }}][label]" class="form-control" placeholder="Label (e.g. Reach)" value="{{ $insight['label'] ?? '' }}">
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <input type="text" name="key_insights[{{ $index }}][value]" class="form-control" placeholder="Value (e.g. 50,000)" value="{{ $insight['value'] ?? '' }}">
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input type="hidden" name="key_insights[{{ $index }}][show_after_heading]" value="0">
+                            <input type="checkbox" name="key_insights[{{ $index }}][show_after_heading]" class="form-check-input" value="1" @checked($insight['show_after_heading'] ?? false)>
+                            <label class="form-check-label small">After heading</label>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
                         <button type="button" class="btn btn-outline-danger w-100 btn-remove-insight"><i class="bi bi-trash"></i></button>
                     </div>
                 </div>
@@ -203,14 +211,21 @@ $(function () {
     $('#btnAddInsight').on('click', function () {
         const i = insightIndex++;
         $('#keyInsightsRows').append(`
-            <div class="row g-2 mb-2 key-insight-row">
-                <div class="col-md-5">
+            <div class="row g-2 mb-2 align-items-center key-insight-row">
+                <div class="col-md-4">
                     <input type="text" name="key_insights[${i}][label]" class="form-control" placeholder="Label (e.g. Reach)">
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <input type="text" name="key_insights[${i}][value]" class="form-control" placeholder="Value (e.g. 50,000)">
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input type="hidden" name="key_insights[${i}][show_after_heading]" value="0">
+                        <input type="checkbox" name="key_insights[${i}][show_after_heading]" class="form-check-input" value="1">
+                        <label class="form-check-label small">After heading</label>
+                    </div>
+                </div>
+                <div class="col-md-1">
                     <button type="button" class="btn btn-outline-danger w-100 btn-remove-insight"><i class="bi bi-trash"></i></button>
                 </div>
             </div>

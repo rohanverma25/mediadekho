@@ -11,6 +11,7 @@ use App\Mail\JobApplicationCustomerConfirmation;
 use App\Mail\NewCustomerAdminNotification;
 use App\Mail\OrderAdminNotification;
 use App\Mail\OrderCustomerConfirmation;
+use App\Mail\PasswordResetEmail;
 use App\Mail\WelcomeCustomerEmail;
 use App\Models\AwardNomination;
 use App\Models\ContactLead;
@@ -65,6 +66,15 @@ class NotificationMailer
     {
         $this->sendAdminCopy(new NewCustomerAdminNotification($user));
         $this->send($user->email, new WelcomeCustomerEmail($user));
+    }
+
+    /**
+     * Password resets are between the customer and their own inbox — no
+     * admin copy, unlike every other notification here.
+     */
+    public function passwordReset(User $user, string $resetUrl): void
+    {
+        $this->send($user->email, new PasswordResetEmail($user, $resetUrl));
     }
 
     /**

@@ -41,7 +41,10 @@ export function normalizeInventoryItem(item) {
     slug: item.slug,
     title: item.title,
     category: item.category?.name ?? 'Media Inventory',
-    subCategory: item.subcategory?.name ?? item.category?.name ?? 'General',
+    // Genuinely null (not a category-name fallback) when the listing has no
+    // subcategory, so callers can tell "no subcategory" apart from "one
+    // that happens to share the category's name" and skip rendering it.
+    subCategory: item.subcategory?.name || null,
     location: 'Pan-India',
     city: 'Pan-India',
     price,

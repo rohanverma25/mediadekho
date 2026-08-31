@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Blog;
+use App\Models\Magazine;
 use App\Models\MediaCategory;
 use App\Models\MediaInventory;
 use App\Observers\BlogObserver;
+use App\Observers\MagazineObserver;
 use App\Observers\MediaCategoryObserver;
 use App\Observers\MediaInventoryObserver;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         MediaCategory::observe(MediaCategoryObserver::class);
         MediaInventory::observe(MediaInventoryObserver::class);
         Blog::observe(BlogObserver::class);
+        Magazine::observe(MagazineObserver::class);
 
         $this->configurePublicDiskUrl();
     }

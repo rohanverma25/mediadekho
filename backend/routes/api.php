@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AwardController;
 use App\Http\Controllers\Api\AwardNominationController;
 use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\MagazineController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ClientLogoController;
 use App\Http\Controllers\Api\ContactLeadController;
@@ -27,6 +28,8 @@ Route::apiResource('categories', CategoryController::class);
 
 Route::post('register', [AuthController::class, 'register'])->middleware('throttle:10,1');
 Route::post('login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+Route::post('reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:10,1');
 Route::post('contact', [ContactLeadController::class, 'store'])->middleware('throttle:10,1');
 
 // Open to guests, but the controller links the nomination to the caller's
@@ -79,6 +82,10 @@ Route::middleware('throttle:60,1')->group(function () {
 
     Route::get('blogs', [BlogController::class, 'index']);
     Route::get('blogs/{blog:slug}', [BlogController::class, 'show']);
+
+    Route::get('magazines', [MagazineController::class, 'index']);
+    Route::get('magazines/{magazine:slug}', [MagazineController::class, 'show']);
+    Route::get('magazines/{magazine:slug}/pdf', [MagazineController::class, 'pdf']);
 
     Route::get('settings', [SettingController::class, 'index']);
 

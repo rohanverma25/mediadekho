@@ -41,7 +41,7 @@ class MediaInventoryResource extends JsonResource
             'subcategory' => $this->whenLoaded('subcategory', fn () => $this->subcategory ? new MediaCategoryResource($this->subcategory) : null),
             'frequency' => $this->whenLoaded('frequency', fn () => $this->frequency?->only(['id', 'name'])),
             'language' => $this->whenLoaded('language', fn () => $this->language?->only(['id', 'name'])),
-            'key_insights' => $this->whenLoaded('keyInsights', fn () => $this->keyInsights->map->only(['label', 'value'])),
+            'key_insights' => $this->whenLoaded('keyInsights', fn () => $this->keyInsights->map->only(['label', 'value', 'show_after_heading'])),
             'faqs' => $this->whenLoaded('faqs', fn () => FaqResource::collection($this->faqs)),
             'cover_image_url' => $this->whenLoaded('images', fn () => $this->images->firstWhere('is_cover', true)?->url ?? $this->images->first()?->url),
             'images' => $this->whenLoaded('images', fn () => $this->images->pluck('url')),

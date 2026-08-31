@@ -8,6 +8,7 @@ use App\Services\NotificationMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -81,6 +82,8 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone,
+                'company' => $user->company,
+                'gst_number' => $user->gst_number,
                 'roles' => $user->getRoleNames(),
             ],
         ], 201);
@@ -128,9 +131,66 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone' => $user->phone,
+                'company' => $user->company,
+                'gst_number' => $user->gst_number,
                 'roles' => $user->getRoleNames(),
             ],
         ]);
+    }
+
+    /**
+     * Sends a reset link to the given email, if an account exists for it.
+     * The response is deliberately identical either way — a distinguishable
+     * "no account found" response would let anyone enumerate registered
+     * emails through this endpoint.
+     */
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $request->validate(['email' => ['required', 'email']]);
+
+        $user = User::query()->where('email', $request->input('email'))->first();
+
+        if ($user) {
+            // Laravel's password broker generates and stores the token
+            // (hashed, with its own expiry) the same way the built-in
+            // Password::sendResetLink() would — only delivery is custom,
+            // so it goes through this app's own Mailable/NotificationMailer
+            // pipeline (branded layout, SMTP settings from the admin panel)
+            // instead of Laravel's default notification-based email.
+            $token = Password::broker()->createToken($user);
+            $resetUrl = rtrim(config('app.frontend_url'), '/')
+                .'/reset-password?token='.$token.'&email='.urlencode($user->email);
+
+            $this->mailer->passwordReset($user, $resetUrl);
+        }
+
+        return response()->json([
+            'message' => "If an account exists for that email, we've sent a password reset link.",
+        ]);
+    }
+
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'token' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $status = Password::broker()->reset(
+            $data,
+            function (User $user, string $password) {
+                $user->update(['password' => $password]);
+            }
+        );
+
+        if ($status !== Password::PASSWORD_RESET) {
+            throw ValidationException::withMessages([
+                'email' => [__($status)],
+            ]);
+        }
+
+        return response()->json(['message' => 'Your password has been reset. You can now log in.']);
     }
 
     public function logout(Request $request): JsonResponse
@@ -149,6 +209,8 @@ class AuthController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
+            'company' => $user->company,
+            'gst_number' => $user->gst_number,
             'roles' => $user->getRoleNames(),
         ]);
     }

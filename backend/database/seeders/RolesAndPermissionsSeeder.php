@@ -30,6 +30,9 @@ class RolesAndPermissionsSeeder extends Seeder
         'blog.create',
         'blog.edit',
         'blog.delete',
+        'magazine.create',
+        'magazine.edit',
+        'magazine.delete',
         'news.create',
         'news.edit',
         'news.delete',
@@ -64,6 +67,50 @@ class RolesAndPermissionsSeeder extends Seeder
         'page-meta.edit',
         'order.view',
         'order.manage',
+        'role.manage',
+        'staff-user.manage',
+    ];
+
+    /**
+     * These role names are relied on by name elsewhere in the codebase —
+     * Super Admin/Admin gate access to the admin panel's more sensitive
+     * modules, and PricingService/AuthController hardcode the four
+     * customer-tier names to resolve pricing and registration. Renaming or
+     * deleting any of them from the Roles admin UI would silently break
+     * that code, so the UI blocks it outright.
+     */
+    public const PROTECTED_ROLES = [
+        'Super Admin',
+        'Admin',
+        'Retail Customer',
+        'B2C Customer',
+        'B2B Customer',
+        'Enterprise Customer',
+    ];
+
+    /**
+     * The four self-registration customer tiers are a separate concern
+     * (they only drive PricingService's tier resolution) and aren't
+     * assignable staff/admin-panel roles — filtered out of the Roles and
+     * Staff Users admin screens so they can't be confused with one another.
+     */
+    public const CUSTOMER_ROLES = [
+        'Retail Customer',
+        'B2C Customer',
+        'B2B Customer',
+        'Enterprise Customer',
+    ];
+
+    /**
+     * Permissions sensitive enough that only Super Admin gets them by
+     * default — same reasoning as inventory.price.manage: a careless or
+     * compromised Admin account granting itself more access is exactly
+     * what this list exists to prevent.
+     */
+    private const SUPER_ADMIN_ONLY_PERMISSIONS = [
+        'inventory.price.manage',
+        'role.manage',
+        'staff-user.manage',
     ];
 
     private const ROLES = [
@@ -102,7 +149,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdmin->syncPermissions(self::PERMISSIONS);
 
         $admin = Role::findByName('Admin');
-        $admin->syncPermissions(array_diff(self::PERMISSIONS, ['inventory.price.manage']));
+        $admin->syncPermissions(array_diff(self::PERMISSIONS, self::SUPER_ADMIN_ONLY_PERMISSIONS));
 
         // Customer roles (Retail/B2C/B2B/Enterprise) intentionally have no admin
         // permissions — their role only drives which price tier PricingService

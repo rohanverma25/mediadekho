@@ -11,6 +11,7 @@ class MediaInventoryKeyInsight extends Model
         'inventory_id',
         'label',
         'value',
+        'show_after_heading',
         'sort_order',
     ];
 
@@ -18,6 +19,7 @@ class MediaInventoryKeyInsight extends Model
     {
         return [
             'sort_order' => 'integer',
+            'show_after_heading' => 'boolean',
         ];
     }
 

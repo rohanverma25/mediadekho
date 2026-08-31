@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -20,6 +20,11 @@ import { CategoryPage } from './pages/CategoryPage';
 import { ListingDetailPage } from './pages/ListingDetailPage';
 import { BlogListPage } from './pages/BlogListPage';
 import { BlogDetailPage } from './pages/BlogDetailPage';
+import { MagazinesPage } from './pages/MagazinesPage';
+// react-pdf/pdfjs-dist pulls in a ~1MB PDF-rendering worker — code-split it
+// so that weight is only ever fetched by someone actually opening the
+// reader, not added to every page's initial load.
+const MagazineReaderPage = lazy(() => import('./pages/MagazineReaderPage').then((m) => ({ default: m.MagazineReaderPage })));
 import { LegalPage } from './pages/LegalPage';
 import { NewsPage } from './pages/NewsPage';
 import { FaqPage } from './pages/FaqPage';
@@ -35,6 +40,8 @@ import { ProfilePage } from './pages/ProfilePage';
 import { ThankYouPage } from './pages/ThankYouPage';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
 
 export function App() {
   return (
@@ -64,6 +71,7 @@ export function App() {
                           <Route path="/listing" element={<ListingDetailPage />} />
                           <Route path="/blogs" element={<BlogListPage />} />
                           <Route path="/blog" element={<BlogDetailPage />} />
+                          <Route path="/magazines-reader" element={<MagazinesPage />} />
                           <Route path="/about" element={<LegalPage title="About Us" field="about_us" />} />
                           <Route path="/privacy-policy" element={<LegalPage title="Privacy Policy" field="privacy_policy" />} />
                           <Route path="/terms-of-service" element={<LegalPage title="Terms of Service" field="terms_of_use" />} />
@@ -90,6 +98,21 @@ export function App() {
                 {/* Standalone Auth Routes (without main Header/Footer layout) */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+                {/* Standalone Magazine Reader (full-bleed, no site chrome —
+                    an immersive reading view rather than a normal page).
+                    Suspense's fallback covers the moment the lazy-loaded
+                    reader bundle (react-pdf/pdfjs-dist) is still downloading. */}
+                <Route
+                  path="/magazines-reader/:slug"
+                  element={(
+                    <Suspense fallback={<div className="bg-slate-900 min-h-screen" />}>
+                      <MagazineReaderPage />
+                    </Suspense>
+                  )}
+                />
               </Routes>
 
               {/* Global Modals & Overlays */}

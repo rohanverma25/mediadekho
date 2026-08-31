@@ -52,6 +52,7 @@ class UpdateMediaInventoryRequest extends FormRequest
             'key_insights' => ['nullable', 'array'],
             'key_insights.*.label' => ['required_with:key_insights.*.value', 'string', 'max:255'],
             'key_insights.*.value' => ['required_with:key_insights.*.label', 'string', 'max:255'],
+            'key_insights.*.show_after_heading' => ['nullable', 'boolean'],
             'gallery' => ['nullable', 'array'],
             'gallery.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'documents' => ['nullable', 'array'],

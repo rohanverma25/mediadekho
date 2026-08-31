@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\ImageUploadHelper;
 use App\Http\Controllers\Controller;
 use App\Models\ClientLogo;
+use App\Models\Industry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,7 +18,9 @@ class ClientLogoController extends Controller
     {
         $this->authorize('viewAny', ClientLogo::class);
 
-        return view('admin.client-logos.index');
+        $industries = Industry::query()->where('status', 'active')->orderBy('title')->get();
+
+        return view('admin.client-logos.index', compact('industries'));
     }
 
     /**
@@ -29,11 +32,13 @@ class ClientLogoController extends Controller
         $this->authorize('viewAny', ClientLogo::class);
 
         $logos = ClientLogo::query()
+            ->with('industry')
             ->orderBy('sort_order')
             ->get()
             ->map(fn (ClientLogo $logo) => [
                 'id' => $logo->id,
                 'name' => $logo->name,
+                'industry' => $logo->industry?->title,
                 'website_url' => $logo->website_url,
                 'status' => $logo->status,
                 'sort_order' => $logo->sort_order,
@@ -47,8 +52,15 @@ class ClientLogoController extends Controller
     {
         $this->authorize('create', ClientLogo::class);
 
+        // The "None" option submits an empty string, not an absent field —
+        // normalize before validation runs, since the `integer` rule
+        // otherwise rejects "" outright (nullable only skips rules for an
+        // actual null, not an empty string).
+        $request->merge(['industry_id' => $request->filled('industry_id') ? $request->input('industry_id') : null]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'industry_id' => ['nullable', 'integer', 'exists:industries,id'],
             'website_url' => ['nullable', 'url', 'max:255'],
             'logo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],
@@ -75,8 +87,11 @@ class ClientLogoController extends Controller
     {
         $this->authorize('update', $clientLogo);
 
+        $request->merge(['industry_id' => $request->filled('industry_id') ? $request->input('industry_id') : null]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'industry_id' => ['nullable', 'integer', 'exists:industries,id'],
             'website_url' => ['nullable', 'url', 'max:255'],
             'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:2048'],
             'status' => ['required', 'in:active,inactive'],

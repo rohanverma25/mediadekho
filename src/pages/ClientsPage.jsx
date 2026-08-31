@@ -1,10 +1,14 @@
 import React from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useClientLogos } from '../hooks/useClientLogos';
 import { Skeleton } from '../components/Skeleton';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 export const ClientsPage = () => {
+  const [searchParams] = useSearchParams();
+  const industryId = searchParams.get('industry');
+
   const { meta } = usePageMeta('clients');
   useDocumentMeta({
     title: meta?.title || 'Our Clients',
@@ -12,7 +16,11 @@ export const ClientsPage = () => {
     image: meta?.og_image_url,
   });
 
-  const { logos, status } = useClientLogos();
+  const { logos, status } = useClientLogos({ industry_id: industryId });
+  // Nothing else on this page knows the industry's name — each filtered
+  // logo already carries it, so the first result is a cheap, honest source
+  // rather than firing a second fetch just to look it up.
+  const industryName = logos[0]?.industry?.title;
 
   return (
     <div>
@@ -26,6 +34,18 @@ export const ClientsPage = () => {
           <p className="text-slate-600 text-sm max-w-2xl mx-auto leading-relaxed">
             5,000+ global brands and fast-growing startups plan and execute their campaigns with Media Dekho.
           </p>
+
+          {industryId && (
+            <div className="flex items-center justify-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-sm">
+                <i className="fa-solid fa-filter text-brand-red text-[10px]"></i>
+                {industryName ? `Filtered by ${industryName}` : 'Filtered by industry'}
+                <Link to="/clients" aria-label="Clear filter" className="text-slate-400 hover:text-brand-red">
+                  <i className="fa-solid fa-xmark"></i>
+                </Link>
+              </span>
+            </div>
+          )}
         </div>
       </section>
 
@@ -45,7 +65,14 @@ export const ClientsPage = () => {
           {status === 'success' && logos.length === 0 && (
             <div className="text-center py-20 text-slate-500">
               <i className="fa-solid fa-handshake text-3xl mb-3 text-slate-300"></i>
-              <p className="text-sm font-medium">No clients published yet. Check back soon.</p>
+              {industryId ? (
+                <>
+                  <p className="text-sm font-medium mb-3">No clients in this industry yet.</p>
+                  <Link to="/clients" className="text-brand-red font-bold text-xs hover:underline">View all clients</Link>
+                </>
+              ) : (
+                <p className="text-sm font-medium">No clients published yet. Check back soon.</p>
+              )}
             </div>
           )}
 

@@ -19,6 +19,10 @@ class ClientLogoResource extends JsonResource
             'name' => $this->name,
             'logo_url' => $this->logo_url,
             'website_url' => $this->website_url,
+            'industry' => $this->whenLoaded('industry', fn () => $this->industry ? [
+                'id' => $this->industry->id,
+                'title' => $this->industry->title,
+            ] : null),
         ];
     }
 }

@@ -398,14 +398,19 @@ export const CategoryPage = () => {
                     return (
                       <div key={item.id} className="glass-card rounded-2xl overflow-hidden group flex flex-col justify-between h-full bg-white border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300">
                         <div>
-                          <Link to={listingHref} className="relative h-48 overflow-hidden block">
-                            <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                          <Link to={listingHref} className="relative h-48 overflow-hidden block bg-slate-100">
+                            <img src={item.image} alt={item.title} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                             <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-slate-900 text-xs px-2.5 py-1 rounded-full font-bold shadow">
                               {item.category}
                             </span>
                           </Link>
 
                           <div className="p-5 space-y-3">
+                            {item.subCategory && (
+                              <span className="text-[10px] font-bold text-brand-red uppercase tracking-wider block">
+                                {item.subCategory}
+                              </span>
+                            )}
                             <Link to={listingHref} className="font-outfit font-bold text-lg text-slate-900 group-hover:text-brand-red transition line-clamp-2 leading-snug">
                               {item.title}
                             </Link>
@@ -454,11 +459,18 @@ export const CategoryPage = () => {
                     const listingHref = item.slug ? `/listing/${item.slug}` : '/listing';
                     return (
                       <div key={item.id} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <img src={item.image} alt={item.title} className="w-full sm:w-36 h-28 rounded-xl object-cover" />
+                        <img src={item.image} alt={item.title} className="w-full sm:w-36 h-28 rounded-xl object-contain bg-slate-100" />
                         <div className="flex-1 min-w-0">
-                          <span className="bg-red-50 text-brand-red border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                            {item.category}
-                          </span>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="bg-red-50 text-brand-red border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                              {item.category}
+                            </span>
+                            {item.subCategory && (
+                              <span className="bg-slate-100 text-slate-500 border border-slate-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                                {item.subCategory}
+                              </span>
+                            )}
+                          </div>
                           <Link to={listingHref} className="font-outfit font-bold text-base text-slate-900 hover:text-brand-red transition block mt-1">
                             {item.title}
                           </Link>

@@ -156,6 +156,20 @@ class MediaInventoryApiCrudTest extends TestCase
             ->assertJsonPath('data.meta_description', 'Prime billboard site with high daily footfall.');
     }
 
+    public function test_show_exposes_show_after_heading_on_each_key_insight(): void
+    {
+        $category = MediaCategory::factory()->create();
+        $inventory = MediaInventory::factory()->published()->create(['category_id' => $category->id]);
+        $inventory->keyInsights()->create(['label' => 'Reach', 'value' => '50,000', 'show_after_heading' => true, 'sort_order' => 0]);
+        $inventory->keyInsights()->create(['label' => 'Footfall', 'value' => 'High', 'show_after_heading' => false, 'sort_order' => 1]);
+
+        $response = $this->getJson("/api/media-inventory/{$inventory->slug}")->assertOk();
+
+        $insights = collect($response->json('data.key_insights'));
+        $this->assertTrue($insights->firstWhere('label', 'Reach')['show_after_heading']);
+        $this->assertFalse($insights->firstWhere('label', 'Footfall')['show_after_heading']);
+    }
+
     public function test_search_index_can_filter_by_category(): void
     {
         $categoryA = MediaCategory::factory()->create();

@@ -88,7 +88,7 @@ class MediaInventoryService
      * side), so the simplest correct sync is to drop and recreate rather
      * than diff against what's already stored.
      *
-     * @param  array<int, array{label: string, value: string}>  $keyInsights
+     * @param  array<int, array{label: string, value: string, show_after_heading?: mixed}>  $keyInsights
      */
     private function syncKeyInsights(MediaInventory $inventory, array $keyInsights): void
     {
@@ -106,6 +106,12 @@ class MediaInventoryService
             $inventory->keyInsights()->create([
                 'label' => $row['label'],
                 'value' => $row['value'],
+                // Checkbox inputs are simply absent from the payload when
+                // unchecked (the admin form's hidden-input-plus-checkbox
+                // trick sends a literal "0"/"1" either way), so this always
+                // resolves to an explicit boolean rather than leaving it
+                // ambiguous.
+                'show_after_heading' => filter_var($row['show_after_heading'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'sort_order' => $index,
             ]);
         }

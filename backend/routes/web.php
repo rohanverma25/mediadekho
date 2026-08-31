@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AwardController;
 use App\Http\Controllers\Admin\AwardNominationController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\MagazineController;
 use App\Http\Controllers\Admin\ClientLogoController;
 use App\Http\Controllers\Admin\ContactLeadController;
 use App\Http\Controllers\Admin\CustomerController;
@@ -22,7 +23,9 @@ use App\Http\Controllers\Admin\MediaSubCategoryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageMetaController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\StaffUserController;
 use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\VideoController;
 use Illuminate\Support\Facades\Route;
@@ -95,6 +98,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('blogs/{blog}/edit', [BlogController::class, 'edit'])->name('blogs.edit');
         Route::put('blogs/{blog}', [BlogController::class, 'update'])->name('blogs.update');
         Route::delete('blogs/{blog}', [BlogController::class, 'destroy'])->name('blogs.destroy');
+
+        Route::get('magazines', [MagazineController::class, 'index'])->name('magazines.index');
+        Route::get('magazines/data', [MagazineController::class, 'data'])->name('magazines.data');
+        Route::post('magazines', [MagazineController::class, 'store'])->name('magazines.store');
+        Route::get('magazines/{magazine}/edit', [MagazineController::class, 'edit'])->name('magazines.edit');
+        Route::put('magazines/{magazine}', [MagazineController::class, 'update'])->name('magazines.update');
+        Route::delete('magazines/{magazine}', [MagazineController::class, 'destroy'])->name('magazines.destroy');
 
         Route::get('news', [NewsController::class, 'index'])->name('news.index');
         Route::get('news/data', [NewsController::class, 'data'])->name('news.data');
@@ -185,5 +195,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
         Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
+
+        Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+        Route::get('roles/data', [RoleController::class, 'data'])->name('roles.data');
+        Route::get('roles/create', [RoleController::class, 'create'])->name('roles.create');
+        Route::post('roles', [RoleController::class, 'store'])->name('roles.store');
+        Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+        Route::put('roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+        Route::delete('roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+
+        Route::get('staff-users', [StaffUserController::class, 'index'])->name('staff-users.index');
+        Route::get('staff-users/data', [StaffUserController::class, 'data'])->name('staff-users.data');
+        Route::post('staff-users', [StaffUserController::class, 'store'])->name('staff-users.store');
+        Route::get('staff-users/{staffUser}/edit', [StaffUserController::class, 'edit'])->name('staff-users.edit');
+        Route::put('staff-users/{staffUser}', [StaffUserController::class, 'update'])->name('staff-users.update');
+        Route::delete('staff-users/{staffUser}', [StaffUserController::class, 'destroy'])->name('staff-users.destroy');
     });
 });

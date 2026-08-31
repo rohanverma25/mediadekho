@@ -30,7 +30,8 @@ class ProfileUpdateTest extends TestCase
         $response->assertOk()
             ->assertJsonPath('name', 'New Name')
             ->assertJsonPath('email', 'new@example.com')
-            ->assertJsonPath('phone', '+91 90000 00000');
+            ->assertJsonPath('phone', '+91 90000 00000')
+            ->assertJsonPath('company', 'Acme Co');
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
@@ -38,6 +39,47 @@ class ProfileUpdateTest extends TestCase
             'email' => 'new@example.com',
             'company' => 'Acme Co',
         ]);
+    }
+
+    public function test_b2b_customer_can_set_a_valid_gstin(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user, 'sanctum')->putJson('/api/profile', [
+            'name' => $user->name,
+            'email' => $user->email,
+            'gst_number' => '22aaaaa0000a1z5',
+        ]);
+
+        $response->assertOk()->assertJsonPath('gst_number', '22AAAAA0000A1Z5');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'gst_number' => '22AAAAA0000A1Z5',
+        ]);
+    }
+
+    public function test_an_invalid_gstin_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'sanctum')
+            ->putJson('/api/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'gst_number' => 'not-a-real-gstin',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('gst_number');
+    }
+
+    public function test_gstin_is_optional(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'sanctum')
+            ->putJson('/api/profile', ['name' => $user->name, 'email' => $user->email])
+            ->assertOk();
     }
 
     public function test_email_uniqueness_excludes_the_current_user(): void

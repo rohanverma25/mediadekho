@@ -116,15 +116,27 @@ export const Header = () => {
               )}
             </button>
 
-            {/* Login Account Icon Button */}
-            <Link
-              to={isAuthenticated ? '/dashboard' : '/login'}
-              title={isAuthenticated ? `${user?.name || 'My Account'}` : 'Log In / Account'}
-              className={`bg-slate-100 p-2.5 rounded-2xl hover:bg-slate-200 border border-slate-200 transition flex items-center justify-center ${
-                isActive('/login') || isActive('/dashboard') ? 'text-brand-red border-brand-red bg-red-50' : 'text-slate-700 hover:text-brand-red'
-              }`}>
-              <i className={`fa-solid ${isAuthenticated ? 'fa-circle-user' : 'fa-user'} text-base`}></i>
-            </Link>
+            {/* Account Icon (logged in) / Log In Button (guest) */}
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                title={user?.name || 'My Account'}
+                className={`bg-slate-100 p-2.5 rounded-2xl hover:bg-slate-200 border border-slate-200 transition flex items-center justify-center ${
+                  isActive('/dashboard') ? 'text-brand-red border-brand-red bg-red-50' : 'text-slate-700 hover:text-brand-red'
+                }`}>
+                <i className="fa-solid fa-circle-user text-base"></i>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                title="Log In"
+                className={`font-outfit font-bold text-xs sm:text-sm px-3.5 sm:px-4 py-2.5 rounded-2xl border-2 transition flex items-center gap-2 ${
+                  isActive('/login') ? 'bg-brand-red border-brand-red text-white' : 'border-brand-red text-brand-red hover:bg-brand-red hover:text-white'
+                }`}>
+                <i className="fa-solid fa-user text-sm"></i>
+                <span>Log In</span>
+              </Link>
+            )}
 
             {/* Get Proposal CTA */}
             <button 

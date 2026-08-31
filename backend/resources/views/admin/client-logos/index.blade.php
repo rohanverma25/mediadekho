@@ -16,6 +16,7 @@
                     <tr>
                         <th>Logo</th>
                         <th>Name</th>
+                        <th>Industry</th>
                         <th>Website</th>
                         <th>Status</th>
                         <th>Sort Order</th>
@@ -42,6 +43,18 @@
                             <label class="form-label">Name</label>
                             <input type="text" name="name" id="client_logo_name" class="form-control" required>
                             <div class="invalid-feedback" data-field="name"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Industry</label>
+                            <select name="industry_id" id="client_logo_industry_id" class="form-select">
+                                <option value="">None</option>
+                                @foreach ($industries as $industry)
+                                    <option value="{{ $industry->id }}">{{ $industry->title }}</option>
+                                @endforeach
+                            </select>
+                            <div class="form-text">Lets visitors jump here filtered to this industry from the homepage's "Industries We Serve" section.</div>
+                            <div class="invalid-feedback" data-field="industry_id"></div>
                         </div>
 
                         <div class="mb-3">
@@ -99,6 +112,7 @@ $(function () {
         columns: [
             { data: 'logo_url', orderable: false, render: (url) => url ? `<img src="${url}" class="rounded border" width="48" height="48" style="object-fit:contain;">` : '<span class="text-muted">—</span>' },
             { data: 'name' },
+            { data: 'industry', defaultContent: '—' },
             { data: 'website_url', render: (url) => url ? `<a href="${url}" target="_blank" rel="noopener">${url}</a>` : '<span class="text-muted">—</span>' },
             { data: 'status', render: (status) => `<span class="badge text-bg-${status === 'active' ? 'success' : 'secondary'}">${status}</span>` },
             { data: 'sort_order' },
@@ -150,6 +164,7 @@ $(function () {
         clearErrors();
         $('#clientLogoForm')[0].reset();
         $('#client_logo_id').val('');
+        $('#client_logo_industry_id').val('');
         $('#client_logo_file').prop('required', true);
         $('#client_logo_required_hint').removeClass('d-none');
         resetLogoPreview();
@@ -165,6 +180,7 @@ $(function () {
 
             $('#client_logo_id').val(l.id);
             $('#client_logo_name').val(l.name);
+            $('#client_logo_industry_id').val(l.industry_id ?? '');
             $('#client_logo_website_url').val(l.website_url);
             $('#client_logo_status').val(l.status);
             $('#client_logo_sort_order').val(l.sort_order);

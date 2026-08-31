@@ -71,6 +71,11 @@ export const ListingDetailPage = () => {
 
   const faqs = hasLiveItem && liveItem.faqs?.length > 0 ? liveItem.faqs : [];
   const keyInsights = hasLiveItem && liveItem.key_insights?.length > 0 ? liveItem.key_insights : [];
+  // Admin-flagged insights (e.g. Reach) surface right under the title next
+  // to the frequency/language pills; everything else stays in the full
+  // grid further down — never both, to avoid showing the same fact twice.
+  const headingInsights = keyInsights.filter((insight) => insight.show_after_heading);
+  const bodyInsights = keyInsights.filter((insight) => !insight.show_after_heading);
 
   useDocumentMeta(
     hasLiveItem
@@ -189,7 +194,7 @@ export const ListingDetailPage = () => {
             <div className="lg:col-span-5 space-y-4">
               <div className="relative bg-slate-100 rounded-3xl overflow-hidden border border-slate-200 shadow-xl aspect-[4/3] group">
                 {activeImg ? (
-                  <img src={activeImg} alt={liveItem.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={activeImg} alt={liveItem.title} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-300">
                     <i className="fa-solid fa-image text-5xl"></i>
@@ -208,7 +213,7 @@ export const ListingDetailPage = () => {
                       src={src}
                       alt="Thumbnail"
                       onClick={() => setActiveImg(src)}
-                      className={`rounded-xl border-2 cursor-pointer object-cover h-20 w-full transition ${
+                      className={`rounded-xl border-2 cursor-pointer object-contain bg-slate-100 h-20 w-full transition ${
                         activeImg === src ? 'border-brand-red' : 'border-slate-200 hover:border-brand-red'
                       }`} />
                   ))}
@@ -221,12 +226,18 @@ export const ListingDetailPage = () => {
                 <div className="flex items-center gap-2 text-xs font-bold text-brand-red uppercase tracking-widest mb-2">
                   <i className="fa-solid fa-book-open"></i>
                   {liveItem.category?.name || 'Media Inventory'}
+                  {liveItem.subcategory?.name && (
+                    <>
+                      <i className="fa-solid fa-chevron-right text-[9px]"></i>
+                      {liveItem.subcategory.name}
+                    </>
+                  )}
                 </div>
                 <h1 className="font-outfit font-semibold text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight leading-tight mb-3">
                   {liveItem.title}
                 </h1>
 
-                {(liveItem.frequency?.name || liveItem.language?.name) && (
+                {(liveItem.frequency?.name || liveItem.language?.name || headingInsights.length > 0) && (
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     {liveItem.frequency?.name && (
                       <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full">
@@ -238,6 +249,13 @@ export const ListingDetailPage = () => {
                         <i className="fa-solid fa-language text-brand-red text-[10px]"></i> {liveItem.language.name}
                       </span>
                     )}
+                    {headingInsights.map((insight, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full">
+                        <i className="fa-solid fa-circle-check text-brand-red text-[10px]"></i> {insight.label}: {insight.value}
+                      </span>
+                    ))}
                   </div>
                 )}
 
@@ -248,9 +266,9 @@ export const ListingDetailPage = () => {
                 )}
               </div>
 
-              {keyInsights.length > 0 && (
+              {bodyInsights.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                  {keyInsights.slice(0, 4).map((insight, i) => (
+                  {bodyInsights.slice(0, 4).map((insight, i) => (
                     <div key={i}>
                       <span className="text-[10px] text-slate-400 uppercase font-bold block">{insight.label}</span>
                       <span className="font-outfit font-extrabold text-base text-slate-900">{insight.value}</span>

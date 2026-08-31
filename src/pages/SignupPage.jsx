@@ -8,10 +8,10 @@ import { ApiError } from '../services/api';
 import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const USER_TYPES = [
-  { value: 'retail', label: 'Retail' },
-  { value: 'b2c', label: 'B2C' },
+  { value: 'retail', label: 'MSME Startups' },
+  { value: 'b2c', label: 'Brand/Company' },
   { value: 'b2b', label: 'B2B' },
-  { value: 'enterprise', label: 'Enterprise' },
+  { value: 'enterprise', label: 'Custom' },
 ];
 
 export const SignupPage = () => {

@@ -20,9 +20,10 @@
 <body>
     @php
         $navInventoryActive = request()->routeIs('admin.categories.*', 'admin.subcategories.*', 'admin.media-inventory.*', 'admin.frequencies.*', 'admin.languages.*');
-        $navCmsActive = request()->routeIs('admin.faqs.*', 'admin.blogs.*', 'admin.news.*', 'admin.awards.*', 'admin.jobs.*', 'admin.client-logos.*', 'admin.industries.*', 'admin.stats.*', 'admin.videos.*', 'admin.announcements.*', 'admin.page-meta.*');
+        $navCmsActive = request()->routeIs('admin.faqs.*', 'admin.blogs.*', 'admin.magazines.*', 'admin.news.*', 'admin.awards.*', 'admin.jobs.*', 'admin.client-logos.*', 'admin.industries.*', 'admin.stats.*', 'admin.videos.*', 'admin.announcements.*', 'admin.page-meta.*');
         $navEnquiriesActive = request()->routeIs('admin.leads.*', 'admin.award-nominations.*', 'admin.job-applications.*');
         $navOrdersActive = request()->routeIs('admin.customers.*', 'admin.orders.*');
+        $navAdminActive = request()->routeIs('admin.roles.*', 'admin.staff-users.*');
     @endphp
     <div class="admin-sidebar d-flex flex-column" id="adminSidebar">
         <a href="{{ route('admin.dashboard') }}" class="brand">Media Dekho</a>
@@ -68,6 +69,9 @@
                     </a>
                     <a href="{{ route('admin.blogs.index') }}" class="nav-link {{ request()->routeIs('admin.blogs.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-text"></i> Blogs
+                    </a>
+                    <a href="{{ route('admin.magazines.index') }}" class="nav-link {{ request()->routeIs('admin.magazines.*') ? 'active' : '' }}">
+                        <i class="bi bi-journal-richtext"></i> Magazines
                     </a>
                     <a href="{{ route('admin.news.index') }}" class="nav-link {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
                         <i class="bi bi-newspaper"></i> News
@@ -130,6 +134,22 @@
                     </a>
                     <a href="{{ route('admin.orders.index') }}" class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
                         <i class="bi bi-receipt"></i> Orders
+                    </a>
+                </div>
+            </div>
+
+            {{-- ADMINISTRATION --}}
+            <a href="#navGroupAdmin" class="nav-link nav-group-toggle {{ $navAdminActive ? 'active' : '' }}" data-bs-toggle="collapse" role="button" aria-expanded="{{ $navAdminActive ? 'true' : 'false' }}" aria-controls="navGroupAdmin">
+                <span><i class="bi bi-shield-lock"></i> Administration</span>
+                <i class="bi bi-chevron-down nav-group-caret"></i>
+            </a>
+            <div class="collapse {{ $navAdminActive ? 'show' : '' }}" id="navGroupAdmin">
+                <div class="nav flex-column nav-group">
+                    <a href="{{ route('admin.roles.index') }}" class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+                        <i class="bi bi-key"></i> Roles & Permissions
+                    </a>
+                    <a href="{{ route('admin.staff-users.index') }}" class="nav-link {{ request()->routeIs('admin.staff-users.*') ? 'active' : '' }}">
+                        <i class="bi bi-person-badge"></i> Staff Users
                     </a>
                 </div>
             </div>

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\ClientLogo;
+use App\Models\Industry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -93,6 +94,63 @@ class ClientLogoTest extends TestCase
                 'status' => 'active',
             ])
             ->assertForbidden();
+    }
+
+    public function test_super_admin_can_assign_an_industry_to_a_client_logo(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        $industry = Industry::factory()->create();
+
+        $this->actingAs($admin)
+            ->postJson(route('admin.client-logos.store'), [
+                'name' => 'Swiggy',
+                'industry_id' => $industry->id,
+                'logo' => UploadedFile::fake()->image('swiggy.png'),
+                'status' => 'active',
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('client_logos', [
+            'name' => 'Swiggy',
+            'industry_id' => $industry->id,
+        ]);
+    }
+
+    /**
+     * The industry select's "None" option submits an empty string, not an
+     * absent field — this proves that no longer 422s and correctly clears
+     * a previously-assigned industry.
+     */
+    public function test_clearing_the_industry_selection_sets_it_to_null(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+        $industry = Industry::factory()->create();
+        $logo = ClientLogo::factory()->create(['industry_id' => $industry->id]);
+
+        $this->actingAs($admin)
+            ->putJson(route('admin.client-logos.update', $logo), [
+                'name' => $logo->name,
+                'industry_id' => '',
+                'status' => 'active',
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('client_logos', ['id' => $logo->id, 'industry_id' => null]);
+    }
+
+    public function test_an_invalid_industry_id_is_rejected(): void
+    {
+        $admin = $this->userWithRole('Super Admin');
+
+        $this->actingAs($admin)
+            ->postJson(route('admin.client-logos.store'), [
+                'name' => 'Swiggy',
+                'industry_id' => 999999,
+                'logo' => UploadedFile::fake()->image('swiggy.png'),
+                'status' => 'active',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('industry_id');
     }
 
     public function test_super_admin_can_update_client_logo_without_replacing_the_image(): void

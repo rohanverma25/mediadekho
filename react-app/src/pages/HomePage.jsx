@@ -29,6 +29,79 @@ const FALLBACK_BLOG_IMAGE =
 const FALLBACK_AWARD_IMAGE =
   'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80';
 
+/**
+ * The one card design used everywhere a media inventory item is shown as a
+ * card on the homepage — the main "Explore Advertising Options" grid and
+ * the "Top Media Deals" slider both render this, so the two never drift
+ * apart into visually inconsistent card styles.
+ */
+const MediaListingCard = ({ item, isAuthenticated, isCarted, onAddToCart }) => {
+  const listingHref = item.slug ? `/listing/${item.slug}` : '/listing';
+
+  return (
+    <div className="glass-card rounded-2xl overflow-hidden group flex flex-col justify-between h-full bg-white border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300">
+      <div>
+        <Link to={listingHref} className="relative h-48 overflow-hidden block bg-slate-100">
+          <img src={item.image} alt={item.title} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
+          <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-slate-900 text-xs px-2.5 py-1 rounded-full font-bold shadow">
+            {item.category}
+          </span>
+          <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-xs text-white font-medium">
+            <span className="flex items-center gap-1"><i className="fa-solid fa-location-dot text-red-400"></i> {item.location}</span>
+            <span className="flex items-center gap-1 bg-brand-red text-white px-2 py-0.5 rounded font-bold">
+              <i className="fa-solid fa-star text-white"></i> {item.rating}
+            </span>
+          </div>
+        </Link>
+
+        <div className="p-5 space-y-3">
+          {item.subCategory && (
+            <span className="text-[10px] font-bold text-brand-red uppercase tracking-wider block">
+              {item.subCategory}
+            </span>
+          )}
+          <Link to={listingHref} className="font-outfit font-bold text-lg text-slate-900 group-hover:text-brand-red transition line-clamp-2 leading-snug">
+            {item.title}
+          </Link>
+
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {item.specs.map((spec, i) => (
+              <span key={i} className="bg-slate-100 border border-slate-200 text-slate-600 text-[11px] px-2 py-0.5 rounded font-medium">
+                <i className="fa-solid fa-circle-check text-brand-red text-[9px] mr-1"></i>{spec}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="px-5 pb-5 pt-3 border-t border-slate-100 flex justify-between items-center mt-auto bg-slate-50/50">
+        <div>
+          {isAuthenticated ? (
+            <div className="text-xl font-extrabold text-slate-900 font-outfit">
+              ₹{item.price.toLocaleString('en-IN')}
+              {item.priceUnit && <span className="text-xs text-slate-500 font-normal font-inter"> / {item.priceUnit}</span>}
+            </div>
+          ) : (
+            <ViewPricingButton />
+          )}
+        </div>
+
+        <button
+          onClick={onAddToCart}
+          className={`px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all duration-300 cursor-pointer ${
+            isCarted
+              ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20'
+              : 'bg-brand-red hover:bg-brand-red-dark text-white shadow-lg shadow-brand-red/25 hover:scale-105'
+          }`}>
+          <i className={`fa-solid ${isCarted ? 'fa-check' : 'fa-plus'}`}></i>
+          {isCarted ? 'Added' : 'Add to Plan'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export const HomePage = () => {
   const { meta: homeMeta } = usePageMeta('home');
   useDocumentMeta({ title: homeMeta?.title, description: homeMeta?.description, image: homeMeta?.og_image_url });
@@ -116,15 +189,15 @@ export const HomePage = () => {
           
           <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 text-brand-red px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
             <span className="w-2 h-2 rounded-full bg-brand-red animate-ping"></span>
-            <span>India's Largest Media Aggregator Platform</span>
+            <span>India's Trusted Media Aggregator Platform</span>
           </div>
 
           <h1 className="font-outfit font-black text-4xl sm:text-5xl lg:text-6xl text-slate-900 tracking-tight leading-[1.1]">
-            Make Your Ad Campaigns Online Across <span className="gradient-text-brand">300,000+ Media Options</span>
+            Choose MediaDekho for your 360° Brand Visibility Partner Across <span className="gradient-text-brand">15,000+ Media, PR & Advertising Options</span>
           </h1>
 
           <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed">
-            Plan, compare, and book advertising spots instantly across <strong>Offline</strong>, <strong>Digital</strong>, <strong>Sports</strong> & <strong>Gifting</strong> with 100% verified direct owner rates.
+            Plan, compare, and book advertising spots instantly across <strong>Print Online</strong>, <strong>Digital</strong>, <strong>Entertainment</strong> & <strong>Sports</strong>.
           </p>
 
           {/* Main Interactive Search Box Widget */}
@@ -206,50 +279,16 @@ export const HomePage = () => {
                 className="flex items-stretch gap-4 overflow-x-auto scrollbar-none scroll-smooth snap-x snap-mandatory py-1 flex-1">
                 {dealsStatus === 'loading'
                   ? Array.from({ length: 4 }).map((_, i) => (
-                      <Skeleton key={i} className="h-56 w-[85%] sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)] rounded-2xl flex-shrink-0 snap-start" />
+                      <Skeleton key={i} className="h-[26rem] w-[85%] sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)] rounded-2xl flex-shrink-0 snap-start" />
                     ))
                   : normalizedDeals.map((item) => (
-                      <div
-                        key={item.id}
-                        className="group relative flex-shrink-0 snap-start w-[85%] sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)] h-56 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow bg-gradient-to-br from-brand-red via-brand-red-dark to-slate-900">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          loading="lazy"
-                          className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-500"
+                      <div key={item.id} className="flex-shrink-0 snap-start w-[85%] sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)]">
+                        <MediaListingCard
+                          item={item}
+                          isAuthenticated={isAuthenticated}
+                          isCarted={cart.some((c) => c.id === item.id)}
+                          onAddToCart={() => handleAddToCart(item.id, item)}
                         />
-                        <div className="relative h-full flex flex-col justify-between p-4">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="bg-white text-brand-red text-[10px] font-black px-2.5 py-1 rounded-lg shadow truncate max-w-[65%]">
-                              {item.category}
-                            </span>
-                            <span className="bg-amber-400 text-slate-900 text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wide flex-shrink-0">
-                              Hot Deal
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-white font-outfit font-bold text-sm line-clamp-1 mb-1.5">{item.title}</p>
-                            <div className="mb-3">
-                              {item.priceLocked ? (
-                                <ViewPricingButton className="inline-flex items-center gap-1.5 text-[11px] font-bold text-white bg-white/15 hover:bg-white hover:text-brand-red border border-white/30 transition rounded-lg px-2.5 py-1.5" />
-                              ) : item.discountAmount > 0 ? (
-                                <span className="text-white font-outfit font-black text-lg">
-                                  Save ₹{Math.round(item.discountAmount).toLocaleString('en-IN')}
-                                </span>
-                              ) : (
-                                <span className="text-white font-outfit font-black text-lg">
-                                  ₹{Math.round(item.price).toLocaleString('en-IN')}
-                                </span>
-                              )}
-                            </div>
-                            <Link
-                              to={item.slug ? `/listing/${item.slug}` : '/listing'}
-                              className="inline-flex items-center gap-1.5 bg-white text-brand-red font-outfit font-extrabold text-xs px-4 py-2 rounded-xl hover:bg-slate-100 transition">
-                              Grab Deal
-                              <i className="fa-solid fa-arrow-right text-[10px] transition-transform group-hover:translate-x-1"></i>
-                            </Link>
-                          </div>
-                        </div>
                       </div>
                     ))}
               </div>
@@ -290,7 +329,7 @@ export const HomePage = () => {
                         src={logo.logo_url}
                         alt={logo.name}
                         title={logo.name}
-                        className="h-8 w-auto max-w-[140px] object-contain grayscale opacity-60 hover:opacity-100 hover:grayscale-0 transition"
+                        className="h-8 w-auto max-w-[140px] object-contain"
                       />
                     </a>
                   ))
@@ -372,67 +411,15 @@ export const HomePage = () => {
               </div>
             )}
 
-            {inventoryStatus !== 'loading' && filteredMedia.map((item) => {
-              const isCarted = cart.some((c) => c.id === item.id);
-              const listingHref = item.slug ? `/listing/${item.slug}` : '/listing';
-              return (
-                <div key={item.id} className="glass-card rounded-2xl overflow-hidden group flex flex-col justify-between h-full bg-white border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300">
-                  <div>
-                    <Link to={listingHref} className="relative h-48 overflow-hidden block">
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
-                      <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-slate-900 text-xs px-2.5 py-1 rounded-full font-bold shadow">
-                        {item.category}
-                      </span>
-                      <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-xs text-white font-medium">
-                        <span className="flex items-center gap-1"><i className="fa-solid fa-location-dot text-red-400"></i> {item.location}</span>
-                        <span className="flex items-center gap-1 bg-brand-red text-white px-2 py-0.5 rounded font-bold">
-                          <i className="fa-solid fa-star text-white"></i> {item.rating}
-                        </span>
-                      </div>
-                    </Link>
-
-                    <div className="p-5 space-y-3">
-                      <Link to={listingHref} className="font-outfit font-bold text-lg text-slate-900 group-hover:text-brand-red transition line-clamp-2 leading-snug">
-                        {item.title}
-                      </Link>
-
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {item.specs.map((spec, i) => (
-                          <span key={i} className="bg-slate-100 border border-slate-200 text-slate-600 text-[11px] px-2 py-0.5 rounded font-medium">
-                            <i className="fa-solid fa-circle-check text-brand-red text-[9px] mr-1"></i>{spec}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="px-5 pb-5 pt-3 border-t border-slate-100 flex justify-between items-center mt-auto bg-slate-50/50">
-                    <div>
-                      {isAuthenticated ? (
-                        <div className="text-xl font-extrabold text-slate-900 font-outfit">
-                          ₹{item.price.toLocaleString('en-IN')}
-                          {item.priceUnit && <span className="text-xs text-slate-500 font-normal font-inter"> / {item.priceUnit}</span>}
-                        </div>
-                      ) : (
-                        <ViewPricingButton />
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => handleAddToCart(item.id, item)}
-                      className={`px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all duration-300 cursor-pointer ${
-                        isCarted
-                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20'
-                          : 'bg-brand-red hover:bg-brand-red-dark text-white shadow-lg shadow-brand-red/25 hover:scale-105'
-                      }`}>
-                      <i className={`fa-solid ${isCarted ? 'fa-check' : 'fa-plus'}`}></i>
-                      {isCarted ? 'Added' : 'Add to Plan'}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+            {inventoryStatus !== 'loading' && filteredMedia.map((item) => (
+              <MediaListingCard
+                key={item.id}
+                item={item}
+                isAuthenticated={isAuthenticated}
+                isCarted={cart.some((c) => c.id === item.id)}
+                onAddToCart={() => handleAddToCart(item.id, item)}
+              />
+            ))}
           </div>
 
         </div>
@@ -515,9 +502,10 @@ export const HomePage = () => {
                       <Skeleton key={i} className="h-44 w-56 rounded-2xl flex-shrink-0 snap-start" />
                     ))
                   : industries.map((industry) => (
-                      <div
+                      <Link
                         key={industry.id}
-                        className="relative h-44 w-56 flex-shrink-0 snap-start rounded-2xl overflow-hidden group shadow-sm border border-slate-200">
+                        to={`/clients?industry=${industry.id}`}
+                        className="relative h-44 w-56 flex-shrink-0 snap-start rounded-2xl overflow-hidden group shadow-sm border border-slate-200 block">
                         <img
                           src={industry.image_url}
                           alt={industry.title}
@@ -527,7 +515,7 @@ export const HomePage = () => {
                         <span className="absolute bottom-3 left-3 right-3 text-white font-outfit font-bold text-sm drop-shadow">
                           {industry.title}
                         </span>
-                      </div>
+                      </Link>
                     ))}
               </div>
 

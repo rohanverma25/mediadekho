@@ -15,6 +15,7 @@
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Company</th>
+                        <th>GSTIN</th>
                         <th>Account Type</th>
                         <th>Status</th>
                         <th>Orders</th>
@@ -52,6 +53,7 @@ $(function () {
             { data: 'email' },
             { data: 'phone', defaultContent: '—' },
             { data: 'company', defaultContent: '—' },
+            { data: 'gst_number', defaultContent: '—' },
             { data: 'role', render: (role) => `<span class="badge text-bg-secondary">${role ?? '—'}</span>` },
             { data: 'approval_status', render: statusBadge },
             { data: 'orders_count' },

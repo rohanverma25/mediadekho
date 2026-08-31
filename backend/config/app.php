@@ -56,6 +56,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend URL
+    |--------------------------------------------------------------------------
+    |
+    | The React SPA is a separate app from this backend — links this app
+    | emails to customers (e.g. the password reset link) need to point at
+    | the SPA, not at Laravel itself, so its base URL is configured
+    | separately from APP_URL.
+    |
+    */
+
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:5173/mediadekho'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

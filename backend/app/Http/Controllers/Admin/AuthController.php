@@ -34,7 +34,11 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        if (! Auth::user()->hasAnyRole(['Super Admin', 'Admin'])) {
+        // Same permission-based check as the `staff` route middleware — any
+        // role with at least one admin-panel permission counts, not just
+        // the hardcoded Super Admin/Admin names, so a custom role created
+        // via the Roles admin module can log in immediately.
+        if (Auth::user()->getAllPermissions()->isEmpty()) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

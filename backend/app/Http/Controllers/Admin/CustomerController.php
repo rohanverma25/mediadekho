@@ -39,6 +39,7 @@ class CustomerController extends Controller
                 'email' => $customer->email,
                 'phone' => $customer->phone,
                 'company' => $customer->company,
+                'gst_number' => $customer->gst_number,
                 'role' => $customer->getRoleNames()->first(),
                 'approval_status' => $customer->approval_status,
                 'orders_count' => $customer->orders_count,

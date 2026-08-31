@@ -137,6 +137,22 @@ class AuthRegisterTest extends TestCase
         ])->assertUnprocessable()->assertJsonValidationErrors('password');
     }
 
+    public function test_login_response_includes_company_for_the_signed_in_user(): void
+    {
+        $this->postJson('/api/register', [
+            'name' => 'Rajesh Kumar',
+            'email' => 'rajesh@techcorp.com',
+            'company' => 'TechCorp Solutions',
+            'password' => 'password123',
+            'user_type' => 'enterprise',
+        ])->assertCreated();
+
+        $this->postJson('/api/login', [
+            'email' => 'rajesh@techcorp.com',
+            'password' => 'password123',
+        ])->assertOk()->assertJsonPath('user.company', 'TechCorp Solutions');
+    }
+
     public function test_registered_user_can_immediately_log_in(): void
     {
         $this->postJson('/api/register', [

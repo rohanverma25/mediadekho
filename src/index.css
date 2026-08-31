@@ -268,3 +268,45 @@ input[type=range] {
   font-style: italic;
 }
 .blog-content strong { font-weight: 700; color: #0f172a; }
+
+/* Magazine Reader — plays once per page change (the wrapper around
+   react-pdf's <Page> is re-keyed by the spread's page numbers, which
+   remounts it and restarts this animation) to give a smooth "page turn"
+   feel without pulling in a full 3D flip-physics library. Direction-aware:
+   moving forward rotates in from the right (as if the new page is
+   swinging out from behind the one before it), moving back rotates in
+   from the left — the mirror image of the same motion. The container this
+   sits in needs `perspective` for the rotateY to actually read as 3D
+   depth rather than a flat squash. cubic-bezier here is an "ease-out-quart"
+   curve — fast start, long smooth settle, reads as considerably more
+   fluid than a linear/ease-out fade at the same duration. */
+@keyframes magazine-flip-in-next {
+  from {
+    opacity: 0;
+    transform: rotateY(-14deg) translateX(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0) scale(1);
+  }
+}
+@keyframes magazine-flip-in-prev {
+  from {
+    opacity: 0;
+    transform: rotateY(14deg) translateX(-28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0) scale(1);
+  }
+}
+.magazine-flip-next,
+.magazine-flip-prev {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+}
+.magazine-flip-next { animation-name: magazine-flip-in-next; }
+.magazine-flip-prev { animation-name: magazine-flip-in-prev; }
