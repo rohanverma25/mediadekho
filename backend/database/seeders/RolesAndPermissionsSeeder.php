@@ -48,6 +48,8 @@ class RolesAndPermissionsSeeder extends Seeder
         'job.delete',
         'job-application.view',
         'job-application.delete',
+        'media-listing-request.view',
+        'media-listing-request.delete',
         'client-logo.create',
         'client-logo.edit',
         'client-logo.delete',

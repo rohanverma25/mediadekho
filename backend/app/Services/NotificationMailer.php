@@ -8,6 +8,8 @@ use App\Mail\ContactLeadAdminNotification;
 use App\Mail\ContactLeadCustomerConfirmation;
 use App\Mail\JobApplicationAdminNotification;
 use App\Mail\JobApplicationCustomerConfirmation;
+use App\Mail\MediaListingRequestAdminNotification;
+use App\Mail\MediaListingRequestCustomerConfirmation;
 use App\Mail\NewCustomerAdminNotification;
 use App\Mail\OrderAdminNotification;
 use App\Mail\OrderCustomerConfirmation;
@@ -16,6 +18,7 @@ use App\Mail\WelcomeCustomerEmail;
 use App\Models\AwardNomination;
 use App\Models\ContactLead;
 use App\Models\JobApplication;
+use App\Models\MediaListingRequest;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Mail\Mailable;
@@ -51,6 +54,12 @@ class NotificationMailer
     {
         $this->sendAdminCopy(new JobApplicationAdminNotification($application));
         $this->send($application->email, new JobApplicationCustomerConfirmation($application));
+    }
+
+    public function mediaListingRequest(MediaListingRequest $mediaListingRequest): void
+    {
+        $this->sendAdminCopy(new MediaListingRequestAdminNotification($mediaListingRequest));
+        $this->send($mediaListingRequest->email, new MediaListingRequestCustomerConfirmation($mediaListingRequest));
     }
 
     public function orderConfirmed(Order $order): void

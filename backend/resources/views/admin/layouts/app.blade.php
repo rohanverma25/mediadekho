@@ -21,7 +21,7 @@
     @php
         $navInventoryActive = request()->routeIs('admin.categories.*', 'admin.subcategories.*', 'admin.media-inventory.*', 'admin.frequencies.*', 'admin.languages.*');
         $navCmsActive = request()->routeIs('admin.faqs.*', 'admin.blogs.*', 'admin.magazines.*', 'admin.news.*', 'admin.awards.*', 'admin.jobs.*', 'admin.client-logos.*', 'admin.industries.*', 'admin.stats.*', 'admin.videos.*', 'admin.announcements.*', 'admin.page-meta.*');
-        $navEnquiriesActive = request()->routeIs('admin.leads.*', 'admin.award-nominations.*', 'admin.job-applications.*');
+        $navEnquiriesActive = request()->routeIs('admin.leads.*', 'admin.award-nominations.*', 'admin.job-applications.*', 'admin.media-listing-requests.*');
         $navOrdersActive = request()->routeIs('admin.customers.*', 'admin.orders.*');
         $navAdminActive = request()->routeIs('admin.roles.*', 'admin.staff-users.*');
     @endphp
@@ -118,6 +118,9 @@
                     </a>
                     <a href="{{ route('admin.job-applications.index') }}" class="nav-link {{ request()->routeIs('admin.job-applications.*') ? 'active' : '' }}">
                         <i class="bi bi-file-earmark-person"></i> Job Applications
+                    </a>
+                    <a href="{{ route('admin.media-listing-requests.index') }}" class="nav-link {{ request()->routeIs('admin.media-listing-requests.*') ? 'active' : '' }}">
+                        <i class="bi bi-broadcast"></i> Media Listing Requests
                     </a>
                 </div>
             </div>

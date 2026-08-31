@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ContactLeadController;
 use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\IndustryController;
 use App\Http\Controllers\Api\JobApplicationController;
+use App\Http\Controllers\Api\MediaListingRequestController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\MediaCategoryController;
 use App\Http\Controllers\Api\MediaInventoryController;
@@ -38,6 +39,7 @@ Route::post('award-nominations', [AwardNominationController::class, 'store'])->m
 
 // Same pattern — open to guests, linked to the account when authenticated.
 Route::post('job-applications', [JobApplicationController::class, 'store'])->middleware('throttle:10,1');
+Route::post('media-listing-requests', [MediaListingRequestController::class, 'store'])->middleware('throttle:10,1');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);

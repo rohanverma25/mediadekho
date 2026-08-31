@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\FrequencyController;
 use App\Http\Controllers\Admin\IndustryController;
 use App\Http\Controllers\Admin\JobApplicationController;
+use App\Http\Controllers\Admin\MediaListingRequestController;
 use App\Http\Controllers\Admin\JobController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\MediaCategoryController;
@@ -151,6 +152,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('job-applications/data', [JobApplicationController::class, 'data'])->name('job-applications.data');
         Route::put('job-applications/{application}', [JobApplicationController::class, 'update'])->name('job-applications.update');
         Route::delete('job-applications/{application}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
+
+        Route::get('media-listing-requests', [MediaListingRequestController::class, 'index'])->name('media-listing-requests.index');
+        Route::get('media-listing-requests/data', [MediaListingRequestController::class, 'data'])->name('media-listing-requests.data');
+        Route::put('media-listing-requests/{mediaListingRequest}', [MediaListingRequestController::class, 'update'])->name('media-listing-requests.update');
+        Route::delete('media-listing-requests/{mediaListingRequest}', [MediaListingRequestController::class, 'destroy'])->name('media-listing-requests.destroy');
 
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
 

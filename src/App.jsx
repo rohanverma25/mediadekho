@@ -32,6 +32,7 @@ import { ContactPage } from './pages/ContactPage';
 import { AwardsPage } from './pages/AwardsPage';
 import { ClientsPage } from './pages/ClientsPage';
 import { CareerPage } from './pages/CareerPage';
+import { ListYourMediaPage } from './pages/ListYourMediaPage';
 import { CartPage } from './pages/CartPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { OrdersPage } from './pages/OrdersPage';
@@ -81,6 +82,7 @@ export function App() {
                           <Route path="/awards" element={<AwardsPage />} />
                           <Route path="/clients" element={<ClientsPage />} />
                           <Route path="/careers" element={<CareerPage />} />
+                          <Route path="/list-your-media" element={<ListYourMediaPage />} />
                           <Route path="/cart" element={<CartPage />} />
                           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
                           <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
