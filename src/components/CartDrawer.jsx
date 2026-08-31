@@ -41,7 +41,7 @@ export const CartDrawer = () => {
               <img src={item.image} alt={item.title} className="w-14 h-14 rounded-lg object-cover" />
               <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-bold text-slate-900 truncate">{item.title}</h4>
-                <span className="text-[10px] text-slate-500 font-medium block">{item.category} • {item.location}</span>
+                <span className="text-[10px] text-slate-500 font-medium block">{item.category}</span>
                 {isAuthenticated ? (
                   <span className="text-xs font-extrabold text-brand-red font-outfit">₹{item.price.toLocaleString('en-IN')} <span className="font-normal text-slate-500 text-[10px]">{item.priceUnit}</span></span>
                 ) : (

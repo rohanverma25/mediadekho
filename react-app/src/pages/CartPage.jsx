@@ -165,7 +165,6 @@ export const CartPage = () => {
                               <span className="bg-red-50 text-brand-red text-[10px] uppercase font-extrabold px-2.5 py-0.5 rounded-full border border-red-100">
                                 {item.category}
                               </span>
-                              <span className="text-xs text-slate-500 font-medium">{item.location}</span>
                             </div>
 
                             <Link to={listingHref} className="font-outfit font-bold text-base text-slate-900 truncate block hover:text-brand-red transition">

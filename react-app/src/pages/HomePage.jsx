@@ -43,16 +43,9 @@ const MediaListingCard = ({ item, isAuthenticated, isCarted, onAddToCart }) => {
       <div>
         <Link to={listingHref} className="relative h-48 overflow-hidden block bg-slate-100">
           <img src={item.image} alt={item.title} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
           <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-slate-900 text-xs px-2.5 py-1 rounded-full font-bold shadow">
             {item.category}
           </span>
-          <div className="absolute bottom-3 left-3 right-3 flex justify-between items-center text-xs text-white font-medium">
-            <span className="flex items-center gap-1"><i className="fa-solid fa-location-dot text-red-400"></i> {item.location}</span>
-            <span className="flex items-center gap-1 bg-brand-red text-white px-2 py-0.5 rounded font-bold">
-              <i className="fa-solid fa-star text-white"></i> {item.rating}
-            </span>
-          </div>
         </Link>
 
         <div className="p-5 space-y-3">

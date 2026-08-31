@@ -168,8 +168,6 @@ export const CategoryPage = () => {
     filtered.sort((a, b) => a.price - b.price);
   } else if (sortBy === 'price-high') {
     filtered.sort((a, b) => b.price - a.price);
-  } else if (sortBy === 'rating') {
-    filtered.sort((a, b) => b.rating - a.rating);
   }
 
   return (
@@ -342,7 +340,6 @@ export const CategoryPage = () => {
                       <option value="popular">Popularity (Recommended)</option>
                       <option value="price-low">Price: Low to High</option>
                       <option value="price-high">Price: High to Low</option>
-                      <option value="rating">Highest Rated</option>
                     </select>
                   </div>
 
@@ -474,7 +471,7 @@ export const CategoryPage = () => {
                           <Link to={listingHref} className="font-outfit font-bold text-base text-slate-900 hover:text-brand-red transition block mt-1">
                             {item.title}
                           </Link>
-                          <span className="text-xs text-slate-500 font-medium block">{item.location} • {item.impressions}</span>
+                          <span className="text-xs text-slate-500 font-medium block">{item.impressions}</span>
                         </div>
                         <div className="text-right sm:border-l sm:border-slate-100 sm:pl-4">
                           {isAuthenticated ? (

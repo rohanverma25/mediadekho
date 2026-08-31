@@ -126,7 +126,7 @@ export const SearchModal = () => {
                 <img src={item.image} alt={item.title} className="w-12 h-12 rounded-lg object-cover" />
                 <div>
                   <h4 className="font-bold text-slate-900 text-sm line-clamp-1">{item.title}</h4>
-                  <p className="text-xs text-slate-500 font-medium">{item.category} • {item.location}</p>
+                  <p className="text-xs text-slate-500 font-medium">{item.category}</p>
                 </div>
               </div>
               <div className="text-right" onClick={(e) => item.priceLocked && e.stopPropagation()}>
