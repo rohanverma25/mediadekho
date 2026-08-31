@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 const SITE_NAME = 'Media Dekho';
 export const DEFAULT_TITLE = "Media Dekho | India's #1 Media Buying Agency & Ad Aggregator";
 export const DEFAULT_DESCRIPTION =
-  'Plan, compare, and book advertising spots instantly across Offline, Digital, Sports & Gifting with 100% verified direct owner rates.';
+  'Plan, compare, and book advertising spots instantly across Print Online, Digital, Entertainment & Sports.';
 
 function upsertMeta(attr, key, content) {
   const existing = document.querySelector(`meta[${attr}="${key}"]`);

@@ -193,11 +193,11 @@ export const HomePage = () => {
           </div>
 
           <h1 className="font-outfit font-black text-4xl sm:text-5xl lg:text-6xl text-slate-900 tracking-tight leading-[1.1]">
-            Choose MediaDekho for your 360° Brand Visibility Partner Across <span className="gradient-text-brand">15,000+ Media, PR & Advertising Options</span>
+            Make Your Ad Campaigns Online Across <span className="gradient-text-brand">300,000+ Media Options</span>
           </h1>
 
           <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed">
-            Plan, compare, and book advertising spots instantly across <strong>Print Online</strong>, <strong>Digital</strong>, <strong>Entertainment</strong> & <strong>Sports</strong>.
+            Plan, compare, and book advertising spots instantly across <strong>Print Online</strong>, <strong>Digital</strong>, <strong>Entertainment</strong> & <strong>Sports.</strong>
           </p>
 
           {/* Main Interactive Search Box Widget */}

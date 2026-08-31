@@ -78,8 +78,8 @@
                         <th>Category</th>
                         <th>Frequency</th>
                         <th>Language</th>
-                        <th>Retail</th>
-                        <th>B2C</th>
+                        <th>MSME Startups</th>
+                        <th>Brand/Company</th>
                         <th>B2B</th>
                         <th>Status</th>
                         <th>Created By</th>

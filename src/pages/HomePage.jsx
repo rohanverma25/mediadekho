@@ -189,7 +189,7 @@ export const HomePage = () => {
           
           <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 text-brand-red px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase shadow-sm">
             <span className="w-2 h-2 rounded-full bg-brand-red animate-ping"></span>
-            <span>India's Largest Media Aggregator Platform</span>
+            <span>India's Trusted Media Aggregator Platform</span>
           </div>
 
           <h1 className="font-outfit font-black text-4xl sm:text-5xl lg:text-6xl text-slate-900 tracking-tight leading-[1.1]">
@@ -197,7 +197,7 @@ export const HomePage = () => {
           </h1>
 
           <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto font-normal leading-relaxed">
-            Plan, compare, and book advertising spots instantly across <strong>Offline</strong>, <strong>Digital</strong>, <strong>Sports</strong> & <strong>Gifting</strong> with 100% verified direct owner rates.
+            Plan, compare, and book advertising spots instantly across <strong>Print Online</strong>, <strong>Digital</strong>, <strong>Entertainment</strong> & <strong>Sports.</strong>
           </p>
 
           {/* Main Interactive Search Box Widget */}

@@ -16,20 +16,20 @@
                         <input type="number" step="0.01" min="0" name="base_price" id="base_price" class="form-control calc-input" value="{{ old('base_price', $price?->base_price) }}" required>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Retail Markup %</label>
+                        <label class="form-label">MSME Startups Markup %</label>
                         <div class="input-group">
                             <input type="number" step="0.01" min="0" max="1000" name="retail_percentage" id="retail_percentage" class="form-control calc-input" value="{{ old('retail_percentage', $price?->retail_percentage ?? 0) }}" required>
                             <span class="input-group-text">%</span>
                         </div>
-                        <div class="form-text">Retail price: <span id="retail_price_preview">—</span></div>
+                        <div class="form-text">MSME Startups price: <span id="retail_price_preview">—</span></div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">B2C Markup %</label>
+                        <label class="form-label">Brand/Company Markup %</label>
                         <div class="input-group">
                             <input type="number" step="0.01" min="0" max="1000" name="b2c_percentage" id="b2c_percentage" class="form-control calc-input" value="{{ old('b2c_percentage', $price?->b2c_percentage ?? 0) }}" required>
                             <span class="input-group-text">%</span>
                         </div>
-                        <div class="form-text">B2C price: <span id="b2c_price_preview">—</span></div>
+                        <div class="form-text">Brand/Company price: <span id="b2c_price_preview">—</span></div>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">B2B Markup %</label>
@@ -40,7 +40,7 @@
                         <div class="form-text">B2B price: <span id="b2b_price_preview">—</span></div>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">Enterprise Price <span class="text-muted small">(custom)</span></label>
+                        <label class="form-label">Custom Price</label>
                         <input type="number" step="0.01" min="0" name="enterprise_price" id="enterprise_price" class="form-control calc-input" value="{{ old('enterprise_price', $price?->enterprise_price) }}">
                     </div>
                     <div class="col-md-3">
@@ -95,7 +95,7 @@
                             </tr>
                         </thead>
                         <tbody id="calcTableBody">
-                            @foreach (['retail' => 'Retail', 'b2c' => 'B2C', 'b2b' => 'B2B', 'enterprise' => 'Enterprise'] as $tier => $label)
+                            @foreach (['retail' => 'MSME Startups', 'b2c' => 'Brand/Company', 'b2b' => 'B2B', 'enterprise' => 'Custom'] as $tier => $label)
                                 <tr data-tier="{{ $tier }}">
                                     <td class="fw-semibold">{{ $label }}</td>
                                     <td data-field="price">—</td>
